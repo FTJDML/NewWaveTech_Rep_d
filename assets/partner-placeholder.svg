@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 72" width="160" height="72" role="img"
+     aria-label="Placeholder voor partnerlogo">
+  <!-- NEUTRALE LOGO-PLACEHOLDER — uitsluitend te vervangen door goedgekeurde
+       CGI-partnerlogo's. Geen ongeverifieerde partners toevoegen. -->
+  <title>Placeholder voor partnerlogo</title>
+  <rect x="1" y="1" width="158" height="70" fill="#fafafa" stroke="#e2e2e2" stroke-width="2"
+        stroke-dasharray="6 4"/>
+  <circle cx="34" cy="36" r="13" fill="#e2e2e2"/>
+  <rect x="56" y="26" width="70" height="8" rx="2" fill="#e2e2e2"/>
+  <rect x="56" y="40" width="46" height="8" rx="2" fill="#ececec"/>
+</svg>

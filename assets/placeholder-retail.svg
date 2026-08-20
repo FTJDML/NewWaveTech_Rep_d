@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 540" width="720" height="540" role="img"
+     aria-label="Illustratieve weergave van winkel-, data- en IT-operatie in retail">
+  <!-- BEELD-PLACEHOLDER — vervang door een bestaande CGI-hero-afbeelding of
+       -video van de live pagina (asset uit het CMS). Verhouding 4:3 zodat er
+       geen layout shift optreedt bij vervanging. -->
+  <title>Beeld-placeholder: retailoperatie, data en winkeltechnologie</title>
+  <rect width="720" height="540" fill="#f1f1f2"/>
+
+  <!-- winkelgevel -->
+  <rect x="70" y="200" width="330" height="230" fill="#ffffff" stroke="#d6d6d8" stroke-width="2"/>
+  <path d="M60 200 L235 120 L410 200 Z" fill="#e6e6e8" stroke="#d6d6d8" stroke-width="2"/>
+  <rect x="110" y="250" width="110" height="90" fill="#f6f6f7" stroke="#d6d6d8" stroke-width="2"/>
+  <rect x="250" y="250" width="110" height="90" fill="#f6f6f7" stroke="#d6d6d8" stroke-width="2"/>
+  <rect x="185" y="360" width="100" height="70" fill="#e31937" opacity="0.12" stroke="#e31937" stroke-width="2"/>
+
+  <!-- datastroom -->
+  <g stroke="#e31937" stroke-width="3" fill="none" stroke-linecap="round">
+    <path d="M430 250 C500 250 500 190 570 190"/>
+    <path d="M430 300 C510 300 510 300 580 300"/>
+    <path d="M430 350 C500 350 500 410 570 410"/>
+  </g>
+  <g fill="#e31937">
+    <circle cx="585" cy="190" r="14"/>
+    <circle cx="595" cy="300" r="14"/>
+    <circle cx="585" cy="410" r="14"/>
+    <circle cx="430" cy="250" r="8"/>
+    <circle cx="430" cy="300" r="8"/>
+    <circle cx="430" cy="350" r="8"/>
+  </g>
+
+  <!-- kassa/POS-vlak -->
+  <rect x="440" y="120" width="200" height="40" rx="2" fill="#ffffff" stroke="#d6d6d8" stroke-width="2"/>
+  <rect x="456" y="134" width="120" height="12" fill="#e6e6e8"/>
+
+  <text x="360" y="490" text-anchor="middle" font-family="Segoe UI, system-ui, Arial, sans-serif"
+        font-size="22" font-weight="600" fill="#8a8a8c">Beeld-placeholder</text>
+  <text x="360" y="516" text-anchor="middle" font-family="Segoe UI, system-ui, Arial, sans-serif"
+        font-size="16" fill="#a2a2a4">Vervang door bestaand CGI-retailbeeld of -video</text>
+</svg>

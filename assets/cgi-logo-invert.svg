@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 208 80" width="208" height="80" role="img" aria-label="CGI">
+  <!-- PLACEHOLDER LOGO (donkere achtergrond) — vervang door het officiele
+       CGI-logo-asset uit het CMS. -->
+  <title>CGI</title>
+  <text x="0" y="58" font-family="Segoe UI, system-ui, Arial, sans-serif" font-size="54"
+        font-weight="700" letter-spacing="1" fill="#ffffff">CGI</text>
+  <rect x="118" y="16" width="4" height="42" fill="#4d4d4d"/>
+  <text x="132" y="34" font-family="Segoe UI, system-ui, Arial, sans-serif" font-size="14"
+        font-weight="600" fill="#a8a8a8">logo-</text>
+  <text x="132" y="52" font-family="Segoe UI, system-ui, Arial, sans-serif" font-size="14"
+        font-weight="600" fill="#a8a8a8">placeholder</text>
+</svg>

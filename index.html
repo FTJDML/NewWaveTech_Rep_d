@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Retail- en consumenten dienstverlening | CGI NL — managementprototype</title>
+<meta name="description" content="Managementprototype van een vernieuwde CGI Retail &amp; Consumer Services-pagina. Niet voor publicatie.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ==========================================================================
+     PROTOTYPE-MARKERING (§18) — mag in productie worden verwijderd
+     ========================================================================== -->
+<div class="concept-flag" role="note">
+  <span class="concept-flag__dot" aria-hidden="true"></span>
+  <span><strong>Management concept</strong> — niet voor publicatie</span>
+</div>
+
+<a class="skip-link" href="#main">Direct naar hoofdinhoud</a>
+
+<!-- ==========================================================================
+     SECTIE 1 — CGI SHELL: UTILITY BAR + HEADER + HOOFDNAVIGATIE
+     Overgenomen shell. Menu-items en footerlinks NIET wijzigen.
+     VERIFY: exacte menulabels, volgorde en URL's controleren tegen
+     www.cgi.com/nl/nl (deze omgeving had geen netwerktoegang tot cgi.com).
+     ========================================================================== -->
+<div class="utility-bar">
+  <div class="container utility-bar__inner">
+    <ul class="utility-bar__links">
+      <li><a href="https://www.cgi.com/nl/nl/over-ons">Over ons</a></li>
+      <li><a href="https://www.cgi.com/nl/nl/nieuws">Nieuws</a></li>
+      <li><a href="https://www.cgi.com/en/investors">Investeerders</a></li>
+      <li><a href="https://www.cgi.com/nl/nl/werken-bij-cgi">Werken bij CGI</a></li>
+    </ul>
+    <div class="utility-bar__locale">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18"/></svg>
+      <span>Nederland</span>
+      <span class="utility-bar__sep" aria-hidden="true">|</span>
+      <a href="https://www.cgi.com/en" hreflang="en">EN</a>
+    </div>
+  </div>
+</div>
+
+<header class="site-header" id="site-header">
+  <div class="container site-header__inner">
+    <a class="logo" href="https://www.cgi.com/nl/nl" aria-label="CGI — naar de homepage">
+      <!-- REPLACE: officieel CGI-logo-asset uit het CMS. Onderstaande SVG is een
+           tekstuele placeholder in de CGI-huisstijl, geen gecertificeerd merkasset. -->
+      <img src="assets/cgi-logo.svg" alt="CGI" width="104" height="40">
+    </a>
+
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-nav">
+      <span class="nav-toggle__bars" aria-hidden="true"><span></span><span></span><span></span></span>
+      <span class="nav-toggle__label">Menu</span>
+    </button>
+
+    <nav class="primary-nav" id="primary-nav" aria-label="Hoofdnavigatie">
+      <ul class="primary-nav__list">
+        <li><a href="https://www.cgi.com/nl/nl/diensten">Wat we doen</a></li>
+        <li><a href="https://www.cgi.com/nl/nl/sectoren" aria-current="true">Sectoren</a></li>
+        <li><a href="https://www.cgi.com/nl/nl/insights">Insights</a></li>
+        <li><a href="https://www.cgi.com/nl/nl/werken-bij-cgi">Carrières</a></li>
+        <li><a href="https://www.cgi.com/nl/nl/over-ons">Over ons</a></li>
+      </ul>
+      <div class="primary-nav__actions">
+        <button class="icon-btn" type="button" data-modal-open data-modal-title="Zoeken op cgi.com" data-modal-kind="search">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg>
+          <span class="sr-only">Zoeken</span>
+        </button>
+        <a class="btn btn--primary btn--sm" href="#contact">Contact</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ========================================================================
+       SECTIE 2 — HERO
+       ======================================================================== -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="container hero__inner">
+      <div class="hero__content">
+        <nav class="breadcrumb" aria-label="Kruimelpad">
+          <ol>
+            <li><a href="https://www.cgi.com/nl/nl">Home</a></li>
+            <li><a href="https://www.cgi.com/nl/nl/sectoren">Sectoren</a></li>
+            <li aria-current="page">Retail- en consumenten dienstverlening</li>
+          </ol>
+        </nav>
+        <p class="eyebrow">CGI Retail &amp; Consumer Services</p>
+        <h1 id="hero-title">Retailtechnologie die werkt — van strategie tot winkelvloer</h1>
+        <p class="hero__intro">CGI helpt retailers hun technologie te transformeren, waarde te realiseren met
+          Data, Cloud &amp; AI en hun winkel- en IT-operatie wereldwijd betrouwbaar te laten draaien.</p>
+        <div class="btn-row">
+          <button class="btn btn--primary" type="button" data-modal-open data-modal-title="Plan een retail technology gesprek" data-modal-kind="gesprek">Plan een retail technology gesprek</button>
+          <a class="btn btn--secondary" href="#expertise">Ontdek onze expertise</a>
+        </div>
+      </div>
+
+      <div class="hero__media">
+        <!-- REPLACE: bestaande CGI-hero-afbeelding of -video van de live pagina
+             (assets uit het CMS). Placeholder houdt de exacte beeldverhouding vast
+             zodat er geen layout shift optreedt. -->
+        <figure class="media-placeholder media-placeholder--hero">
+          <img src="assets/placeholder-retail.svg" alt="Illustratieve weergave van winkel-, data- en IT-operatie in retail" width="720" height="540">
+          <figcaption>Beeld-placeholder — vervang door bestaand CGI-retailbeeld</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <!-- Compacte claimstrip: de drie expertisedomeinen zijn direct in het eerste
+         zichtbare deel van de pagina herkenbaar (§25). -->
+    <div class="container">
+      <ul class="claim-strip" aria-label="De drie expertisedomeinen van CGI Retail &amp; Consumer Services">
+        <li>
+          <p class="claim-strip__kicker">1 · Transform</p>
+          <a class="claim-strip__link" href="#claim-transformation">Retail Technology Transformation &amp; Business Consulting</a>
+        </li>
+        <li>
+          <p class="claim-strip__kicker">2 · Create value</p>
+          <a class="claim-strip__link" href="#claim-data-ai">Retail Data, Cloud &amp; AI</a>
+        </li>
+        <li>
+          <p class="claim-strip__kicker">3 · Run</p>
+          <a class="claim-strip__link" href="#claim-operations">Retail Operations &amp; Managed IT Services</a>
+        </li>
+      </ul>
+
+      <p class="hero__proof">
+        <svg class="icon icon--accent" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m4 12.5 5 5L20 6.5"/></svg>
+        <span>CGI is erkend als <em>Major Player</em> in de IDC MarketScape voor wereldwijde
+          professionele dienstverleners voor retailers (2024).
+          <a href="https://www.cgi.com/nl/nl/nieuws/retail-en-consumenten-dienstverlening/cgi-erkend-als-belangrijke-speler-retaildienstverlening">Lees het nieuwsbericht</a></span>
+      </p>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       SECTIE 3 — COMPACTE ANKERBALK (sticky onder de header)
+       ======================================================================== -->
+  <nav class="anchor-bar" id="anchor-bar" aria-label="Inhoud van deze pagina">
+    <div class="container anchor-bar__inner">
+      <ul class="anchor-bar__list">
+        <li><a href="#expertise">Onze expertise</a></li>
+        <li><a href="#klantresultaten">Klantresultaten</a></li>
+        <li><a href="#insights">Insights &amp; research</a></li>
+        <li><a href="#events">Events</a></li>
+        <li><a href="#careers">Werken bij CGI</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ========================================================================
+       SECTIE 4 — MARKTINTRODUCTIE + VOICE OF OUR CLIENTS
+       VERIFY: cijfers, jaartal en bronvermelding één-op-één controleren tegen de
+       live pagina / het VOOC-rapport vóór gebruik in de presentatie.
+       ======================================================================== -->
+  <section class="section section--tint" id="markt" aria-labelledby="markt-title">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">De markt verandert</p>
+        <h2 id="markt-title">De markt verandert, de operatie moet doorgaan</h2>
+        <p class="section-head__lead">Retailers moeten tegelijkertijd vernieuwen en blijven presteren. AI,
+          veranderende klantverwachtingen, druk op marges, legacytechnologie en toenemende operationele
+          complexiteit vragen om keuzes die niet alleen strategisch goed zijn, maar ook uitvoerbaar op de
+          winkelvloer.</p>
+      </div>
+
+      <div class="stats" role="group" aria-labelledby="stats-title">
+        <h3 class="sr-only" id="stats-title">Inzichten uit de CGI Voice of Our Clients</h3>
+        <!-- VERIFY: bestaande, actuele Voice of Our Clients-cijfers van de live pagina.
+             Deze waarden zijn afkomstig uit de CGI Voice of Our Clients-publicaties voor
+             retail, consumer goods &amp; wholesale. Niet aanpassen zonder bronbevestiging. -->
+        <div class="stat">
+          <p class="stat__value">57%</p>
+          <p class="stat__label">van de retailbeslissers noemt technologische en digitale versnelling
+            de meest invloedrijke macrotrend.</p>
+        </div>
+        <div class="stat">
+          <p class="stat__value">55%</p>
+          <p class="stat__label">noemt veranderingen in het regelgevende en fiscale klimaat als
+            tweede meest invloedrijke macrotrend.</p>
+        </div>
+        <div class="stat">
+          <p class="stat__value">209</p>
+          <p class="stat__label">klantgesprekken vormen de basis voor de inzichten in retail,
+            consumer goods en dienstverlening.</p>
+        </div>
+      </div>
+
+      <p class="source-note">
+        Bron: CGI Voice of Our Clients — retail, consumer goods &amp; wholesale.
+        <a href="https://www.cgi.com/nl/nl/voice-of-our-clients">Bekijk het volledige onderzoek</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       SECTIE 5 — DRIE EXPERTISECLAIMS (Transform → Create value → Run)
+       ======================================================================== -->
+  <section class="section" id="expertise" aria-labelledby="expertise-title">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Onze expertise</p>
+        <h2 id="expertise-title">Drie expertisedomeinen, één end-to-end verhaal</h2>
+        <p class="section-head__lead">Van het bepalen en realiseren van de transformatie tot het structureel
+          ondersteunen van de dagelijkse retailoperatie.</p>
+      </div>
+
+      <ol class="journey" aria-label="Van transformatie naar waarde naar operatie">
+        <li><span class="journey__step">1</span> Transform</li>
+        <li aria-hidden="true" class="journey__arrow">→</li>
+        <li><span class="journey__step">2</span> Create value</li>
+        <li aria-hidden="true" class="journey__arrow">→</li>
+        <li><span class="journey__step">3</span> Run</li>
+      </ol>
+
+      <div class="grid grid--3 claim-cards">
+
+        <article class="card card--claim">
+          <p class="card__kicker">Transform</p>
+          <h3 class="card__title">Retail Technology Transformation &amp; Business Consulting</h3>
+          <p class="card__lead">Van strategie en operating model tot implementatie en adoptie: CGI maakt
+            complexe technologietransformaties bestuurbaar en realiseerbaar.</p>
+          <p class="card__sub">Onderwerpen</p>
+          <ul class="tag-list">
+            <li>Retail technology strategy</li>
+            <li>Transformation roadmaps</li>
+            <li>Operating models</li>
+            <li>Enterprise architecture</li>
+            <li>POS- en platformselectie</li>
+          </ul>
+          <p class="card__sub">Klantuitkomsten</p>
+          <ul class="check-list">
+            <li>Meer grip op complexe transformaties</li>
+            <li>Één samenhangende roadmap</li>
+            <li>Kortere route van strategie naar resultaat</li>
+          </ul>
+          <a class="link-arrow" href="#claim-transformation">Bekijk dit expertisedomein</a>
+        </article>
+
+        <article class="card card--claim">
+          <p class="card__kicker">Create value</p>
+          <h3 class="card__title">Retail Data, Cloud &amp; AI</h3>
+          <p class="card__lead">Van gefragmenteerde data, cloudcomplexiteit en losse AI-pilots naar schaalbare
+            oplossingen die aantoonbare waarde leveren in de dagelijkse retailoperatie.</p>
+          <p class="card__sub">Onderwerpen</p>
+          <ul class="tag-list">
+            <li>Retail data foundations</li>
+            <li>Data governance</li>
+            <li>Cloudmodernisering</li>
+            <li>AI van pilot naar productie</li>
+            <li>Agentic retail</li>
+          </ul>
+          <p class="card__sub">Klantuitkomsten</p>
+          <ul class="check-list">
+            <li>Betrouwbaardere en beter bruikbare data</li>
+            <li>AI-use-cases gekoppeld aan businesswaarde</li>
+            <li>Snellere opschaling van pilots</li>
+          </ul>
+          <a class="link-arrow" href="#claim-data-ai">Bekijk dit expertisedomein</a>
+        </article>
+
+        <article class="card card--claim">
+          <p class="card__kicker">Run</p>
+          <h3 class="card__title">Retail Operations &amp; Managed IT Services</h3>
+          <p class="card__lead">Betrouwbare winkel- en IT-operaties met global support, lokale field services,
+            store roll-outs, SIAM en managed IT services.</p>
+          <p class="card__sub">Onderwerpen</p>
+          <ul class="tag-list">
+            <li>Global retail support</li>
+            <li>Field services</li>
+            <li>Store technology roll-outs</li>
+            <li>SIAM &amp; service integration</li>
+            <li>Peak readiness</li>
+          </ul>
+          <p class="card__sub">Klantuitkomsten</p>
+          <ul class="check-list">
+            <li>Hogere beschikbaarheid van winkeltechnologie</li>
+            <li>Snellere incidentoplossing</li>
+            <li>Voorspelbaardere roll-outs</li>
+          </ul>
+          <a class="link-arrow" href="#claim-operations">Bekijk dit expertisedomein</a>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       SECTIE 6 — VERDIEPING PER CLAIM
+       Vaste structuur: klantprobleem → point of view → capabilities →
+       klantuitkomsten → bewijs → eerste stap → CTA
+       ======================================================================== -->
+  <section class="section section--tint" id="verdieping" aria-labelledby="verdieping-title">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Verdieping</p>
+        <h2 id="verdieping-title">Wat dit concreet betekent</h2>
+        <p class="section-head__lead">Per expertisedomein: het vraagstuk dat we herkennen, onze visie,
+          onze capabilities, het resultaat voor de klant en een concrete eerste stap.</p>
+      </div>
+
+      <!-- ---------------- Claim 1 ---------------- -->
+      <article class="deepdive" id="claim-transformation" aria-labelledby="dd1-title">
+        <header class="deepdive__head">
+          <p class="card__kicker">Transform</p>
+          <h3 id="dd1-title">Retail Technology Transformation &amp; Business Consulting</h3>
+          <p class="deepdive__promise">Van strategie en operating model tot implementatie en adoptie: CGI helpt
+            retailers complexe technologietransformaties bestuurbaar te maken en succesvol te realiseren.</p>
+        </header>
+
+        <div class="deepdive__body">
+          <div class="deepdive__col">
+            <h4 class="h-label">Het vraagstuk dat we herkennen</h4>
+            <p>Strategie, architectuur en delivery zijn niet met elkaar verbonden. Landen en businessunits
+              werken met eigen prioriteiten en platformen, programma’s lopen naast elkaar en besluitvorming
+              duurt lang. Het gevolg: veel initiatieven, weinig aantoonbare voortgang.</p>
+
+            <h4 class="h-label">CGI point of view</h4>
+            <p>Een transformatie wordt pas bestuurbaar als businessdoelen, capabilities, architectuur, governance
+              en delivery in één roadmap samenkomen — met duidelijk eigenaarschap per stap en een realistische
+              volgorde. Wij ontwerpen die roadmap en blijven verantwoordelijk voor de realisatie.</p>
+
+            <h4 class="h-label">Belangrijkste klantuitkomsten</h4>
+            <ul class="check-list check-list--2col">
+              <li>Meer grip op complexe transformaties</li>
+              <li>Één samenhangende roadmap</li>
+              <li>Betere aansluiting tussen business en IT</li>
+              <li>Minder risico tijdens implementatie</li>
+              <li>Snellere besluitvorming</li>
+              <li>Kortere route van strategie naar resultaat</li>
+            </ul>
+          </div>
+
+          <div class="deepdive__col">
+            <h4 class="h-label">Relevante capabilities</h4>
+            <div class="accordion" data-accordion>
+              <div class="accordion__item">
+                <h5 class="accordion__heading">
+                  <button class="accordion__trigger" type="button" aria-expanded="true" aria-controls="acc-1a" id="acc-1a-btn">
+                    Strategie, roadmap en governance
+                    <svg class="icon accordion__chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>
+                  </button>
+                </h5>
+                <div class="accordion__panel" id="acc-1a" role="region" aria-labelledby="acc-1a-btn">
+                  <ul class="bullet-list">
+                    <li>Retail technology strategy</li>
+                    <li>Business consulting</li>
+                    <li>Transformation roadmaps</li>
+                    <li>Operating models</li>
+                    <li>Programma- en transformatiegovernance</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="accordion__item">
+                <h5 class="accordion__heading">
+                  <button class="accordion__trigger" type="button" aria-expanded="false" aria-controls="acc-1b" id="acc-1b-btn">
+                    Architectuur en platformkeuzes
+                    <svg class="icon accordion__chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>
+                  </button>
+                </h5>
+                <div class="accordion__panel" id="acc-1b" role="region" aria-labelledby="acc-1b-btn" hidden>
+                  <ul class="bullet-list">
+                    <li>Enterprise architecture</li>
+                    <li>POS- en platformselectie</li>
+                    <li>Omnichannel- en unified-commerce-transformatie</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="accordion__item">
+                <h5 class="accordion__heading">
+                  <button class="accordion__trigger" type="button" aria-expanded="false" aria-controls="acc-1c" id="acc-1c-btn">
+                    Realisatie en adoptie
+                    <svg class="icon accordion__chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>
+                  </button>
+                </h5>
+                <div class="accordion__panel" id="acc-1c" role="region" aria-labelledby="acc-1c-btn" hidden>
+                  <ul class="bullet-list">
+                    <li>Procesoptimalisatie</li>
+                    <li>Change en adoptie</li>
+                    <li>End-to-end delivery</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="proof">
+              <h4 class="h-label">Bewijs en voorbeeld</h4>
+              <ul class="link-list">
+                <li><a href="https://www.cgi.com/nl/nl/artikelen/retail-en-consumenten-dienstverlening/unified-commerce-de-nieuwe-realiteit-retail">Artikel: Unified Commerce is de nieuwe realiteit in retail</a></li>
+                <li><a href="https://www.cgi.com/nl/nl/retail-implementatie-and-roll-outs">CGI Retail Implementatie &amp; Roll-Outs (Unified Commerce)</a></li>
+                <li><a href="#case-1">Conceptvoorbeeld: één bestuurbare retail technology roadmap</a></li>
+              </ul>
+            </div>
+
+            <div class="next-step">
+              <h4 class="h-label">Concrete eerste stap</h4>
+              <p><strong>Retail Technology Transformation Review</strong> — een compacte review van strategie,
+                roadmap, governance, architectuur en delivery-risico’s.</p>
+              <div class="btn-row">
+                <button class="btn btn--primary" type="button" data-modal-open data-modal-title="Bespreek uw retailtransformatie" data-modal-kind="transformatie">Bespreek uw retailtransformatie</button>
+                <a class="btn btn--tertiary" href="#offerings">Bekijk de review</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ---------------- Claim 2 ---------------- -->
+      <article class="deepdive" id="claim-data-ai" aria-labelledby="dd2-title">
+        <header class="deepdive__head">
+          <p class="card__kicker">Create value</p>
+          <h3 id="dd2-title">Retail Data, Cloud &amp; AI</h3>
+          <p class="deepdive__promise">Van gefragmenteerde data, cloudcomplexiteit en losse AI-pilots naar
+            schaalbare oplossingen die aantoonbare waarde leveren in de dagelijkse retailoperatie.</p>
+        </header>
+
+        <div class="deepdive__body">
+          <div class="deepdive__col">
+            <h4 class="h-label">Het vraagstuk dat we herkennen</h4>
+            <p>Er is veel data en er zijn veel experimenten, maar de weg naar productie ontbreekt. Databronnen
+              sluiten niet op elkaar aan, eigenaarschap is onduidelijk, integratie met bestaande retailprocessen
+              is complex en veelbelovende AI-pilots blijven daardoor in de pilotfase steken.</p>
+
+            <h4 class="h-label">CGI point of view</h4>
+            <p>Succesvolle AI in retail begint niet bij het model, maar bij het klantprobleem, betrouwbare data,
+              integratie, eigenaarschap en een realistische route naar productie en beheer. Wij prioriteren
+              use-cases op businesswaarde en bouwen het fundament mee dat opschaling mogelijk maakt.</p>
+
+            <h4 class="h-label">Belangrijkste klantuitkomsten</h4>
+            <ul class="check-list check-list--2col">
+              <li>Betrouwbaardere en beter bruikbare data</li>
+              <li>AI-use-cases gekoppeld aan businesswaarde</li>
+              <li>Snellere opschaling van pilots</li>
+              <li>Minder fragmentatie in het landschap</li>
+              <li>Betere integratie tussen platforms</li>
+              <li>Schaalbare cloud- en datafundamenten</li>
+            </ul>
+          </div>
+
+          <div class="deepdive__col">
+            <h4 class="h-label">Relevante capabilities</h4>
+            <div class="accordion" data-accordion>
+              <div class="accordion__item">
+                <h5 class="accordion__heading">
+                  <button class="accordion__trigger" type="button" aria-expanded="true" aria-controls="acc-2a" id="acc-2a-btn">
+                    Data- en cloudfundament
+                    <svg class="icon accordion__chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>
+                  </button>
+                </h5>
+                <div class="accordion__panel" id="acc-2a" role="region" aria-labelledby="acc-2a-btn">
+                  <ul class="bullet-list">
+                    <li>Retail data foundations</li>
+                    <li>Data governance</li>
+                    <li>Cloudmodernisering</li>
+                    <li>Applicatie- en systeemintegratie</li>
+                    <li>SaaS-integratie</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="accordion__item">
+                <h5 class="accordion__heading">
+                  <button class="accordion__trigger" type="button" aria-expanded="false" aria-controls="acc-2b" id="acc-2b-btn">
+                    AI van pilot naar productie
+                    <svg class="icon accordion__chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>
+                  </button>
+                </h5>
+                <div class="accordion__panel" id="acc-2b" role="region" aria-labelledby="acc-2b-btn" hidden>
+                  <ul class="bullet-list">
+                    <li>AI-industrialisatie</li>
+                    <li>Agentic retail</li>
+                    <li>Advanced analytics</li>
+                    <li>Intelligente automatisering</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="accordion__item">
+                <h5 class="accordion__heading">
+                  <button class="accordion__trigger" type="button" aria-expanded="false" aria-controls="acc-2c" id="acc-2c-btn">
+                    Verantwoord en beheersbaar
+                    <svg class="icon accordion__chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>
+                  </button>
+                </h5>
+                <div class="accordion__panel" id="acc-2c" role="region" aria-labelledby="acc-2c-btn" hidden>
+                  <ul class="bullet-list">
+                    <li>Responsible AI</li>
+                    <li>Eigenaarschap, monitoring en beheer</li>
+                    <li>Adoptie in de dagelijkse operatie</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="proof">
+              <h4 class="h-label">Bewijs en voorbeeld</h4>
+              <ul class="link-list">
+                <li><a href="https://www.cgi.com/nl/nl/blog/retail-en-consumenten-dienstverlening/data-naar-meetbare-retailwaarde-ai-voorbij-pilot-fase">Blog: Van data naar meetbare retailwaarde — AI voorbij de pilotfase</a></li>
+                <li><a href="https://www.cgi.com/nl/nl/voice-of-our-clients">CGI Voice of Our Clients — retailinzichten</a></li>
+                <li><a href="#case-2">Conceptvoorbeeld: van AI-pilots naar dagelijks gebruik</a></li>
+              </ul>
+            </div>
+
+            <div class="next-step">
+              <h4 class="h-label">Concrete eerste stap</h4>
+              <p><strong>Retail Data &amp; AI Value Scan</strong> — welke use-cases leveren de meeste waarde en
+                wat is nodig om ze verantwoord en schaalbaar te realiseren?</p>
+              <div class="btn-row">
+                <button class="btn btn--primary" type="button" data-modal-open data-modal-title="Ontdek uw Data &amp; AI-kansen" data-modal-kind="data-ai">Ontdek uw Data &amp; AI-kansen</button>
+                <a class="btn btn--tertiary" href="#offerings">Bekijk de value scan</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ---------------- Claim 3 ---------------- -->
+      <article class="deepdive" id="claim-operations" aria-labelledby="dd3-title">
+        <header class="deepdive__head">
+          <p class="card__kicker">Run</p>
+          <h3 id="dd3-title">Retail Operations &amp; Managed IT Services</h3>
+          <p class="deepdive__promise">Betrouwbare winkel- en IT-operaties met global support, lokale field
+            services, store roll-outs, SIAM en managed IT services.</p>
+        </header>
+
+        <div class="deepdive__body">
+          <div class="deepdive__col">
+            <h4 class="h-label">Het vraagstuk dat we herkennen</h4>
+            <p>Winkeltechnologie moet altijd werken, ook tijdens piekmomenten en roll-outs. Lokale
+              supportmodellen, meerdere leveranciers en beperkte end-to-end regie maken incidentafhandeling,
+              winkelopeningen en refits echter onnodig complex en onvoorspelbaar.</p>
+
+            <h4 class="h-label">CGI point of view</h4>
+            <p>Operationele betrouwbaarheid is een ontwerpkeuze, geen toeval. Met één integraal supportmodel —
+              global service management, lokale field services, duidelijke leveranciersregie en
+              gestandaardiseerde processen — wordt de winkelvloer minder verstoord en de operatie beter
+              voorspelbaar.</p>
+
+            <h4 class="h-label">Belangrijkste klantuitkomsten</h4>
+            <ul class="check-list check-list--2col">
+              <li>Hogere beschikbaarheid van winkeltechnologie</li>
+              <li>Snellere incidentoplossing</li>
+              <li>Voorspelbaardere roll-outs</li>
+              <li>Minder verstoring op de winkelvloer</li>
+              <li>Betere samenwerking tussen leveranciers</li>
+              <li>Meer grip op operationele kosten</li>
+            </ul>
+          </div>
+
+          <div class="deepdive__col">
+            <h4 class="h-label">Relevante capabilities</h4>
+            <div class="accordion" data-accordion>
+              <div class="accordion__item">
+                <h5 class="accordion__heading">
+                  <button class="accordion__trigger" type="button" aria-expanded="true" aria-controls="acc-3a" id="acc-3a-btn">
+                    Support en field services
+                    <svg class="icon accordion__chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>
+                  </button>
+                </h5>
+                <div class="accordion__panel" id="acc-3a" role="region" aria-labelledby="acc-3a-btn">
+                  <ul class="bullet-list">
+                    <li>Global retail support</li>
+                    <li>Servicedesk</li>
+                    <li>Field services</li>
+                    <li>Incident- en problemmanagement</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="accordion__item">
+                <h5 class="accordion__heading">
+                  <button class="accordion__trigger" type="button" aria-expanded="false" aria-controls="acc-3b" id="acc-3b-btn">
+                    Store technology en roll-outs
+                    <svg class="icon accordion__chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>
+                  </button>
+                </h5>
+                <div class="accordion__panel" id="acc-3b" role="region" aria-labelledby="acc-3b-btn" hidden>
+                  <ul class="bullet-list">
+                    <li>Winkelopeningen en refits</li>
+                    <li>Store technology roll-outs</li>
+                    <li>Peak readiness</li>
+                    <li>Operationele continuïteit</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="accordion__item">
+                <h5 class="accordion__heading">
+                  <button class="accordion__trigger" type="button" aria-expanded="false" aria-controls="acc-3c" id="acc-3c-btn">
+                    Managed services en regie
+                    <svg class="icon accordion__chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>
+                  </button>
+                </h5>
+                <div class="accordion__panel" id="acc-3c" role="region" aria-labelledby="acc-3c-btn" hidden>
+                  <ul class="bullet-list">
+                    <li>Managed IT services</li>
+                    <li>SIAM en service integration</li>
+                    <li>Kosten- en leveranciersbeheersing</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="proof">
+              <h4 class="h-label">Bewijs en voorbeeld</h4>
+              <ul class="link-list">
+                <li><a href="https://www.cgi.com/nl/nl/nieuws/retail-en-consumenten-dienstverlening/cgi-erkend-als-belangrijke-speler-retaildienstverlening">Nieuws: CGI erkend als Major Player in de IDC MarketScape (2024)</a></li>
+                <li><a href="https://www.cgi.com/nl/nl/retail-implementatie-and-roll-outs">CGI Retail Implementatie &amp; Roll-Outs</a></li>
+                <li><a href="#case-3">Conceptvoorbeeld: één supportmodel voor een internationale winkeloperatie</a></li>
+              </ul>
+            </div>
+
+            <div class="next-step">
+              <h4 class="h-label">Concrete eerste stap</h4>
+              <p><strong>Retail IT Operations Benchmark</strong> — beoordeel de volwassenheid van support,
+                field services, SIAM, leveranciersregie en store roll-outs.</p>
+              <div class="btn-row">
+                <button class="btn btn--primary" type="button" data-modal-open data-modal-title="Beoordeel uw Retail IT Operations" data-modal-kind="operations">Beoordeel uw Retail IT Operations</button>
+                <a class="btn btn--tertiary" href="#offerings">Bekijk de benchmark</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       SECTIE 7 (§9) — KLANTRESULTATEN / CONCEPTCASES
+       Alle cases zijn conceptvoorbeelden. Geen echte klantnamen, logo's of
+       financiële resultaten.
+       ======================================================================== -->
+  <section class="section" id="klantresultaten" aria-labelledby="cases-title">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Klantresultaten</p>
+        <h2 id="cases-title">Hoe dit er in de praktijk uitziet</h2>
+        <p class="section-head__lead">Drie voorbeelden van vraagstukken waarvoor retailers CGI inschakelen —
+          opgebouwd volgens dezelfde structuur: vraagstuk, aanpak en resultaat.</p>
+      </div>
+
+      <div class="grid grid--3">
+
+        <article class="card card--case" id="case-1">
+          <p class="concept-label">Conceptvoorbeeld — te vervangen door goedgekeurde CGI-klantcase</p>
+          <p class="card__kicker">Technology Transformation</p>
+          <h3 class="card__title">Van versnipperde initiatieven naar één bestuurbare retail technology roadmap</h3>
+          <dl class="meta-list">
+            <dt>Type klant</dt><dd>Internationale omnichannel retailer</dd>
+          </dl>
+          <div class="accordion" data-accordion>
+            <div class="accordion__item">
+              <h4 class="accordion__heading">
+                <button class="accordion__trigger" type="button" aria-expanded="false" aria-controls="case-1-panel" id="case-1-btn">
+                  Vraagstuk, aanpak en resultaat
+                  <svg class="icon accordion__chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+              </h4>
+              <div class="accordion__panel" id="case-1-panel" role="region" aria-labelledby="case-1-btn" hidden>
+                <h5 class="h-label">Vraagstuk</h5>
+                <p>Verschillende landen en businessunits werkten met eigen prioriteiten, platformen en
+                  implementatieplannen. Hierdoor ontbrak samenhang tussen strategie, architectuur en delivery.</p>
+                <h5 class="h-label">CGI-aanpak</h5>
+                <p>CGI bracht businessprioriteiten, capabilities, architectuur en lopende programma’s samen in
+                  één transformatieroadmap en governancemodel.</p>
+                <h5 class="h-label">Illustratief resultaat</h5>
+                <ul class="check-list">
+                  <li>Één gedeelde roadmap</li>
+                  <li>Duidelijkere besluitvorming</li>
+                  <li>Betere aansluiting tussen business en IT</li>
+                  <li>Meer grip op afhankelijkheden en uitvoering</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <button class="btn btn--secondary btn--sm" type="button" data-modal-open data-modal-title="Bekijk de aanpak" data-modal-kind="case-transformatie">Bekijk de aanpak</button>
+        </article>
+
+        <article class="card card--case" id="case-2">
+          <p class="concept-label">Conceptvoorbeeld — te vervangen door goedgekeurde CGI-klantcase</p>
+          <p class="card__kicker">Data, Cloud &amp; AI</p>
+          <h3 class="card__title">Van veelbelovende AI-pilots naar toepassingen die dagelijks worden gebruikt</h3>
+          <dl class="meta-list">
+            <dt>Type klant</dt><dd>Europese retailorganisatie</dd>
+          </dl>
+          <div class="accordion" data-accordion>
+            <div class="accordion__item">
+              <h4 class="accordion__heading">
+                <button class="accordion__trigger" type="button" aria-expanded="false" aria-controls="case-2-panel" id="case-2-btn">
+                  Vraagstuk, aanpak en resultaat
+                  <svg class="icon accordion__chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+              </h4>
+              <div class="accordion__panel" id="case-2-panel" role="region" aria-labelledby="case-2-btn" hidden>
+                <h5 class="h-label">Vraagstuk</h5>
+                <p>De organisatie had meerdere AI-experimenten gestart, maar miste betrouwbare data,
+                  eigenaarschap, integratie en een duidelijk model om succesvolle toepassingen op te schalen.</p>
+                <h5 class="h-label">CGI-aanpak</h5>
+                <p>CGI hielp use-cases te prioriteren, het datafundament te versterken en een route te ontwerpen
+                  van experiment naar productie, adoptie en beheer.</p>
+                <h5 class="h-label">Illustratief resultaat</h5>
+                <ul class="check-list">
+                  <li>Focus op use-cases met aantoonbare businesswaarde</li>
+                  <li>Betere datakwaliteit en governance</li>
+                  <li>Duidelijkere overgang van pilot naar productie</li>
+                  <li>Schaalbare integratie met bestaande retailprocessen</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <button class="btn btn--secondary btn--sm" type="button" data-modal-open data-modal-title="Ontdek de Data &amp; AI Value Scan" data-modal-kind="value-scan">Ontdek de Data &amp; AI Value Scan</button>
+        </article>
+
+        <article class="card card--case" id="case-3">
+          <p class="concept-label">Conceptvoorbeeld — te vervangen door goedgekeurde CGI-klantcase</p>
+          <p class="card__kicker">Retail Operations</p>
+          <h3 class="card__title">Eén supportmodel voor een complexe internationale winkeloperatie</h3>
+          <dl class="meta-list">
+            <dt>Type klant</dt><dd>Retailer met winkels in meerdere Europese landen</dd>
+          </dl>
+          <div class="accordion" data-accordion>
+            <div class="accordion__item">
+              <h4 class="accordion__heading">
+                <button class="accordion__trigger" type="button" aria-expanded="false" aria-controls="case-3-panel" id="case-3-btn">
+                  Vraagstuk, aanpak en resultaat
+                  <svg class="icon accordion__chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+              </h4>
+              <div class="accordion__panel" id="case-3-panel" role="region" aria-labelledby="case-3-btn" hidden>
+                <h5 class="h-label">Vraagstuk</h5>
+                <p>Lokale supportmodellen, verschillende leveranciers en beperkte end-to-end regie maakten
+                  incidentafhandeling en store roll-outs onnodig complex.</p>
+                <h5 class="h-label">CGI-aanpak</h5>
+                <p>CGI ontwierp een geïntegreerd supportmodel met global service management, lokale field
+                  services, duidelijke leveranciersregie en gestandaardiseerde processen.</p>
+                <h5 class="h-label">Illustratief resultaat</h5>
+                <ul class="check-list">
+                  <li>Snellere en consistentere ondersteuning</li>
+                  <li>Meer grip op leveranciers en escalaties</li>
+                  <li>Voorspelbaardere winkelopeningen en refits</li>
+                  <li>Betere operationele transparantie</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <button class="btn btn--secondary btn--sm" type="button" data-modal-open data-modal-title="Bekijk het operationsmodel" data-modal-kind="case-operations">Bekijk het operationsmodel</button>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       SECTIE 8 (§10) — FRAMEWORKS, SCANS EN ENTRY OFFERINGS
+       ======================================================================== -->
+  <section class="section section--tint" id="offerings" aria-labelledby="offerings-title">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Zo kunt u starten</p>
+        <h2 id="offerings-title">Drie concrete manieren om met CGI te beginnen</h2>
+        <p class="section-head__lead">Compacte trajecten met een duidelijke uitkomst: inzicht in prioriteiten,
+          afhankelijkheden en concrete vervolgstappen.</p>
+      </div>
+
+      <div class="grid grid--3">
+        <article class="card card--offering">
+          <p class="concept-label concept-label--soft">Concept offering</p>
+          <div class="card__icon" aria-hidden="true">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M4 19V5m0 14h16"/><path d="M8 15V9m4 6V6m4 9v-4"/></svg>
+          </div>
+          <h3 class="card__title">Retail Technology Transformation Review</h3>
+          <p>Een compacte review van strategie, roadmap, governance, architectuur en delivery-risico’s. De
+            uitkomst is een overzicht van prioriteiten, afhankelijkheden en concrete vervolgstappen.</p>
+          <button class="btn btn--primary btn--sm" type="button" data-modal-open data-modal-title="Plan een review" data-modal-kind="review">Plan een review</button>
+        </article>
+
+        <article class="card card--offering">
+          <p class="concept-label concept-label--soft">Concept offering</p>
+          <div class="card__icon" aria-hidden="true">
+            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 4v3m0 10v3M4 12h3m10 0h3M6.5 6.5l2 2m7 7 2 2m0-11-2 2m-7 7-2 2"/></svg>
+          </div>
+          <h3 class="card__title">Retail Data &amp; AI Value Scan</h3>
+          <p>Identificeer welke Data- en AI-use-cases de meeste waarde kunnen creëren en wat nodig is om deze
+            verantwoord en schaalbaar te realiseren.</p>
+          <button class="btn btn--primary btn--sm" type="button" data-modal-open data-modal-title="Vraag de scan aan" data-modal-kind="scan">Vraag de scan aan</button>
+        </article>
+
+        <article class="card card--offering">
+          <p class="concept-label concept-label--soft">Concept offering</p>
+          <div class="card__icon" aria-hidden="true">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 1 18 0"/><path d="M12 12l4-3"/><path d="M3 12h2m14 0h2M12 21h0"/></svg>
+          </div>
+          <h3 class="card__title">Retail IT Operations Benchmark</h3>
+          <p>Beoordeel de volwassenheid van support, field services, SIAM, leveranciersregie, store roll-outs en
+            operationele sturing.</p>
+          <button class="btn btn--primary btn--sm" type="button" data-modal-open data-modal-title="Start de benchmark" data-modal-kind="benchmark">Start de benchmark</button>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       SECTIE 9 (§11) — INSIGHTS, ARTIKELEN EN RESEARCH
+       3 bestaande CGI-contentitems + 3 conceptitems + conceptonderzoek
+       ======================================================================== -->
+  <section class="section" id="insights" aria-labelledby="insights-title">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Insights &amp; research</p>
+        <h2 id="insights-title">Inzichten voor retail technology leiders</h2>
+        <p class="section-head__lead">Artikelen, viewpoints, frameworks en onderzoek — gefilterd op het
+          expertisedomein waar u aan werkt.</p>
+      </div>
+
+      <div class="filter-bar" role="group" aria-label="Filter insights op expertisedomein">
+        <button class="chip is-active" type="button" data-filter="all" aria-pressed="true">Alles</button>
+        <button class="chip" type="button" data-filter="transform" aria-pressed="false">Transformation</button>
+        <button class="chip" type="button" data-filter="data" aria-pressed="false">Data, Cloud &amp; AI</button>
+        <button class="chip" type="button" data-filter="run" aria-pressed="false">Operations &amp; Managed IT</button>
+      </div>
+
+      <div class="grid grid--3" id="insights-grid">
+
+        <!-- ECHTE CGI-CONTENT (1/3) -->
+        <article class="card card--content" data-claim="transform">
+          <p class="card__type">Artikel · cgi.com</p>
+          <h3 class="card__title"><a href="https://www.cgi.com/nl/nl/artikelen/retail-en-consumenten-dienstverlening/unified-commerce-de-nieuwe-realiteit-retail">Unified Commerce is de nieuwe realiteit in retail</a></h3>
+          <p>Waarom kanalen, systemen en processen samen moeten komen in één commerce-fundament — en wat dat
+            betekent voor architectuur, platformkeuzes en delivery.</p>
+          <p class="card__foot">Retail Technology Transformation</p>
+        </article>
+
+        <!-- ECHTE CGI-CONTENT (2/3) -->
+        <article class="card card--content" data-claim="data">
+          <p class="card__type">Blog · cgi.com</p>
+          <h3 class="card__title"><a href="https://www.cgi.com/nl/nl/blog/retail-en-consumenten-dienstverlening/data-naar-meetbare-retailwaarde-ai-voorbij-pilot-fase">Van data naar meetbare retailwaarde: AI voorbij de pilotfase</a></h3>
+          <p>Retailers genereren enorme hoeveelheden data, maar het omzetten daarvan in meetbare businesswaarde
+            blijft een uitdaging. Waar lopen AI-pilots op vast?</p>
+          <p class="card__foot">Retail Data, Cloud &amp; AI</p>
+        </article>
+
+        <!-- ECHTE CGI-CONTENT (3/3) -->
+        <article class="card card--content" data-claim="run">
+          <p class="card__type">Research · cgi.com</p>
+          <h3 class="card__title"><a href="https://www.cgi.com/nl/nl/voice-of-our-clients">CGI Voice of Our Clients — retail, consumer goods &amp; wholesale</a></h3>
+          <p>Inzichten uit klantgesprekken met business- en IT-executives over prioriteiten, macrotrends en
+            investeringskeuzes in retail.</p>
+          <p class="card__foot">Alle expertisedomeinen</p>
+        </article>
+
+        <!-- CONCEPT CONTENT (1/3) -->
+        <article class="card card--content" data-claim="data">
+          <p class="concept-label concept-label--soft">Concept content</p>
+          <p class="card__type">Artikel</p>
+          <h3 class="card__title">Van AI-pilot naar meetbare retailwaarde</h3>
+          <p>Waarom succesvolle AI in retail niet begint bij het model, maar bij het klantprobleem, betrouwbare
+            data, integratie, eigenaarschap en een realistische route naar productie.</p>
+          <p class="card__foot">Retail Data, Cloud &amp; AI</p>
+        </article>
+
+        <!-- CONCEPT CONTENT (2/3) -->
+        <article class="card card--content" data-claim="transform">
+          <p class="concept-label concept-label--soft">Concept content</p>
+          <p class="card__type">Viewpoint</p>
+          <h3 class="card__title">Waarom retailtransformaties vastlopen tussen strategie en uitvoering</h3>
+          <p>Zeven oorzaken waardoor goede plannen onvoldoende resultaat opleveren — en hoe business,
+            architectuur, governance en delivery beter op elkaar kunnen aansluiten.</p>
+          <p class="card__foot">Retail Technology Transformation</p>
+        </article>
+
+        <!-- CONCEPT CONTENT (3/3) -->
+        <article class="card card--content" data-claim="run">
+          <p class="concept-label concept-label--soft">Concept content</p>
+          <p class="card__type">Executive brief</p>
+          <h3 class="card__title">The Always-On Store</h3>
+          <p>Welke keuzes bepalen of winkeltechnologie tijdens drukke periodes beschikbaar, ondersteunbaar en
+            schaalbaar blijft?</p>
+          <p class="card__foot">Retail Operations &amp; Managed IT</p>
+        </article>
+
+      </div>
+
+      <p class="empty-state" id="insights-empty" hidden>Geen insights binnen dit filter. Kies een ander
+        expertisedomein.</p>
+
+      <!-- Conceptonderzoek -->
+      <aside class="promo" aria-labelledby="research-title">
+        <div class="promo__body">
+          <p class="concept-label concept-label--soft">Concept voor toekomstige ontwikkeling — nog niet gepubliceerd onderzoek</p>
+          <p class="card__type">Aankomend onderzoek</p>
+          <h3 id="research-title">CGI Retail Technology Outlook 2027</h3>
+          <p>De belangrijkste technologische prioriteiten, investeringsvraagstukken en operationele uitdagingen
+            van Nederlandse retailbeslissers.</p>
+        </div>
+        <div class="promo__action">
+          <button class="btn btn--primary" type="button" data-modal-open data-modal-title="Blijf op de hoogte" data-modal-kind="outlook">Blijf op de hoogte</button>
+        </div>
+      </aside>
+
+      <p class="section-foot">
+        <a class="link-arrow" href="https://www.cgi.com/nl/nl/mediacenter/retail-en-consumenten-dienstverlening">Bekijk alle retailinzichten in het CGI Media Center</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       SECTIE 10 (§12) — EVENTS
+       ======================================================================== -->
+  <section class="section section--tint" id="events" aria-labelledby="events-title">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Events</p>
+        <h2 id="events-title">Ontmoet onze retail-experts</h2>
+        <p class="section-head__lead">Compacte sessies voor retail technology leiders — van besloten
+          roundtables tot een breed flagship event.</p>
+      </div>
+
+      <div class="grid grid--3">
+        <article class="card card--event">
+          <p class="concept-label">Concept event — datum en programma nog te bevestigen</p>
+          <p class="card__type">Executive roundtable</p>
+          <h3 class="card__title">Executive roundtable: AI voorbij de pilotfase</h3>
+          <p>Een besloten gesprek voor CIO’s, CDO’s en AI-leads over de route van experiment naar productie,
+            adoptie en aantoonbare businesswaarde.</p>
+          <dl class="meta-list">
+            <dt>Doelgroep</dt><dd>CIO, CDO, Head of Data, AI Lead</dd>
+            <dt>Periode</dt><dd>november 2026</dd>
+          </dl>
+          <button class="btn btn--secondary btn--sm" type="button" data-modal-open data-modal-title="Toon interesse — Executive roundtable" data-modal-kind="event-roundtable">Toon interesse</button>
+        </article>
+
+        <article class="card card--event">
+          <p class="concept-label">Concept event — datum en programma nog te bevestigen</p>
+          <p class="card__type">Breakfast session</p>
+          <h3 class="card__title">Retail Operations Breakfast: The Always-On Store</h3>
+          <p>Een interactieve ontbijtsessie over store uptime, global support, field services,
+            leveranciersregie en peak readiness.</p>
+          <dl class="meta-list">
+            <dt>Doelgroep</dt><dd>IT Operations, Store Operations, Service Management</dd>
+            <dt>Periode</dt><dd>eerste kwartaal 2027</dd>
+          </dl>
+          <button class="btn btn--secondary btn--sm" type="button" data-modal-open data-modal-title="Toon interesse — Retail Operations Breakfast" data-modal-kind="event-breakfast">Toon interesse</button>
+        </article>
+
+        <article class="card card--event">
+          <p class="concept-label">Concept event — datum en programma nog te bevestigen</p>
+          <p class="card__type">Flagship event</p>
+          <h3 class="card__title">CGI Retail Technology Outlook</h3>
+          <p>Presentatie van de belangrijkste retail technology trends, aangevuld met inzichten van klanten,
+            CGI-experts en partners.</p>
+          <dl class="meta-list">
+            <dt>Doelgroep</dt><dd>Retail technology leadership</dd>
+            <dt>Periode</dt><dd>tweede kwartaal 2027</dd>
+          </dl>
+          <button class="btn btn--secondary btn--sm" type="button" data-modal-open data-modal-title="Ontvang een uitnodiging" data-modal-kind="event-outlook">Ontvang een uitnodiging</button>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       SECTIE 11 (§13) — PARTNERS EN ECOSYSTEMEN
+       Uitsluitend neutrale logo-placeholders. Geen ongeverifieerde partnerlogo's.
+       ======================================================================== -->
+  <section class="section" id="partners" aria-labelledby="partners-title">
+    <div class="container">
+      <div class="split">
+        <div class="split__text">
+          <p class="eyebrow">Partners en ecosystemen</p>
+          <h2 id="partners-title">Oplossingsonafhankelijk, met een breed technologie-ecosysteem</h2>
+          <p>Retailtransformaties vragen om een samenhangend ecosysteem. CGI combineert onafhankelijke
+            advisering, retailkennis, systeemintegratie en managed services met de technologie van wereldwijde
+            en gespecialiseerde partners.</p>
+          <a class="btn btn--secondary" href="https://www.cgi.com/nl/nl/partners">Ontdek onze allianties</a>
+        </div>
+        <div class="split__media">
+          <p class="concept-label concept-label--soft">Neutrale logo-placeholders — vervang door goedgekeurde CGI-partnerlogo’s</p>
+          <ul class="logo-wall">
+            <li><img src="assets/partner-placeholder.svg" alt="Placeholder voor partnerlogo 1" width="160" height="72"></li>
+            <li><img src="assets/partner-placeholder.svg" alt="Placeholder voor partnerlogo 2" width="160" height="72"></li>
+            <li><img src="assets/partner-placeholder.svg" alt="Placeholder voor partnerlogo 3" width="160" height="72"></li>
+            <li><img src="assets/partner-placeholder.svg" alt="Placeholder voor partnerlogo 4" width="160" height="72"></li>
+            <li><img src="assets/partner-placeholder.svg" alt="Placeholder voor partnerlogo 5" width="160" height="72"></li>
+            <li><img src="assets/partner-placeholder.svg" alt="Placeholder voor partnerlogo 6" width="160" height="72"></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       SECTIE 12 (§14) — EXPERTS
+       Namen, functietitels, foto's en contactgegevens: PLACEHOLDER.
+       Niets verzinnen — aanleveren door CGI Retail & Consumer Services.
+       ======================================================================== -->
+  <section class="section section--tint" id="experts" aria-labelledby="experts-title">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Onze experts</p>
+        <h2 id="experts-title">Spreek direct met de juiste expert</h2>
+        <p class="section-head__lead">Ieder expertisedomein heeft een vast aanspreekpunt binnen CGI Retail &amp;
+          Consumer Services.</p>
+      </div>
+
+      <div class="grid grid--3">
+        <article class="card card--expert">
+          <p class="concept-label">Placeholder — naam, functietitel, foto en contactgegevens nog aan te leveren</p>
+          <img class="avatar" src="assets/avatar-placeholder.svg" alt="Profielfoto-placeholder" width="120" height="120">
+          <h3 class="card__title">Chris <span class="placeholder-token">[achternaam]</span></h3>
+          <p class="card__role"><span class="placeholder-token">[functietitel]</span></p>
+          <p class="card__kicker">Retail Technology Transformation &amp; Business Consulting</p>
+          <p class="card__bio">Werkt met retailers aan technologiestrategie, roadmaps, operating models en
+            governance, en aan het bestuurbaar maken van complexe transformatieprogramma’s van strategie tot
+            realisatie.</p>
+          <div class="card__actions">
+            <a class="link-arrow" href="#" aria-label="LinkedIn-profiel — placeholder"><span class="placeholder-token">[LinkedIn-profiel]</span></a>
+            <button class="btn btn--secondary btn--sm" type="button" data-modal-open data-modal-title="Neem contact op — Retail Technology Transformation" data-modal-kind="expert-1">Neem contact op</button>
+          </div>
+        </article>
+
+        <article class="card card--expert">
+          <p class="concept-label">Placeholder — naam, functietitel, foto en contactgegevens nog aan te leveren</p>
+          <img class="avatar" src="assets/avatar-placeholder.svg" alt="Profielfoto-placeholder" width="120" height="120">
+          <h3 class="card__title">Floris <span class="placeholder-token">[achternaam]</span></h3>
+          <p class="card__role"><span class="placeholder-token">[functietitel]</span></p>
+          <p class="card__kicker">Retail Data, Cloud &amp; AI</p>
+          <p class="card__bio">Helpt retailers hun datafundament te versterken, cloud te moderniseren en
+            AI-use-cases van experiment naar productie te brengen, met aandacht voor waarde, integratie en
+            verantwoord gebruik.</p>
+          <div class="card__actions">
+            <a class="link-arrow" href="#" aria-label="LinkedIn-profiel — placeholder"><span class="placeholder-token">[LinkedIn-profiel]</span></a>
+            <button class="btn btn--secondary btn--sm" type="button" data-modal-open data-modal-title="Neem contact op — Retail Data, Cloud &amp; AI" data-modal-kind="expert-2">Neem contact op</button>
+          </div>
+        </article>
+
+        <article class="card card--expert">
+          <p class="concept-label">Placeholder — volledige naam, functietitel, foto en contactgegevens nog aan te leveren</p>
+          <img class="avatar" src="assets/avatar-placeholder.svg" alt="Profielfoto-placeholder" width="120" height="120">
+          <h3 class="card__title"><span class="placeholder-token">[volledige naam JK]</span></h3>
+          <p class="card__role"><span class="placeholder-token">[functietitel]</span></p>
+          <p class="card__kicker">Retail Operations &amp; Managed IT Services</p>
+          <p class="card__bio">Verantwoordelijk voor betrouwbare winkel- en IT-operaties: global support, field
+            services, store roll-outs, SIAM en managed services voor internationale retailorganisaties.</p>
+          <div class="card__actions">
+            <a class="link-arrow" href="#" aria-label="LinkedIn-profiel — placeholder"><span class="placeholder-token">[LinkedIn-profiel]</span></a>
+            <button class="btn btn--secondary btn--sm" type="button" data-modal-open data-modal-title="Neem contact op — Retail Operations &amp; Managed IT" data-modal-kind="expert-3">Neem contact op</button>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       SECTIE 13 (§15) — WERKEN BIJ CGI EN OPENSTAANDE VACATURES
+       Dummyvacatures. Component is ontworpen om te worden gevoed vanuit het
+       centrale CGI-vacaturesysteem (zie README, §E CMS-aannames).
+       ======================================================================== -->
+  <section class="section" id="careers" aria-labelledby="careers-title">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Werken bij CGI</p>
+        <h2 id="careers-title">Bouw mee aan de toekomst van retailtechnologie</h2>
+        <p class="section-head__lead">Werk aan zichtbare retailtransformaties, Data-, Cloud- en AI-oplossingen en
+          betrouwbare winkeloperaties voor toonaangevende organisaties. Binnen CGI Retail &amp; Consumer Services
+          combineer je diepgaande expertise met verantwoordelijkheid voor resultaat — van strategie tot dagelijkse
+          operatie.</p>
+      </div>
+
+      <div class="grid grid--3" data-jobs-list>
+        <article class="card card--job">
+          <p class="concept-label">Dummy vacature — niet daadwerkelijk openstaand</p>
+          <h3 class="card__title">Senior Retail Business Consultant</h3>
+          <p class="card__kicker">Retail Technology Transformation</p>
+          <p>Je werkt met retailers aan technologiestrategie, roadmaps en operating models, en begeleidt de stap
+            van besluit naar realisatie.</p>
+          <dl class="meta-list">
+            <dt>Locatie</dt><dd>nader te bepalen</dd>
+            <dt>Ervaringsniveau</dt><dd>senior</dd>
+          </dl>
+          <a class="btn btn--secondary btn--sm" href="https://www.cgi.com/nl/nl/werken-bij-cgi">Bekijk deze rol</a>
+        </article>
+
+        <article class="card card--job">
+          <p class="concept-label">Dummy vacature — niet daadwerkelijk openstaand</p>
+          <h3 class="card__title">Data &amp; AI Consultant — Retail</h3>
+          <p class="card__kicker">Retail Data, Cloud &amp; AI</p>
+          <p>Je vertaalt retailvraagstukken naar data- en AI-oplossingen en werkt aan de route van use-case naar
+            productie en adoptie.</p>
+          <dl class="meta-list">
+            <dt>Locatie</dt><dd>nader te bepalen</dd>
+            <dt>Ervaringsniveau</dt><dd>medior tot senior</dd>
+          </dl>
+          <a class="btn btn--secondary btn--sm" href="https://www.cgi.com/nl/nl/werken-bij-cgi">Bekijk deze rol</a>
+        </article>
+
+        <article class="card card--job">
+          <p class="concept-label">Dummy vacature — niet daadwerkelijk openstaand</p>
+          <h3 class="card__title">Service Manager / SIAM Consultant</h3>
+          <p class="card__kicker">Retail Operations &amp; Managed IT</p>
+          <p>Je houdt regie op support, leveranciers en service-integratie voor internationale
+            winkeloperaties, en verbetert de operationele keten.</p>
+          <dl class="meta-list">
+            <dt>Locatie</dt><dd>nader te bepalen</dd>
+            <dt>Ervaringsniveau</dt><dd>medior tot senior</dd>
+          </dl>
+          <a class="btn btn--secondary btn--sm" href="https://www.cgi.com/nl/nl/werken-bij-cgi">Bekijk deze rol</a>
+        </article>
+      </div>
+
+      <p class="section-foot">
+        <a class="btn btn--primary" href="https://www.cgi.com/nl/nl/werken-bij-cgi">Bekijk alle openstaande vacatures</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       SECTIE 14 (§16) — CONTACT / CONVERSIE
+       ======================================================================== -->
+  <section class="section section--dark" id="contact" aria-labelledby="contact-title">
+    <div class="container">
+      <div class="cta-panel">
+        <div class="cta-panel__text">
+          <p class="eyebrow eyebrow--invert">Contact</p>
+          <h2 id="contact-title">Waar staat uw retailtechnologie op de route van strategie naar schaal?</h2>
+          <p>Of het nu gaat om een complexe technologietransformatie, het opschalen van Data &amp; AI of het
+            betrouwbaar ondersteunen van uw winkeloperatie: onze retail-experts denken graag mee over een
+            concrete volgende stap.</p>
+        </div>
+        <div class="cta-panel__actions">
+          <button class="btn btn--primary" type="button" data-modal-open data-modal-title="Plan een kennismaking" data-modal-kind="kennismaking">Plan een kennismaking</button>
+          <a class="btn btn--invert" href="#experts">Neem contact op met een expert</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ==========================================================================
+     SECTIE 15 (§17) — CGI-FOOTER (bestaande shell, niet inhoudelijk wijzigen)
+     VERIFY: linkgroepen, juridische teksten en socialmedia-links controleren
+     tegen www.cgi.com/nl/nl.
+     ========================================================================== -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="site-footer__top">
+      <div class="site-footer__brand">
+        <img src="assets/cgi-logo-invert.svg" alt="CGI" width="104" height="40">
+        <p class="site-footer__tagline">Insights you can act on</p>
+        <ul class="social-list" aria-label="CGI op social media">
+          <li><a href="https://www.linkedin.com/company/cgi" aria-label="CGI op LinkedIn"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9v10M6 5.5v.01M11 19v-5.5a2.5 2.5 0 0 1 5 0V19"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg></a></li>
+          <li><a href="https://www.youtube.com/user/CGIGroupInc" aria-label="CGI op YouTube"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="6" width="18" height="12" rx="3"/><path d="m11 10 4 2-4 2z"/></svg></a></li>
+          <li><a href="https://www.instagram.com/cgi_global/" aria-label="CGI op Instagram"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17 7v.01"/></svg></a></li>
+        </ul>
+      </div>
+
+      <nav class="site-footer__nav" aria-label="Footernavigatie">
+        <div class="footer-col">
+          <h2 class="footer-col__title">Wat we doen</h2>
+          <ul>
+            <li><a href="https://www.cgi.com/nl/nl/diensten">Diensten</a></li>
+            <li><a href="https://www.cgi.com/nl/nl/sectoren">Sectoren</a></li>
+            <li><a href="https://www.cgi.com/nl/nl/oplossingen">Oplossingen</a></li>
+            <li><a href="https://www.cgi.com/nl/nl/partners">Partners</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2 class="footer-col__title">Insights</h2>
+          <ul>
+            <li><a href="https://www.cgi.com/nl/nl/insights">Insights</a></li>
+            <li><a href="https://www.cgi.com/nl/nl/voice-of-our-clients">Voice of Our Clients</a></li>
+            <li><a href="https://www.cgi.com/nl/nl/mediacenter">Media center</a></li>
+            <li><a href="https://www.cgi.com/nl/nl/nieuws">Nieuws</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2 class="footer-col__title">Over CGI</h2>
+          <ul>
+            <li><a href="https://www.cgi.com/nl/nl/over-ons">Over ons</a></li>
+            <li><a href="https://www.cgi.com/nl/nl/werken-bij-cgi">Werken bij CGI</a></li>
+            <li><a href="https://www.cgi.com/en/investors">Investeerders</a></li>
+            <li><a href="https://www.cgi.com/nl/nl/contact">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col footer-col--wide">
+          <h2 class="footer-col__title">Blijf op de hoogte</h2>
+          <p>Ontvang de nieuwste CGI-inzichten in uw inbox.</p>
+          <form class="newsletter" data-dummy-form aria-label="Nieuwsbriefinschrijving (prototype)">
+            <label class="sr-only" for="nl-email">Zakelijk e-mailadres</label>
+            <input id="nl-email" name="email" type="email" placeholder="naam@organisatie.nl" autocomplete="email" required>
+            <button class="btn btn--primary btn--sm" type="submit">Aanmelden</button>
+          </form>
+          <p class="form-note" data-form-status role="status">Prototype — er worden geen gegevens verzonden.</p>
+        </div>
+      </nav>
+    </div>
+
+    <div class="site-footer__bottom">
+      <p class="site-footer__copy">&copy; <span data-year>2026</span> CGI Inc. Alle rechten voorbehouden.</p>
+      <ul class="legal-list">
+        <li><a href="https://www.cgi.com/nl/nl/privacyverklaring">Privacyverklaring</a></li>
+        <li><a href="https://www.cgi.com/nl/nl/cookiebeleid">Cookiebeleid</a></li>
+        <li><a href="https://www.cgi.com/nl/nl/juridisch">Juridische informatie</a></li>
+        <li><a href="https://www.cgi.com/nl/nl/toegankelijkheid">Toegankelijkheid</a></li>
+        <li><a href="https://www.cgi.com/nl/nl/sitemap">Sitemap</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<!-- ==========================================================================
+     MODAL — één herbruikbaar, niet-functioneel prototypeformulier (§10, §19)
+     ========================================================================== -->
+<div class="modal" id="proto-modal" hidden>
+  <div class="modal__backdrop" data-modal-close></div>
+  <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-note">
+    <button class="modal__close" type="button" data-modal-close aria-label="Sluiten">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+    <p class="modal__flag" id="modal-note">Prototypeformulier — er worden geen gegevens verzonden</p>
+    <h2 class="modal__title" id="modal-title">Plan een gesprek</h2>
+
+    <form class="form" data-dummy-form novalidate>
+      <div class="form__row">
+        <div class="field">
+          <label for="f-name">Naam</label>
+          <input id="f-name" name="naam" type="text" autocomplete="name" required>
+        </div>
+        <div class="field">
+          <label for="f-org">Organisatie</label>
+          <input id="f-org" name="organisatie" type="text" autocomplete="organization" required>
+        </div>
+      </div>
+      <div class="form__row">
+        <div class="field">
+          <label for="f-email">Zakelijk e-mailadres</label>
+          <input id="f-email" name="email" type="email" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label for="f-role">Functietitel</label>
+          <input id="f-role" name="functietitel" type="text" autocomplete="organization-title">
+        </div>
+      </div>
+      <div class="field">
+        <label for="f-interest">Interessegebied</label>
+        <select id="f-interest" name="interessegebied">
+          <option>Retail Technology Transformation &amp; Business Consulting</option>
+          <option>Retail Data, Cloud &amp; AI</option>
+          <option>Retail Operations &amp; Managed IT Services</option>
+          <option>Anders / nog niet bepaald</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="f-message">Toelichting</label>
+        <textarea id="f-message" name="toelichting" rows="4"></textarea>
+      </div>
+      <div class="field field--check">
+        <input id="f-privacy" name="privacy" type="checkbox">
+        <label for="f-privacy">Ik ga akkoord met de verwerking van mijn gegevens conform de
+          CGI-privacyverklaring. <span class="form-note">(In dit prototype niet van toepassing.)</span></label>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn--primary" type="submit">Verstuur</button>
+        <button class="btn btn--tertiary" type="button" data-modal-close>Annuleren</button>
+      </div>
+      <p class="form-status" data-form-status role="status" aria-live="polite"></p>
+    </form>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
