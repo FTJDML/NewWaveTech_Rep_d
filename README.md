@@ -278,3 +278,40 @@ Geautomatiseerd getest met Chromium (Playwright) op 1440×900, 1280×800,
 * [CGI erkend als Belangrijke Speler in wereldwijde retaildienstverlening (IDC MarketScape 2024)](https://www.cgi.com/nl/nl/nieuws/retail-en-consumenten-dienstverlening/cgi-erkend-als-belangrijke-speler-retaildienstverlening)
 * [Retail Implementatie & Roll-Outs (Unified Commerce)](https://www.cgi.com/nl/nl/retail-implementatie-and-roll-outs)
 * [Media center — Retail- en consumenten dienstverlening](https://www.cgi.com/nl/nl/mediacenter/retail-en-consumenten-dienstverlening)
+
+---
+
+## Volgende stap: exacte visuele replica van cgi.com
+
+De huidige styling is een **interpretatie**, geen replica — `www.cgi.com` was in
+deze omgeving niet bereikbaar (gateway weigert CONNECT met 403). Twee dingen zijn
+inmiddels wel hard geverifieerd en relevant voor de restyle:
+
+* CGI-rood = **Pantone 186C / #E31937** (rgb 227, 25, 55) — klopt in de huidige tokens;
+* de brandrefresh van 2021 stapte juist **weg van massief rood naar tinten paars**,
+  met een rood-naar-donkerpaars gradient als alternatief logo en paars als
+  dominante kleur op de site. De huidige styling mist dat volledig.
+
+Zodra `www.cgi.com` op de network-allowlist van de omgeving staat (en er een
+**nieuwe sessie** is gestart — de policy wordt bij containerstart toegepast):
+
+```
+node tools/extract-cgi-design.js
+```
+
+Dat legt in `design-source/` vast:
+
+* volledige paginascreenshots (desktop + mobiel) van `/en`, `/en/retail-consumer-services`
+  en de NL-pagina;
+* `*-tokens.json` — alle CSS-variabelen, de kleuren- en fontinventarisatie, de
+  typografische schaal per element, buttonstijlen, contentbreedtes, border radii,
+  de navigatie- en footerlabels met hun URL's en de paginaoutline;
+* `*-header.html` / `*-footer.html` — de markup van de shell, om 1:1 over te nemen;
+* `css/` — de stylesheets van de pagina;
+* `assets/` — de echte logo's en beelden.
+
+Daarna is de restyle: tokens in `styles.css` vervangen door de gemeten waarden,
+de shell-markup vervangen door de echte header/footer, en de placeholders in
+`assets/` vervangen door de gedownloade CGI-assets. De contentstructuur van het
+prototype (secties, claims, cases, offerings, events, experts, vacatures) blijft
+daarbij ongewijzigd.
