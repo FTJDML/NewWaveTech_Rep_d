@@ -75,7 +75,7 @@ ingelezen; alles hieronder is uit de beelden afgeleid.
 
 Er zijn twee soorten beeld:
 
-**1. Eigen CGI-retailfoto's** — vier slots staan aangesloten op
+**1. Eigen CGI-retailfoto's** — acht slots staan aangesloten op
 `assets/img/photos/`. Zolang een bestand daar nog niet staat, valt het
 `<img>`-element automatisch terug op de placeholder-illustratie
 (`data-fallback`, afgehandeld in `script.js`). Zodra de foto in de map staat,
@@ -84,9 +84,13 @@ verschijnt hij — zonder verdere aanpassing aan de code.
 | Bestand | Plek in de pagina | Onderwerp |
 | --- | --- | --- |
 | `hero-checkout.jpg` | Hero, rechterkolom | Klant aan de kassa met telefoon in de hand |
-| `operations-rituals-storefront.jpg` | Expertisedomein 3 — Retail Operations & Managed IT | Winkelpui Rituals in shopping mall |
-| `data-ar-shopping.jpg` | Expertisedomein 2 — Retail Data, Cloud & AI | AR-app op telefoon in een kledingwinkel |
-| `usecase-pos-scan.jpg` | Expertisedomein 1 — use case "Platformselectie voor meerdere landen" | Barcode van een telefoon scannen bij de kassa |
+| `transform-store-floor.jpg` | Domein 1 — Retail Technology Transformation | Klant bekijkt kleding aan een rek |
+| `data-ar-shopping.jpg` | Domein 2 — Retail Data, Cloud & AI | AR-app op telefoon in een kledingwinkel |
+| `operations-rituals-storefront.jpg` | Domein 3 — Retail Operations & Managed IT | Winkelpui Rituals in shopping mall |
+| `usecase-pos-scan.jpg` | Domein 1, use case platformselectie | Barcode van een telefoon scannen bij de kassa |
+| `usecase-unified-commerce.jpg` | Domein 1, use case unified commerce | Buy Now Pay Later-app op de telefoon |
+| `usecase-supply-chain.jpg` | Domein 2, use case datafundament | Pakketten op een rollenbaan |
+| `usecase-payment-terminal.jpg` | Domein 3, use case support | Contactloos betalen op een pinautomaat |
 
 Zie `assets/img/photos/README.md` voor de exacte bestandsnamen en het toevoegen
 ervan. **Let op:** waar een herkenbare winkelformule of merknaam in beeld staat,
