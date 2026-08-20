@@ -1,9 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" role="img"
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 112 112" width="112" height="112" role="img"
      aria-label="Profielfoto-placeholder">
   <!-- PLACEHOLDER — vervang door de officiele CGI-expertfoto. -->
   <title>Profielfoto-placeholder</title>
-  <circle cx="60" cy="60" r="60" fill="#ececed"/>
-  <circle cx="60" cy="48" r="19" fill="#c9c9cb"/>
-  <path d="M22 104c4-20 19-30 38-30s34 10 38 30" fill="#c9c9cb"/>
-  <circle cx="60" cy="60" r="59" fill="none" stroke="#d6d6d8" stroke-width="2"/>
+  <rect width="112" height="112" fill="#dcdce0"/>
+  <circle cx="56" cy="44" r="18" fill="#c2c2c9"/>
+  <path d="M20 100c3-19 17-28 36-28s33 9 36 28z" fill="#c2c2c9"/>
 </svg>

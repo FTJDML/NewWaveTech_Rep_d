@@ -1,39 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 540" width="720" height="540" role="img"
-     aria-label="Illustratieve weergave van winkel-, data- en IT-operatie in retail">
-  <!-- BEELD-PLACEHOLDER — vervang door een bestaande CGI-hero-afbeelding of
-       -video van de live pagina (asset uit het CMS). Verhouding 4:3 zodat er
-       geen layout shift optreedt bij vervanging. -->
-  <title>Beeld-placeholder: retailoperatie, data en winkeltechnologie</title>
-  <rect width="720" height="540" fill="#f1f1f2"/>
-
-  <!-- winkelgevel -->
-  <rect x="70" y="200" width="330" height="230" fill="#ffffff" stroke="#d6d6d8" stroke-width="2"/>
-  <path d="M60 200 L235 120 L410 200 Z" fill="#e6e6e8" stroke="#d6d6d8" stroke-width="2"/>
-  <rect x="110" y="250" width="110" height="90" fill="#f6f6f7" stroke="#d6d6d8" stroke-width="2"/>
-  <rect x="250" y="250" width="110" height="90" fill="#f6f6f7" stroke="#d6d6d8" stroke-width="2"/>
-  <rect x="185" y="360" width="100" height="70" fill="#e31937" opacity="0.12" stroke="#e31937" stroke-width="2"/>
-
-  <!-- datastroom -->
-  <g stroke="#e31937" stroke-width="3" fill="none" stroke-linecap="round">
-    <path d="M430 250 C500 250 500 190 570 190"/>
-    <path d="M430 300 C510 300 510 300 580 300"/>
-    <path d="M430 350 C500 350 500 410 570 410"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" width="960" height="600" role="img"
+     aria-label="Winkelmedewerker en klant in een winkelomgeving">
+  <!-- BEELD-PLACEHOLDER — vervang door het bestaande CGI-hero-beeld uit het CMS
+       (op de live pagina een winkelfoto). Geen tekst in het beeld: het label
+       staat als overlay in de HTML, zodat het niet wordt weggesneden. -->
+  <title>Beeld-placeholder: winkelomgeving</title>
+  <rect width="960" height="600" fill="#dcdce0"/>
+  <g fill="#d0d0d6">
+    <rect x="60" y="110" width="170" height="380"/>
+    <rect x="270" y="160" width="170" height="330"/>
+    <rect x="480" y="130" width="170" height="360"/>
+    <rect x="690" y="180" width="170" height="310"/>
   </g>
-  <g fill="#e31937">
-    <circle cx="585" cy="190" r="14"/>
-    <circle cx="595" cy="300" r="14"/>
-    <circle cx="585" cy="410" r="14"/>
-    <circle cx="430" cy="250" r="8"/>
-    <circle cx="430" cy="300" r="8"/>
-    <circle cx="430" cy="350" r="8"/>
+  <g fill="#c6c6cd">
+    <rect x="60" y="200" width="170" height="8"/><rect x="60" y="300" width="170" height="8"/>
+    <rect x="270" y="250" width="170" height="8"/><rect x="270" y="350" width="170" height="8"/>
+    <rect x="480" y="220" width="170" height="8"/><rect x="480" y="330" width="170" height="8"/>
+    <rect x="690" y="270" width="170" height="8"/><rect x="690" y="370" width="170" height="8"/>
   </g>
-
-  <!-- kassa/POS-vlak -->
-  <rect x="440" y="120" width="200" height="40" rx="2" fill="#ffffff" stroke="#d6d6d8" stroke-width="2"/>
-  <rect x="456" y="134" width="120" height="12" fill="#e6e6e8"/>
-
-  <text x="360" y="490" text-anchor="middle" font-family="Segoe UI, system-ui, Arial, sans-serif"
-        font-size="22" font-weight="600" fill="#8a8a8c">Beeld-placeholder</text>
-  <text x="360" y="516" text-anchor="middle" font-family="Segoe UI, system-ui, Arial, sans-serif"
-        font-size="16" fill="#a2a2a4">Vervang door bestaand CGI-retailbeeld of -video</text>
+  <rect y="490" width="960" height="110" fill="#d4d4da"/>
+  <circle cx="480" cy="330" r="52" fill="#c6c6cd"/>
+  <path d="M410 470c8-42 34-62 70-62s62 20 70 62z" fill="#c6c6cd"/>
 </svg>

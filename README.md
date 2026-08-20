@@ -23,41 +23,53 @@ Geen buildstap, geen frameworks, geen externe requests. Werkt lokaal via
 
 ---
 
-## ⚠️ Belangrijk: visuele bronbeperking in deze omgeving
+## Visuele bron: screenshots van de live EN-pagina
 
-De opdracht vraagt om de live pagina
-(`https://www.cgi.com/nl/nl/retail-en-consumenten-dienstverlening`) als *source
-of truth* voor de visuele stijl. **De omgeving waarin dit prototype is gebouwd
-had geen netwerktoegang tot `cgi.com`** (de egress-proxy blokkeerde het domein;
-ook web.archive.org was niet bereikbaar). De pagina-HTML/CSS en de originele
-assets konden daardoor niet worden ingelezen.
+De styling is overgenomen van **https://www.cgi.com/en/retail-consumer-services**,
+op basis van paginascreenshots (desktop) die door de opdrachtgever zijn
+aangeleverd. `cgi.com` is vanuit deze omgeving niet bereikbaar — de
+netwerk-gateway weigert het domein met een 403 op CONNECT, voor curl, WebFetch
+én headless Chromium. De HTML/CSS en de originele assets konden dus niet worden
+ingelezen; alles hieronder is uit de beelden afgeleid.
 
-Wat wél is gebruikt:
+### Wat één-op-één is overgenomen
 
-* inhoudelijke content en bestaande URL's van cgi.com, verkregen via zoek-
-  resultaten (zie *Bronnen* onderaan);
-* een CGI-conforme, terughoudende enterprise-stijl: wit, ruime witruimte, rood
-  accent, nagenoeg rechte hoeken, squared buttons, brede contentkolom.
+| Element | Overgenomen |
+| --- | --- |
+| Header | Witte balk, rood CGI-logo links, `Services / Industries / Insights / Careers / Investors` met chevrons, zoekicoon, rechts `Contact ǀ 🌐 Global ǀ EN` met verticale scheidingslijnen |
+| Kleurgebruik | Paars als dominante kleur voor álle koppen, cijfers en linkteksten; rood alleen in logo en gradient |
+| Gradient | Rood → magenta → paars, verticaal in de balken naast statistieken en capabilities, diagonaal in het hero-blok |
+| Cards | Platte, lichte lavendelblokken: geen schaduw, geen border, geen border radius |
+| Hero | Links tekst op grijs vlak, rechts beeld tot de paginarand, gradient-blok over de onderhoek van het beeld |
+| Voice of Our Clients | Lavendel band, gecentreerde kop met vetgezette aanloop, drie kolommen met gradientbalk links, groot paars cijfer |
+| Capabilities | Accordionrijen in lavendel met magenta plus-icoon, gradientlijn links van de stapel |
+| Contentcards | Beeld boven, type-label, paarse titel, lange dunne pijl onderaan; sectiekop "News and thought leadership", afsluitend "See more →" |
+| Typografie | Sentence case, koppen in medium gewicht, geen uppercase eyebrows |
+| CTA-vorm | Arrow-link met lange dunne pijl als primaire linkvorm |
+| VOOC-cijfers | `#1`, `78%`, `68%`, `209 klantgesprekken` — letterlijk van de live pagina, inclusief de bijbehorende claimregels (Engelse origineel staat als commentaar in `index.html`) |
+| Capability-labels | `Managed IT services`, `Store operations`, `E-commerce`, `Point-of-sales (POS)`, `Omnichannel customer experience`, `Data-driven retail and AI`, `IT modernization/cloud migration`, `Supply chain agility and optimization`, `Sustainable retail` |
 
-Wat nog moet worden geverifieerd (aangeleverde screenshots of geëxporteerde CSS
-zijn hiervoor voldoende):
+### Wat nog niet is geverifieerd
 
-| Wat | Waar te wijzigen | Status |
+| Wat | Status | Waar te wijzigen |
 | --- | --- | --- |
-| Exacte CGI-rood en secundaire merkkleuren | `styles.css` → `:root` `--cgi-red`, `--cgi-red-dark`, `--cgi-red-text` | benadering |
-| CGI-webfont | `:root` `--font-sans` (nu systeemstack, zodat het offline werkt) | benadering |
-| Maximale contentbreedte | `:root` `--container` (nu 1280px) | benadering |
-| Border radius, cardschaduw | `:root` `--radius`, `--shadow-card` | benadering |
-| Labels/volgorde hoofdnavigatie en footerlinks | `index.html`, blokken gemarkeerd met `VERIFY` | benadering |
-| Voice of Our Clients-cijfers | `index.html` sectie `#markt`, gemarkeerd met `VERIFY` | overgenomen uit CGI VOOC-publicaties, één-op-één te controleren tegen de live pagina |
-| Hero-beeld, expertfoto's, partnerlogo's | `assets/` | placeholder |
+| Webfont | CGI gebruikt een humanistische sans (Effra-achtig). `Effra` staat vooraan in de stack, met `Source Sans 3` uit Google Fonts als vrij substituut. | `styles.css` → `--font-sans` |
+| Exacte kleurwaarden | Uit de screenshots gesampled, niet uit de CSS gelezen. CGI-rood is wel hard: Pantone 186C / `#E31937`. | `styles.css` → `:root` |
+| Footer | Staat niet op de aangeleverde screenshots. De huidige footer volgt de merkkleuren en de bestaande CGI-linkgroepen. | `index.html`, blok met `VERIFY` |
+| Buttons | Op de screenshots stonden geen buttons; de paarse buttonvorm is afgeleid van de merkkleur en de rechte hoeken. | `styles.css` → `.btn` |
+| Contentbreedte | Op de screenshots loopt de content vrijwel tot de paginarand; hier `1600px` met smalle gutters. | `styles.css` → `--container` |
+| Mobiel gedrag | Alleen desktopscreenshots ontvangen; de responsive opbouw is een aanname binnen dezelfde stijl. | `styles.css`, media queries |
 
-Alle merk-afhankelijke waarden staan als CSS-token in één blok bovenaan
-`styles.css`. Het gelijktrekken van de huisstijl is daarmee een wijziging van
-enkele regels, niet van de hele stylesheet. De structuur, content en interactie
-van het prototype zijn onafhankelijk van die verificatie.
+### Twee bewuste keuzes
 
----
+1. **Header in het Engels, body in het Nederlands.** De shell is exact overgenomen
+   van de EN-pagina die als designbron is aangewezen; de inhoud blijft Nederlands
+   omdat het prototype voor een NL-publiek en een NL-MT is bedoeld. Voor de echte
+   NL-pagina worden dit de Nederlandse menulabels.
+2. **De hero-headline is over H1 en subregel verdeeld** — "Retailtechnologie die
+   werkt" / "Van strategie tot winkelvloer" — omdat de live pagina exact dat
+   patroon gebruikt (`Retail, consumer & services` / `Helping you deliver on your
+   brand promise`). De inhoud van de gevraagde headline blijft daarmee intact.
 
 ## A. Wat is behouden?
 
@@ -281,37 +293,15 @@ Geautomatiseerd getest met Chromium (Playwright) op 1440×900, 1280×800,
 
 ---
 
-## Volgende stap: exacte visuele replica van cgi.com
+## Verdere verfijning
 
-De huidige styling is een **interpretatie**, geen replica — `www.cgi.com` was in
-deze omgeving niet bereikbaar (gateway weigert CONNECT met 403). Twee dingen zijn
-inmiddels wel hard geverifieerd en relevant voor de restyle:
+`tools/extract-cgi-design.js` staat klaar om, zodra `www.cgi.com` bereikbaar is
+(domein op de network-allowlist van de omgeving + een **nieuwe sessie**, omdat de
+policy bij containerstart wordt toegepast), de exacte bron vast te leggen in
+`design-source/`: alle CSS-variabelen, de kleuren- en fontinventarisatie, de
+typografische schaal, buttonstijlen, contentbreedtes, de header/footer-markup, de
+stylesheets en de echte assets. Daarmee kunnen de zes openstaande punten in de
+tabel hierboven exact worden gemaakt.
 
-* CGI-rood = **Pantone 186C / #E31937** (rgb 227, 25, 55) — klopt in de huidige tokens;
-* de brandrefresh van 2021 stapte juist **weg van massief rood naar tinten paars**,
-  met een rood-naar-donkerpaars gradient als alternatief logo en paars als
-  dominante kleur op de site. De huidige styling mist dat volledig.
-
-Zodra `www.cgi.com` op de network-allowlist van de omgeving staat (en er een
-**nieuwe sessie** is gestart — de policy wordt bij containerstart toegepast):
-
-```
-node tools/extract-cgi-design.js
-```
-
-Dat legt in `design-source/` vast:
-
-* volledige paginascreenshots (desktop + mobiel) van `/en`, `/en/retail-consumer-services`
-  en de NL-pagina;
-* `*-tokens.json` — alle CSS-variabelen, de kleuren- en fontinventarisatie, de
-  typografische schaal per element, buttonstijlen, contentbreedtes, border radii,
-  de navigatie- en footerlabels met hun URL's en de paginaoutline;
-* `*-header.html` / `*-footer.html` — de markup van de shell, om 1:1 over te nemen;
-* `css/` — de stylesheets van de pagina;
-* `assets/` — de echte logo's en beelden.
-
-Daarna is de restyle: tokens in `styles.css` vervangen door de gemeten waarden,
-de shell-markup vervangen door de echte header/footer, en de placeholders in
-`assets/` vervangen door de gedownloade CGI-assets. De contentstructuur van het
-prototype (secties, claims, cases, offerings, events, experts, vacatures) blijft
-daarbij ongewijzigd.
+Zonder die toegang helpen: een screenshot van de **footer**, van de **mobiele**
+weergave, en van een pagina met een **button** erop.

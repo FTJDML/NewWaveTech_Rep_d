@@ -1,13 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 208 80" width="208" height="80" role="img" aria-label="CGI">
-  <!-- PLACEHOLDER LOGO — vervang door het officiele CGI-logo-asset uit het CMS.
-       Deze SVG is een neutrale, tekstuele weergave t.b.v. het prototype en is
-       geen gecertificeerd merkasset. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 80" width="192" height="80" role="img" aria-label="CGI">
+  <!-- PLACEHOLDER — vervang door het officiele CGI-logo-asset uit het CMS.
+       Benadering van het rode CGI-wordmark uit de screenshots. -->
   <title>CGI</title>
-  <text x="0" y="58" font-family="Segoe UI, system-ui, Arial, sans-serif" font-size="54"
-        font-weight="700" letter-spacing="1" fill="#e31937">CGI</text>
-  <rect x="118" y="16" width="4" height="42" fill="#c9c9c9"/>
-  <text x="132" y="34" font-family="Segoe UI, system-ui, Arial, sans-serif" font-size="14"
-        font-weight="600" fill="#6b6b6b">logo-</text>
-  <text x="132" y="52" font-family="Segoe UI, system-ui, Arial, sans-serif" font-size="14"
-        font-weight="600" fill="#6b6b6b">placeholder</text>
+  <text x="0" y="60" font-family="Source Sans 3, Segoe UI, Arial, sans-serif" font-size="66"
+        font-weight="700" letter-spacing="-1" fill="#e31937">CGI</text>
+  <text x="132" y="30" font-family="Source Sans 3, Segoe UI, Arial, sans-serif" font-size="12"
+        font-weight="600" fill="#8a8a95">logo-</text>
+  <text x="132" y="45" font-family="Source Sans 3, Segoe UI, Arial, sans-serif" font-size="12"
+        font-weight="600" fill="#8a8a95">placeholder</text>
 </svg>

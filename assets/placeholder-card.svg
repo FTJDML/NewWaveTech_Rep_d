@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 430 250" width="430" height="250" role="img"
+     aria-label="Beeld-placeholder">
+  <!-- BEELD-PLACEHOLDER voor contentcards — verhouding 43:25, gelijk aan de
+       cards op de live CGI-pagina. -->
+  <title>Beeld-placeholder</title>
+  <rect width="430" height="250" fill="#dcdce0"/>
+  <g fill="#cbcbd2">
+    <rect x="40" y="60" width="90" height="130"/><rect x="150" y="90" width="90" height="100"/>
+    <rect x="260" y="70" width="90" height="120"/>
+  </g>
+  <text x="215" y="225" text-anchor="middle" font-family="Source Sans 3, Segoe UI, Arial, sans-serif"
+        font-size="14" font-weight="600" fill="#6a6a75">Beeld-placeholder</text>
+</svg>
