@@ -73,26 +73,45 @@ ingelezen; alles hieronder is uit de beelden afgeleid.
 
 ## Beeldmateriaal in het prototype
 
-Alle beelden zijn **gegenereerde placeholder-illustraties** in de CGI-merkkleuren
-(`assets/img/`, aangemaakt door `tools/make-placeholders.js`). Ze zijn er om de
-pagina als demo vol en afgemaakt te laten aanvoelen; het is uitdrukkelijk geen
-definitieve fotografie. Iedere illustratie draagt linksboven een klein
-`placeholder`-vlaggetje.
+Er zijn twee soorten beeld:
 
-Waarom geen foto's: deze omgeving heeft geen toegang tot beeldbanken, en een
-gepubliceerd artifact mag geen externe hosts laden. Vervangen is een kwestie van
-hetzelfde bestandspad overschrijven — de verhoudingen liggen vast in de CSS
-(`object-fit: cover`), dus er ontstaat geen layout shift.
+**1. Eigen CGI-retailfoto's** — vier slots staan aangesloten op
+`assets/img/photos/`. Zolang een bestand daar nog niet staat, valt het
+`<img>`-element automatisch terug op de placeholder-illustratie
+(`data-fallback`, afgehandeld in `script.js`). Zodra de foto in de map staat,
+verschijnt hij — zonder verdere aanpassing aan de code.
+
+| Bestand | Plek in de pagina | Onderwerp |
+| --- | --- | --- |
+| `hero-checkout.jpg` | Hero, rechterkolom | Klant aan de kassa met telefoon in de hand |
+| `operations-rituals-storefront.jpg` | Expertisedomein 3 — Retail Operations & Managed IT | Winkelpui Rituals in shopping mall |
+| `data-ar-shopping.jpg` | Expertisedomein 2 — Retail Data, Cloud & AI | AR-app op telefoon in een kledingwinkel |
+| `usecase-pos-scan.jpg` | Expertisedomein 1 — use case "Platformselectie voor meerdere landen" | Barcode van een telefoon scannen bij de kassa |
+
+Zie `assets/img/photos/README.md` voor de exacte bestandsnamen en het toevoegen
+ervan. **Let op:** waar een herkenbare winkelformule of merknaam in beeld staat,
+is dat feitelijk een klantverwijzing — laat dat bevestigen vóór extern gebruik.
+
+**2. Gegenereerde placeholder-illustraties** in de CGI-merkkleuren
+(`assets/img/`, aangemaakt door `tools/make-placeholders.js`) voor alle overige
+posities. Ze zijn er om de pagina als demo vol en afgemaakt te laten aanvoelen;
+het is uitdrukkelijk geen definitieve fotografie. Iedere illustratie draagt
+linksboven een klein `placeholder`-vlaggetje. Deze omgeving heeft geen toegang
+tot beeldbanken en een gepubliceerd artifact mag geen externe hosts laden — vandaar
+gegenereerd in plaats van stock.
 
 | Plek | Bestand | Verhouding |
 | --- | --- | --- |
-| Hero | `hero-store.svg` | 8:5 |
-| Domein-intro's | `transform-consulting.svg`, `data-dashboard.svg`, `operations-field.svg` | 16:9 |
+| Hero (terugval) | `hero-store.svg` | 8:5 |
+| Domein-intro's (terugval) | `transform-consulting.svg`, `data-dashboard.svg`, `operations-field.svg` | 16:9 |
 | Use cases (9×) | `usecase-*.svg` | 18:11 |
 | Frameworks | `framework.svg` | 16:10 |
 | Cases, events, insights, careers | `card-*.svg`, `event.svg`, `careers.svg` | 43:25 |
 | Experts, user stories | `avatar-placeholder.svg` | 1:1 |
 | Partner- en klantlogo's | `partner-placeholder.svg` | neutraal, gestippeld kader |
+
+Alle verhoudingen liggen vast in de CSS (`object-fit: cover`), dus vervangen
+geeft geen layout shift.
 
 ## Opbouw per expertisedomein
 

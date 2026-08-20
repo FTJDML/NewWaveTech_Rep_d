@@ -8,7 +8,8 @@
      4. Insights-filter
      5. Modal (prototypeformulier, focus trap, Esc)
      6. Dummy formulieren: geen verzending
-     7. Jaartal in de footer
+     7. Beeld met terugvaloptie (eigen foto -> placeholder-illustratie)
+     8. Jaartal in de footer
    ========================================================================== */
 (function () {
   'use strict';
@@ -205,7 +206,20 @@
     });
   });
 
-  /* --------------------------------------------------------------- 7. Jaartal */
+  /* ------------------------------------------- 7. Beeld met terugvaloptie
+     Eigen foto's staan in assets/img/photos/. Zolang een bestand daar nog niet
+     staat, valt het <img> terug op de placeholder-illustratie in data-fallback. */
+  document.querySelectorAll('img[data-fallback]').forEach(function (img) {
+    var swap = function () {
+      var fallback = img.getAttribute('data-fallback');
+      if (fallback && img.getAttribute('src') !== fallback) img.src = fallback;
+    };
+    img.addEventListener('error', swap);
+    // Al gefaald voordat deze listener stond (cache/parse-race).
+    if (img.complete && img.naturalWidth === 0) swap();
+  });
+
+  /* --------------------------------------------------------------- 8. Jaartal */
   var yearSlot = document.querySelector('[data-year]');
   if (yearSlot) yearSlot.textContent = String(new Date().getFullYear());
 })();
