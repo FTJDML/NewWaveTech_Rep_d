@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 220" width="360" height="220" role="img" aria-label="Kassa- en point-of-sale-omgeving">
+  <title>Kassa- en point-of-sale-omgeving</title>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e31937"/><stop offset=".5" stop-color="#c4187a"/><stop offset="1" stop-color="#46248a"/></linearGradient>
+    <linearGradient id="gh" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#e31937"/><stop offset=".55" stop-color="#c4187a"/><stop offset="1" stop-color="#46248a"/></linearGradient>
+  </defs>
+<rect width="360" height="220" fill="#eae6f7"/><rect y="145.20000000000002" width="360" height="74.80000000000001" fill="#dcd6f0"/><rect x="43.199999999999996" y="101.2" width="172.79999999999998" height="44" fill="#e2e2e6"/><rect x="72" y="52.8" width="86.39999999999999" height="48.4" fill="#ffffff"/><rect x="81" y="61.60000000000001" width="68.4" height="7.04" fill="#c9c0e6"/><rect x="81" y="77" width="43.199999999999996" height="7.04" fill="#c9c0e6"/><rect x="172.79999999999998" y="70.4" width="25.200000000000003" height="30.800000000000004" fill="url(#g)"/><g transform="translate(288 145.20000000000002) scale(0.6111111111111112)" fill="#c9c0e6"><circle cx="0" cy="-56" r="26"/><path d="M-38 0c2-30 16-44 38-44s36 14 38 44z"/></g>
+<g><rect width="84" height="19" fill="#ffffff" opacity=".92"/><text x="6" y="13.5" font-family="Source Sans 3, Segoe UI, Arial, sans-serif" font-size="11" font-weight="600" fill="#2c1a5e">placeholder</text></g>
+</svg>

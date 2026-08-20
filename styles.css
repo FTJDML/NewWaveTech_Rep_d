@@ -20,9 +20,9 @@
                    Effra staat als eerste in de stack, zodat het CMS de echte
                    font gebruikt zodra die beschikbaar is.
      kleurwaarden: uit de screenshots gesampled, niet uit de CSS gelezen.
-     footer      : niet zichtbaar op de aangeleverde screenshots — huidige
-                   footer is in de merkkleuren opgebouwd en moet nog tegen de
-                   echte CGI-footer worden gelegd.
+     buttons     : pill-vorm en kleur afgeleid van de footer-screenshot
+                   ("Contact", "Subscribe"); overige buttonvarianten volgen
+                   dezelfde vorm.
    ========================================================================== */
 
 :root {
@@ -251,14 +251,14 @@ a:hover { color: var(--magenta); }
 .arrow-link:hover .arrow-link__arrow { transform: translateX(4px); }
 .arrow-link__arrow { transition: transform .15s ease; }
 
-/* Buttons — VERIFY: op de aangeleverde screenshots stonden geen buttons;
-   deze vorm volgt de paarse merkkleur en de rechte hoeken van de site. */
+/* Buttons — pill-vorm, zoals de "Contact"- en "Subscribe"-buttons in de
+   CGI-footer. Enige element op de site met ronde hoeken. */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
   font: inherit; font-size: 1rem; font-weight: 600; line-height: 1.2;
   padding: .8125rem 1.5rem; border: 2px solid var(--purple-900);
   background: var(--purple-900); color: var(--white);
-  text-decoration: none; cursor: pointer; border-radius: var(--radius);
+  text-decoration: none; cursor: pointer; border-radius: 999px;
   transition: background-color .15s ease, color .15s ease, border-color .15s ease;
 }
 .btn:hover { background: var(--purple-700); border-color: var(--purple-700); color: var(--white); }
@@ -294,7 +294,7 @@ a:hover { color: var(--magenta); }
 }
 .h-label { font-size: 1rem; font-weight: 600; color: var(--purple-900); margin: 1.5rem 0 .5rem; }
 .h-label:first-child { margin-top: 0; }
-.source-note { font-size: .9375rem; color: var(--ink-muted); margin: 1.5rem 0 0; }
+.source-note { font-size: .9375rem; color: var(--ink-soft); margin: 1.5rem 0 0; }
 .source-note a { color: var(--purple-900); }
 
 /* Verticale gradientbalk — herhaald element op de CGI-site */
@@ -408,6 +408,11 @@ a:hover { color: var(--magenta); }
   background: var(--purple-050); padding: clamp(1.25rem, 1rem + .75vw, 1.75rem);
 }
 .block--white { background: var(--white); }
+.block--media { padding: 0; }
+.block--media > img { width: 100%; aspect-ratio: 43 / 25; object-fit: cover; }
+.block--media > :not(img) { margin-inline: clamp(1.25rem, 1rem + .75vw, 1.75rem); }
+.block--media > .concept-label { margin-top: clamp(1.25rem, 1rem + .75vw, 1.75rem); }
+.block--media > .block__foot { margin-bottom: clamp(1.25rem, 1rem + .75vw, 1.75rem); }
 .block > :last-child { margin-bottom: 0; }
 .block__title { margin-bottom: .75rem; }
 .block__title a { text-decoration: none; }
@@ -547,34 +552,6 @@ a:hover { color: var(--magenta); }
 @media (max-width: 900px) { .cta-panel { grid-template-columns: 1fr; } .cta-panel__actions { align-items: flex-start; } }
 
 /* --------------------------------------------------------------------------
-   Footer — VERIFY tegen de echte CGI-footer
-   -------------------------------------------------------------------------- */
-.site-footer { background: #211145; color: #dcd5ee; padding: clamp(2.5rem, 2rem + 2vw, 4rem) 0 1.5rem; font-size: 1rem; }
-.site-footer a { color: #dcd5ee; text-decoration: none; }
-.site-footer a:hover { color: var(--white); text-decoration: underline; }
-.site-footer__top { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 3fr); gap: clamp(1.5rem, 1rem + 2vw, 3rem); padding-bottom: 2rem; border-bottom: 1px solid #3b2a63; }
-.site-footer__tagline { color: #b7abd6; margin: 1rem 0; }
-.social-list { display: flex; gap: .75rem; list-style: none; margin: 0; padding: 0; }
-.social-list a { display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border: 1px solid #4d3b78; }
-.social-list a:hover { border-color: var(--white); }
-.site-footer__nav { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.3fr); gap: 1.5rem 2rem; }
-.footer-col ul { list-style: none; margin: 0; padding: 0; }
-.footer-col li { margin-bottom: .5rem; }
-.footer-col__title { font-size: 1rem; font-weight: 600; color: var(--white); margin-bottom: .875rem; }
-.footer-col p { color: #c6bcdf; font-size: .9375rem; }
-.newsletter { display: flex; flex-wrap: wrap; gap: .5rem; }
-.newsletter input { flex: 1 1 12rem; min-width: 0; font: inherit; padding: .625rem .75rem; border: 1px solid #4d3b78; background: #1a0d38; color: var(--white); }
-.newsletter input::placeholder { color: #8f82ad; }
-.site-footer__bottom { display: flex; flex-wrap: wrap; gap: .75rem 1.5rem; align-items: center; justify-content: space-between; padding-top: 1.5rem; }
-.site-footer__copy { margin: 0; color: #b7abd6; font-size: .9375rem; }
-.legal-list { display: flex; flex-wrap: wrap; gap: .75rem 1.25rem; list-style: none; margin: 0; padding: 0; font-size: .9375rem; }
-@media (max-width: 1023px) {
-  .site-footer__top { grid-template-columns: 1fr; }
-  .site-footer__nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-@media (max-width: 560px) { .site-footer__nav { grid-template-columns: 1fr; } }
-
-/* --------------------------------------------------------------------------
    Formulieren en modal
    -------------------------------------------------------------------------- */
 .form__row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
@@ -612,6 +589,144 @@ a:hover { color: var(--magenta); }
 }
 .modal__title { margin-bottom: 1.25rem; }
 body.has-modal { overflow: hidden; }
+
+
+/* --------------------------------------------------------------------------
+   Expertisedomein: eigen band per domein, met use cases, user story,
+   framework en klantlogo's. Bewust luchtig: witte vlakken, geen groot
+   aaneengesloten gekleurd blok.
+   -------------------------------------------------------------------------- */
+.domain__intro {
+  display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+  gap: clamp(1.5rem, 1rem + 2.5vw, 3.5rem); align-items: start;
+  margin-bottom: clamp(1.75rem, 1.25rem + 1.5vw, 2.75rem);
+}
+.domain__media { position: relative; }
+.domain__media img { width: 100%; }
+.domain__cols {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(1.5rem, 1rem + 2.5vw, 3.5rem);
+}
+@media (max-width: 900px) {
+  .domain__intro, .domain__cols { grid-template-columns: 1fr; }
+}
+
+.sub-band { margin-top: clamp(2rem, 1.5rem + 2vw, 3.25rem); }
+.sub-band__head {
+  display: flex; flex-wrap: wrap; gap: .75rem 1.5rem; align-items: baseline;
+  justify-content: space-between; margin-bottom: 1.25rem;
+  padding-bottom: .625rem; border-bottom: 1px solid var(--line);
+}
+.sub-band__title { font-size: 1.25rem; font-weight: 600; color: var(--purple-900); margin: 0; }
+.sub-band__note { font-size: .8125rem; font-weight: 600; color: var(--purple-700); margin: 0; }
+
+/* Use-case tegels */
+.usecase { display: flex; flex-direction: column; background: var(--white); }
+.band--lavender .usecase, .band--grey-soft .usecase { background: var(--white); }
+.usecase img { width: 100%; aspect-ratio: 18 / 11; object-fit: cover; }
+.usecase__body { padding: 1rem 1.125rem 1.25rem; display: flex; flex-direction: column; flex: 1; }
+.usecase__title { font-size: 1.0625rem; font-weight: 600; color: var(--purple-900); margin: 0 0 .375rem; }
+.usecase p { font-size: .9375rem; color: var(--ink); margin: 0; }
+.usecase__tag {
+  font-size: .8125rem; color: var(--purple-700); margin: 0 0 .375rem;
+}
+
+/* User story / quote */
+.story { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1.25rem; align-items: start; background: var(--white); padding: clamp(1.25rem, 1rem + 1vw, 1.75rem); }
+.band--white .story, .band:not(.band--lavender):not(.band--grey-soft) .story { background: var(--purple-025); }
+.story img { width: 72px; height: 72px; object-fit: cover; }
+.story blockquote {
+  margin: 0 0 .875rem; font-size: clamp(1.0625rem, 1rem + .4vw, 1.25rem);
+  line-height: 1.45; color: var(--purple-900); font-weight: 400;
+}
+.story blockquote::before { content: "\201C"; }
+.story blockquote::after { content: "\201D"; }
+.story__by { font-size: .9375rem; color: var(--ink); margin: 0; }
+
+/* Framework-blok */
+.framework { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: clamp(1.25rem, 1rem + 1.5vw, 2rem); align-items: center; background: var(--white); }
+.band--lavender .framework, .band--grey-soft .framework { background: var(--white); }
+.framework__body { padding: clamp(1.25rem, 1rem + 1vw, 1.75rem); }
+.framework__body > :last-child { margin-bottom: 0; }
+.framework img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; }
+@media (max-width: 720px) { .framework { grid-template-columns: 1fr; } }
+
+/* Klantlogo's per domein */
+.client-logos {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem;
+  list-style: none; margin: 0; padding: 0;
+}
+.client-logos li { display: grid; place-items: center; background: var(--white); padding: 1rem; min-height: 84px; }
+@media (max-width: 620px) { .client-logos { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+.band--grey-soft { background: var(--grey-100); }
+
+/* Claim-overzichtskaart met beeld */
+.claim img { width: 100%; aspect-ratio: 43 / 25; object-fit: cover; }
+.claim--white .claim__body { background: var(--white); }
+
+/* --------------------------------------------------------------------------
+   Footer — opbouw volgens de live CGI-footer:
+   gradientband "How can we help?" + drie vlakken (wit / grijs / lavendel)
+   -------------------------------------------------------------------------- */
+.footer-cta {
+  background: linear-gradient(90deg, var(--cgi-red) 0%, var(--magenta) 48%, #4b34a8 100%);
+  padding: clamp(2.5rem, 2rem + 3vw, 4.5rem) 0; text-align: center;
+}
+.footer-cta h2 {
+  color: var(--white); font-weight: 300;
+  font-size: clamp(1.75rem, 1.2rem + 2.4vw, 3rem); margin: 0 0 1.5rem;
+}
+.footer-cta .btn { background: var(--white); border-color: var(--white); color: var(--purple-700); }
+.footer-cta .btn:hover { background: var(--purple-025); border-color: var(--purple-025); color: var(--purple-900); }
+
+.site-footer { background: var(--white); color: var(--ink); font-size: 1rem; }
+.site-footer a { color: var(--purple-900); text-decoration: none; }
+.site-footer a:hover { color: var(--magenta); text-decoration: underline; }
+.site-footer__grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 2.3fr) minmax(0, 1fr); }
+
+.footer-brand { background: var(--white); padding: clamp(1.75rem, 1.5rem + 1.5vw, 3rem) clamp(1.25rem, 1rem + 1.5vw, 2.5rem); }
+.footer-brand img { width: 110px; height: auto; margin-bottom: 1.25rem; }
+.footer-brand__tagline { font-size: 1.25rem; font-weight: 700; color: var(--purple-900); margin: 0 0 1rem; }
+.footer-brand p { color: var(--ink); }
+.footer-brand .arrow-link__arrow { width: 1.5rem; margin-left: .5rem; }
+.footer-brand__copy { font-size: .9375rem; color: var(--ink-muted); margin: 1.5rem 0 0; }
+
+.footer-links {
+  background: var(--grey-100); padding: clamp(1.75rem, 1.5rem + 1.5vw, 3rem) clamp(1.25rem, 1rem + 1.5vw, 2.5rem);
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem 2rem;
+}
+.footer-links h2 { font-size: 1.1875rem; font-weight: 700; color: var(--purple-900); margin: 0 0 1rem; }
+.footer-links ul { list-style: none; margin: 0; padding: 0; }
+.footer-links li { margin-bottom: .75rem; }
+
+.footer-more { background: var(--purple-050); padding: clamp(1.75rem, 1.5rem + 1.5vw, 3rem) clamp(1.25rem, 1rem + 1.5vw, 2.5rem); }
+.footer-more h2 { font-size: 1.1875rem; font-weight: 700; color: var(--purple-900); margin: 0 0 .75rem; }
+.footer-more p { color: var(--ink); margin-bottom: 1rem; }
+.footer-more .btn { background: var(--purple-700); border-color: var(--purple-700); }
+.footer-more__follow { font-size: 1.1875rem; font-weight: 700; color: var(--purple-900); margin: 2rem 0 1rem; }
+.social-list { display: flex; gap: 1.25rem; list-style: none; margin: 0; padding: 0; }
+.social-list a { display: grid; place-items: center; color: var(--purple-900); }
+.social-list svg { width: 1.5rem; height: 1.5rem; fill: currentColor; }
+.social-list a:hover { color: var(--magenta); }
+
+.footer-legal { background: var(--white); border-top: 1px solid var(--grey-200); }
+.footer-legal__inner { display: flex; flex-wrap: wrap; gap: .75rem 1.5rem; align-items: center; justify-content: space-between; padding-block: 1rem; }
+.legal-list { display: flex; flex-wrap: wrap; gap: .75rem 1.25rem; list-style: none; margin: 0; padding: 0; font-size: .9375rem; }
+.footer-note { font-size: .8125rem; color: var(--ink-muted); margin: 0; }
+
+.newsletter { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: .5rem; }
+.newsletter input {
+  flex: 1 1 10rem; min-width: 0; font: inherit; padding: .625rem .875rem;
+  border: 1px solid var(--purple-500); background: var(--white); color: var(--ink);
+  border-radius: 999px;
+}
+
+@media (max-width: 1100px) {
+  .site-footer__grid { grid-template-columns: 1fr; }
+  .footer-links { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 620px) { .footer-links { grid-template-columns: 1fr; } }
 
 /* --------------------------------------------------------------------------
    Print

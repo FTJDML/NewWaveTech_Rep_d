@@ -46,6 +46,8 @@ ingelezen; alles hieronder is uit de beelden afgeleid.
 | Contentcards | Beeld boven, type-label, paarse titel, lange dunne pijl onderaan; sectiekop "News and thought leadership", afsluitend "See more →" |
 | Typografie | Sentence case, koppen in medium gewicht, geen uppercase eyebrows |
 | CTA-vorm | Arrow-link met lange dunne pijl als primaire linkvorm |
+| Footer | Gradientband "How can we help?" met witte pill-button, daaronder drie vlakken: wit (logo, tagline, bedrijfstekst, "Learn more about CGI →", copyright), grijs (Company / Resource center / Support) en lavendel (Discover more about CGI, Subscribe-button, Follow us met LinkedIn/X/YouTube/Facebook) |
+| Buttons | Pill-vorm — het enige element op de site met ronde hoeken. Wit met paarse tekst op de gradient, paars met witte tekst op licht |
 | VOOC-cijfers | `#1`, `78%`, `68%`, `209 klantgesprekken` — letterlijk van de live pagina, inclusief de bijbehorende claimregels (Engelse origineel staat als commentaar in `index.html`) |
 | Capability-labels | `Managed IT services`, `Store operations`, `E-commerce`, `Point-of-sales (POS)`, `Omnichannel customer experience`, `Data-driven retail and AI`, `IT modernization/cloud migration`, `Supply chain agility and optimization`, `Sustainable retail` |
 
@@ -55,8 +57,6 @@ ingelezen; alles hieronder is uit de beelden afgeleid.
 | --- | --- | --- |
 | Webfont | CGI gebruikt een humanistische sans (Effra-achtig). `Effra` staat vooraan in de stack, met `Source Sans 3` uit Google Fonts als vrij substituut. | `styles.css` → `--font-sans` |
 | Exacte kleurwaarden | Uit de screenshots gesampled, niet uit de CSS gelezen. CGI-rood is wel hard: Pantone 186C / `#E31937`. | `styles.css` → `:root` |
-| Footer | Staat niet op de aangeleverde screenshots. De huidige footer volgt de merkkleuren en de bestaande CGI-linkgroepen. | `index.html`, blok met `VERIFY` |
-| Buttons | Op de screenshots stonden geen buttons; de paarse buttonvorm is afgeleid van de merkkleur en de rechte hoeken. | `styles.css` → `.btn` |
 | Contentbreedte | Op de screenshots loopt de content vrijwel tot de paginarand; hier `1600px` met smalle gutters. | `styles.css` → `--container` |
 | Mobiel gedrag | Alleen desktopscreenshots ontvangen; de responsive opbouw is een aanname binnen dezelfde stijl. | `styles.css`, media queries |
 
@@ -70,6 +70,51 @@ ingelezen; alles hieronder is uit de beelden afgeleid.
    werkt" / "Van strategie tot winkelvloer" — omdat de live pagina exact dat
    patroon gebruikt (`Retail, consumer & services` / `Helping you deliver on your
    brand promise`). De inhoud van de gevraagde headline blijft daarmee intact.
+
+## Beeldmateriaal in het prototype
+
+Alle beelden zijn **gegenereerde placeholder-illustraties** in de CGI-merkkleuren
+(`assets/img/`, aangemaakt door `tools/make-placeholders.js`). Ze zijn er om de
+pagina als demo vol en afgemaakt te laten aanvoelen; het is uitdrukkelijk geen
+definitieve fotografie. Iedere illustratie draagt linksboven een klein
+`placeholder`-vlaggetje.
+
+Waarom geen foto's: deze omgeving heeft geen toegang tot beeldbanken, en een
+gepubliceerd artifact mag geen externe hosts laden. Vervangen is een kwestie van
+hetzelfde bestandspad overschrijven — de verhoudingen liggen vast in de CSS
+(`object-fit: cover`), dus er ontstaat geen layout shift.
+
+| Plek | Bestand | Verhouding |
+| --- | --- | --- |
+| Hero | `hero-store.svg` | 8:5 |
+| Domein-intro's | `transform-consulting.svg`, `data-dashboard.svg`, `operations-field.svg` | 16:9 |
+| Use cases (9×) | `usecase-*.svg` | 18:11 |
+| Frameworks | `framework.svg` | 16:10 |
+| Cases, events, insights, careers | `card-*.svg`, `event.svg`, `careers.svg` | 43:25 |
+| Experts, user stories | `avatar-placeholder.svg` | 1:1 |
+| Partner- en klantlogo's | `partner-placeholder.svg` | neutraal, gestippeld kader |
+
+## Opbouw per expertisedomein
+
+De drie domeinen staan niet meer in één doorlopend gekleurd blok. Elk domein
+heeft nu een **eigen band** met een vaste, scanbare opbouw:
+
+1. intro in twee kolommen: vraagstuk en CGI point of view naast een beeld;
+2. capabilities (accordion met gradientlijn) naast klantuitkomsten, bewijs en de
+   concrete eerste stap;
+3. **Use cases** — drie tegels met beeld, thema en één regel uitleg;
+4. **User story** — quote met placeholder-attributie, naast een **framework**-blok
+   met visual en aanvraag-CTA;
+5. **Klanten binnen dit domein** — vier logo-placeholders.
+
+Ieder subblok heeft een kop met daarnaast een conceptmarkering, zodat in één
+oogopslag duidelijk is wat nog vervangen moet worden. De use cases bevatten
+bewust **geen aantallen of percentages**: ze beschrijven het type vraagstuk, niet
+een resultaat.
+
+Nieuw te vervangen bij productie: negen use cases, drie user-story-quotes met
+attributie, drie frameworks en twaalf klantlogo's (alleen met schriftelijke
+goedkeuring).
 
 ## A. Wat is behouden?
 
