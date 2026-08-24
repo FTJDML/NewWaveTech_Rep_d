@@ -728,6 +728,59 @@ body.has-modal { overflow: hidden; }
 }
 @media (max-width: 620px) { .footer-links { grid-template-columns: 1fr; } }
 
+
+/* --------------------------------------------------------------------------
+   Beeldbeheer — prototypehulpmiddel, geen onderdeel van de CGI-huisstijl.
+   Bewust neutraal grijs gehouden zodat het niet als paginacomponent leest.
+   -------------------------------------------------------------------------- */
+.photo-admin { background: #f4f4f6; border-bottom: 1px solid #dcdce2; font-size: .9375rem; }
+.photo-admin details { padding-block: .75rem; }
+.photo-admin summary {
+  display: flex; flex-wrap: wrap; align-items: center; gap: .625rem;
+  cursor: pointer; font-weight: 600; color: #2b2b33; list-style: none;
+}
+.photo-admin summary::-webkit-details-marker { display: none; }
+.photo-admin summary::before { content: "▸"; color: #6a6a75; }
+.photo-admin details[open] summary::before { content: "▾"; }
+.photo-admin__badge {
+  font-size: .6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+  background: #2b2b33; color: #fff; padding: .1875rem .4375rem;
+}
+.photo-admin__count { font-weight: 400; color: #55555f; }
+.photo-admin__intro { margin: .875rem 0 1rem; color: #3d3d47; max-width: 78ch; }
+.photo-admin__list { list-style: none; margin: 0 0 1rem; padding: 0; display: grid; gap: .5rem; }
+.photo-admin__row {
+  display: grid; grid-template-columns: 72px minmax(0, 1fr) auto;
+  gap: .875rem; align-items: center; background: #fff; padding: .5rem .75rem;
+  border: 1px solid #e2e2e8;
+}
+.photo-admin__row.is-filled { border-color: var(--purple-500); }
+.photo-admin__thumb {
+  display: grid; place-items: center; width: 72px; height: 44px;
+  background: #ececf1; overflow: hidden;
+}
+.photo-admin__thumb img { width: 100%; height: 100%; object-fit: cover; }
+.photo-admin__meta { display: flex; flex-direction: column; min-width: 0; }
+.photo-admin__meta strong { font-weight: 600; color: #2b2b33; }
+.photo-admin__meta span { font-size: .8125rem; color: #55555f; overflow-wrap: anywhere; }
+.photo-admin__action { display: flex; align-items: center; gap: .75rem; }
+.photo-admin__remove {
+  font: inherit; font-size: .8125rem; background: none; border: 0; padding: 0;
+  color: #55555f; text-decoration: underline; cursor: pointer;
+}
+.photo-admin__remove:hover { color: var(--cgi-red); }
+.photo-admin__ro { font-size: .8125rem; color: #55555f; }
+.photo-admin__foot { display: flex; flex-wrap: wrap; gap: .75rem 1.25rem; align-items: center; }
+.photo-admin__status { margin: 0; font-size: .875rem; color: #3d3d47; }
+.photo-admin__status.is-ok { color: #1f6b3a; font-weight: 600; }
+.photo-admin__status.is-warn { color: #96131f; font-weight: 600; }
+@media (max-width: 620px) {
+  .photo-admin__row { grid-template-columns: 56px minmax(0, 1fr); }
+  .photo-admin__thumb { width: 56px; height: 36px; }
+  .photo-admin__action { grid-column: 1 / -1; }
+}
+@media print { .photo-admin { display: none; } }
+
 /* --------------------------------------------------------------------------
    Print
    -------------------------------------------------------------------------- */

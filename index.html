@@ -22,6 +22,37 @@
   <span><strong>Management concept</strong> — niet voor publicatie</span>
 </div>
 
+<!-- ==========================================================================
+     BEELDBEHEER — uitsluitend prototypehulpmiddel (§18).
+     Zichtbaar zodra de pagina als artifact draait met de artifact-capability;
+     lokaal en in productie blijft dit blok verborgen. Verwijder dit blok en
+     het bijbehorende script voor een productieversie.
+     ========================================================================== -->
+<section class="photo-admin" id="photo-admin" hidden aria-labelledby="photo-admin-title">
+  <div class="container">
+    <details>
+      <summary>
+        <span class="photo-admin__badge">Prototypehulpmiddel</span>
+        <span id="photo-admin-title">Beeldbeheer &mdash; eigen foto&rsquo;s plaatsen</span>
+        <span class="photo-admin__count" data-photo-count></span>
+      </summary>
+
+      <p class="photo-admin__intro">Kies per plek een eigen foto. De pagina verkleint het beeld,
+        plaatst het op zijn plek en publiceert een nieuwe versie van deze pagina op dezelfde URL.
+        Iedereen met de link ziet daarna de foto. Er wordt niets naar buiten gestuurd.</p>
+
+      <ul class="photo-admin__list" data-photo-slots></ul>
+
+      <div class="photo-admin__foot">
+        <button class="btn btn--sm" type="button" data-photo-download hidden>Alle foto&rsquo;s downloaden met de juiste bestandsnaam</button>
+        <p class="photo-admin__status" data-photo-status role="status" aria-live="polite"></p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<script type="application/json" id="photo-store" data-proto>{}</script>
+
 <a class="skip-link" href="#main">Direct naar hoofdinhoud</a>
 
 <!-- ==========================================================================
@@ -100,7 +131,7 @@
       <div class="hero__media">
         <!-- REPLACE: bestaand CGI-hero-beeld uit het CMS (op de live pagina een
              winkelfoto). Placeholder houdt dezelfde verhouding aan. -->
-        <img src="assets/img/photos/hero-checkout.jpg" data-fallback="assets/img/hero-store.svg"
+        <img src="assets/img/photos/hero-checkout.jpg" data-slot="hero" data-fallback="assets/img/hero-store.svg"
              alt="Klant rekent af aan de kassa in een kledingwinkel, met haar telefoon in de hand"
              width="960" height="600">
         <p class="media-note">Beeld-placeholder — vervang door bestaand CGI-retailbeeld</p>
@@ -333,7 +364,7 @@
           <p>Een transformatie wordt pas bestuurbaar als businessdoelen, capabilities, architectuur, governance en delivery in &eacute;&eacute;n roadmap samenkomen &mdash; met duidelijk eigenaarschap per stap en een realistische volgorde. Wij ontwerpen die roadmap en blijven verantwoordelijk voor de realisatie.</p>
         </div>
         <div class="domain__media">
-          <img src="assets/img/photos/transform-store-floor.jpg" data-fallback="assets/img/transform-consulting.svg"
+          <img src="assets/img/photos/transform-store-floor.jpg" data-slot="transform" data-fallback="assets/img/transform-consulting.svg"
                alt="Klant bekijkt kleding aan een rek in een winkel" width="800" height="450">
         </div>
       </div>
@@ -426,7 +457,7 @@
         </div>
         <div class="grid grid--3">
         <article class="usecase">
-          <img src="assets/img/photos/usecase-pos-scan.jpg" data-fallback="assets/img/usecase-pos.svg"
+          <img src="assets/img/photos/usecase-pos-scan.jpg" data-slot="uc-pos" data-fallback="assets/img/usecase-pos.svg"
                alt="Medewerker scant een digitale barcode van een telefoon bij de kassa" width="360" height="220">
           <div class="usecase__body">
             <p class="usecase__tag">POS &amp; platform</p>
@@ -443,7 +474,7 @@
           </div>
         </article>
         <article class="usecase">
-          <img src="assets/img/photos/usecase-unified-commerce.jpg" data-fallback="assets/img/usecase-customer.svg"
+          <img src="assets/img/photos/usecase-unified-commerce.jpg" data-slot="uc-commerce" data-fallback="assets/img/usecase-customer.svg"
                alt="Klant gebruikt een Buy Now Pay Later-app op de telefoon op een terras" width="360" height="220">
           <div class="usecase__body">
             <p class="usecase__tag">Unified commerce</p>
@@ -520,7 +551,7 @@
           <p>Succesvolle AI in retail begint niet bij het model, maar bij het klantprobleem, betrouwbare data, integratie, eigenaarschap en een realistische route naar productie en beheer. Wij prioriteren use-cases op businesswaarde en bouwen het fundament mee dat opschaling mogelijk maakt.</p>
         </div>
         <div class="domain__media">
-          <img src="assets/img/photos/data-ar-shopping.jpg" data-fallback="assets/img/data-dashboard.svg"
+          <img src="assets/img/photos/data-ar-shopping.jpg" data-slot="data" data-fallback="assets/img/data-dashboard.svg"
                alt="Klant bekijkt een outfit via een AR-app op de telefoon in een kledingwinkel"
                width="800" height="450">
         </div>
@@ -623,7 +654,7 @@
           </div>
         </article>
         <article class="usecase">
-          <img src="assets/img/photos/usecase-supply-chain.jpg" data-fallback="assets/img/usecase-supply.svg"
+          <img src="assets/img/photos/usecase-supply-chain.jpg" data-slot="uc-supply" data-fallback="assets/img/usecase-supply.svg"
                alt="Pakketten op een rollenbaan in een distributiecentrum" width="360" height="220">
           <div class="usecase__body">
             <p class="usecase__tag">Data foundations</p>
@@ -708,7 +739,7 @@
           <p>Operationele betrouwbaarheid is een ontwerpkeuze, geen toeval. Met &eacute;&eacute;n integraal supportmodel &mdash; global service management, lokale field services, duidelijke leveranciersregie en gestandaardiseerde processen &mdash; wordt de winkelvloer minder verstoord en de operatie beter voorspelbaar.</p>
         </div>
         <div class="domain__media">
-          <img src="assets/img/photos/operations-rituals-storefront.jpg" data-fallback="assets/img/operations-field.svg"
+          <img src="assets/img/photos/operations-rituals-storefront.jpg" data-slot="operations" data-fallback="assets/img/operations-field.svg"
                alt="Winkelpui van een Rituals-winkel in een shopping mall" width="800" height="450">
         </div>
       </div>
@@ -800,7 +831,7 @@
         </div>
         <div class="grid grid--3">
         <article class="usecase">
-          <img src="assets/img/photos/usecase-payment-terminal.jpg" data-fallback="assets/img/usecase-field.svg"
+          <img src="assets/img/photos/usecase-payment-terminal.jpg" data-slot="uc-payment" data-fallback="assets/img/usecase-field.svg"
                alt="Contactloos betalen met de telefoon op een pinautomaat" width="360" height="220">
           <div class="usecase__body">
             <p class="usecase__tag">Support &amp; field services</p>
@@ -1594,6 +1625,7 @@
   </div>
 </div>
 
-<script src="script.js"></script>
+<script src="script.js" data-proto></script>
+<script src="photo-admin.js" data-proto></script>
 </body>
 </html>

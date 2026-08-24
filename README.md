@@ -117,6 +117,34 @@ gegenereerd in plaats van stock.
 Alle verhoudingen liggen vast in de CSS (`object-fit: cover`), dus vervangen
 geeft geen layout shift.
 
+## Beeldbeheer op de gepubliceerde pagina
+
+Op de artifact-URL staat bovenaan een uitklapbaar paneel **Beeldbeheer** waarmee
+de eigenaar zelf foto's kan plaatsen, zonder tussenkomst van code:
+
+1. per plek een bestand kiezen;
+2. de pagina verkleint het beeld in de browser (max. 1800 px breed, JPEG q0.82);
+3. het beeld komt direct op zijn plek te staan;
+4. de pagina publiceert zichzelf opnieuw op dezelfde URL, zodat iedereen met de
+   link de foto ziet.
+
+Technisch: `photo-admin.js` bewaart de beelden als data-URI in het JSON-blok
+`#photo-store` in de pagina zelf en roept `claude.use("artifact").publish()` aan
+met een complete, opgeschoonde vervangende pagina. Er gaat niets naar een externe
+server. De knop *Alle foto's downloaden met de juiste bestandsnaam* levert de
+verkleinde bestanden terug met exact de namen die `assets/img/photos/` verwacht,
+zodat ze eenvoudig in de repo te zetten zijn.
+
+Het paneel verschijnt alleen wanneer de pagina als artifact draait én de
+weergave schrijfrechten heeft; lokaal en in een productieversie blijft het
+verborgen. Verwijder voor productie het blok `#photo-admin`, `photo-admin.js` en
+het bijbehorende CSS-blok.
+
+**Let op bij de volgorde:** publiceert de pagina zichzelf (na een upload) en
+publiceer ik daarna opnieuw vanuit de repo, dan overschrijft die publicatie de
+via het paneel geplaatste foto's. Zet de foto's daarom ook in
+`assets/img/photos/`, of laat het weten vóór een nieuwe publicatie vanuit de repo.
+
 ## Opbouw per expertisedomein
 
 De drie domeinen staan niet meer in één doorlopend gekleurd blok. Elk domein
