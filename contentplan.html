@@ -1,0 +1,1001 @@
+<title>Contentplan Retail &amp; Consumer Services</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;1,8..60,400&display=swap">
+<style>
+/* ==========================================================================
+   Contentplan CGI Retail & Consumer Services
+   Palet en typografie afgeleid van het prototype (styles.css): paars als
+   dominante kleur, CGI-rood alleen als signaal, paars-getinte neutralen.
+   ========================================================================== */
+:root {
+  --ink:        #23202c;
+  --ink-soft:   #4c4857;
+  --ink-mute:   #6f6a7d;
+  --ground:     #faf9fc;
+  --surface:    #ffffff;
+  --surface-2:  #f2effa;
+  --surface-3:  #eae6f7;
+  --line:       #e0dcec;
+  --line-firm:  #c8c2da;
+
+  --purple:     #2c1a5e;
+  --purple-mid: #46248a;
+  --purple-soft:#6b3fa0;
+  --red:        #e31937;
+  --magenta:    #c4187a;
+
+  --ok:         #1c6b3f;
+  --ok-bg:      #e6f2ea;
+  --wait:       #8a5300;
+  --wait-bg:    #fbf1df;
+  --gap:        #96131f;
+  --gap-bg:     #fbeaec;
+
+  --rule: linear-gradient(180deg, var(--red) 0%, var(--magenta) 48%, var(--purple-mid) 100%);
+
+  --sans: "Source Sans 3", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+
+  --measure: 68ch;
+  --pad: clamp(1.25rem, .75rem + 2vw, 3rem);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ink:        #ece9f4;
+    --ink-soft:   #c0bacf;
+    --ink-mute:   #9b95ab;
+    --ground:     #17141f;
+    --surface:    #1e1a29;
+    --surface-2:  #241f33;
+    --surface-3:  #2b2440;
+    --line:       #332c46;
+    --line-firm:  #48406098;
+
+    --purple:     #c3b2ee;
+    --purple-mid: #a78bdd;
+    --purple-soft:#8f74c9;
+    --red:        #ff5a70;
+    --magenta:    #e661ab;
+
+    --ok:         #7fd6a2;
+    --ok-bg:      #17311f;
+    --wait:       #f0c37a;
+    --wait-bg:    #33260f;
+    --gap:        #ff8e9c;
+    --gap-bg:     #351a20;
+  }
+}
+:root[data-theme="dark"] {
+  --ink:        #ece9f4;
+  --ink-soft:   #c0bacf;
+  --ink-mute:   #9b95ab;
+  --ground:     #17141f;
+  --surface:    #1e1a29;
+  --surface-2:  #241f33;
+  --surface-3:  #2b2440;
+  --line:       #332c46;
+  --line-firm:  #484060;
+
+  --purple:     #c3b2ee;
+  --purple-mid: #a78bdd;
+  --purple-soft:#8f74c9;
+  --red:        #ff5a70;
+  --magenta:    #e661ab;
+
+  --ok:         #7fd6a2;
+  --ok-bg:      #17311f;
+  --wait:       #f0c37a;
+  --wait-bg:    #33260f;
+  --gap:        #ff8e9c;
+  --gap-bg:     #351a20;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 1rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap { max-width: 1180px; margin-inline: auto; padding: 0 var(--pad) 5rem; }
+.col { max-width: var(--measure); }
+
+h1, h2, h3, h4 { margin: 0; line-height: 1.2; text-wrap: balance; color: var(--ink); }
+h1 { font-size: clamp(1.875rem, 1.4rem + 1.9vw, 2.75rem); font-weight: 700; letter-spacing: -.015em; }
+h2 { font-size: clamp(1.375rem, 1.15rem + .9vw, 1.75rem); font-weight: 600; }
+h3 { font-size: 1.125rem; font-weight: 600; }
+h4 { font-size: 1rem; font-weight: 600; }
+p { margin: 0; }
+a { color: var(--purple-mid); text-underline-offset: .18em; }
+a:hover { color: var(--magenta); }
+:focus-visible { outline: 2px solid var(--magenta); outline-offset: 2px; }
+strong { font-weight: 600; }
+code {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: .875em; background: var(--surface-3); color: var(--purple);
+  padding: .0625rem .3125rem;
+}
+
+/* ---------------------------------------------------------------- header -- */
+.masthead { border-bottom: 1px solid var(--line); background: var(--surface); }
+.masthead__inner {
+  max-width: 1180px; margin-inline: auto; padding: clamp(1.75rem, 1.25rem + 2vw, 3rem) var(--pad);
+  display: grid; gap: 1.5rem;
+}
+.kicker {
+  font-size: .8125rem; font-weight: 600; letter-spacing: .09em; text-transform: uppercase;
+  color: var(--purple-mid); margin: 0;
+}
+.lead { font-family: var(--serif); font-size: clamp(1.0625rem, 1rem + .5vw, 1.3125rem); line-height: 1.5; color: var(--ink-soft); max-width: 60ch; }
+.meta { display: flex; flex-wrap: wrap; gap: .5rem 1.75rem; font-size: .875rem; color: var(--ink-mute); }
+.meta b { color: var(--ink); font-weight: 600; }
+
+/* --------------------------------------------------------------- figures -- */
+.figures {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1px; background: var(--line); border: 1px solid var(--line); margin-top: .5rem;
+}
+.figure { background: var(--surface); padding: .875rem 1rem; }
+.figure b {
+  display: block; font-size: 1.625rem; font-weight: 600; line-height: 1.1;
+  color: var(--purple); font-variant-numeric: tabular-nums;
+}
+.figure span { font-size: .8125rem; color: var(--ink-mute); }
+
+/* -------------------------------------------------------------- sections -- */
+section { margin-top: clamp(2.5rem, 2rem + 2vw, 4rem); }
+.head { display: grid; gap: .625rem; margin-bottom: 1.5rem; }
+.head__row { display: flex; align-items: baseline; gap: .875rem; }
+.num {
+  font-family: var(--serif); font-size: .9375rem; color: var(--purple-soft);
+  font-variant-numeric: tabular-nums; flex: none; padding-top: .1rem;
+}
+.note { font-size: .9375rem; color: var(--ink-mute); max-width: var(--measure); }
+.stack { display: grid; gap: 1rem; }
+.stack--tight { gap: .625rem; }
+
+/* ---------------------------------------------------------------- tables -- */
+.scroll { overflow-x: auto; border: 1px solid var(--line); background: var(--surface); }
+table { width: 100%; border-collapse: collapse; font-size: .9375rem; min-width: 640px; }
+caption { text-align: left; padding: .75rem 1rem; font-size: .8125rem; color: var(--ink-mute); border-bottom: 1px solid var(--line); }
+th, td { text-align: left; padding: .625rem 1rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+th {
+  font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--ink-mute); background: var(--surface-2); white-space: nowrap;
+}
+tbody tr:last-child td { border-bottom: 0; }
+td.num-col { font-variant-numeric: tabular-nums; white-space: nowrap; }
+tbody tr:hover td { background: var(--surface-2); }
+
+/* ----------------------------------------------------------------- pills -- */
+.pill {
+  display: inline-block; font-size: .75rem; font-weight: 600; line-height: 1.35;
+  padding: .0625rem .4375rem; white-space: nowrap;
+}
+.pill--ok { color: var(--ok); background: var(--ok-bg); }
+.pill--wait { color: var(--wait); background: var(--wait-bg); }
+.pill--gap { color: var(--gap); background: var(--gap-bg); }
+
+/* Doorlooptijd — het ordenende principe van dit plan */
+.lt { display: inline-flex; align-items: center; gap: .4375rem; font-size: .8125rem; color: var(--ink-soft); white-space: nowrap; }
+.lt::before {
+  content: ""; width: 3px; height: 1.0625rem; flex: none; background: var(--purple-soft);
+}
+.lt--long::before { background: var(--red); }
+.lt--mid::before { background: var(--magenta); }
+
+/* -------------------------------------------------------------- tijdlijn -- */
+.weeks { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.week { background: var(--surface); display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: 1.25rem; padding: 1rem 1.25rem; }
+.week__when { display: grid; gap: .25rem; align-content: start; }
+.week__when b { font-size: 1.0625rem; font-weight: 600; color: var(--purple); }
+.week__when span { font-size: .8125rem; color: var(--ink-mute); }
+.week__body { display: grid; gap: .5rem; }
+.week ul { margin: 0; padding-left: 1.125rem; display: grid; gap: .3125rem; font-size: .9375rem; }
+.week ul li::marker { color: var(--purple-soft); }
+.owner { font-size: .8125rem; color: var(--ink-mute); }
+.owner b { color: var(--ink-soft); font-weight: 600; }
+@media (max-width: 620px) { .week { grid-template-columns: 1fr; gap: .625rem; } }
+
+/* ---------------------------------------------------------------- cyclus -- */
+.cycle { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.phase { background: var(--surface); padding: 1rem 1.125rem; display: grid; gap: .5rem; align-content: start; }
+.phase__top { display: flex; align-items: baseline; gap: .5rem; }
+.phase__no { font-family: var(--serif); color: var(--purple-soft); font-size: .875rem; font-variant-numeric: tabular-nums; }
+.phase h3 { font-size: 1rem; }
+.phase p { font-size: .9375rem; color: var(--ink-soft); }
+.phase__who { font-size: .8125rem; color: var(--ink-mute); margin-top: auto; padding-top: .25rem; }
+
+/* ----------------------------------------------------------------- panel -- */
+.panel { background: var(--surface); border: 1px solid var(--line); padding: 1.125rem 1.25rem; display: grid; gap: .75rem; }
+.panel--flag { border-left: 3px solid transparent; border-image: var(--rule) 1; }
+.panel h3 { color: var(--purple); }
+.panel ul, .panel ol { margin: 0; padding-left: 1.125rem; display: grid; gap: .375rem; font-size: .9375rem; }
+.panel ul li::marker, .panel ol li::marker { color: var(--purple-soft); }
+
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
+
+/* -------------------------------------------------------------- template -- */
+.tpl { background: var(--surface); border: 1px solid var(--line); }
+.tpl > summary {
+  padding: .75rem 1.125rem; cursor: pointer; font-weight: 600; color: var(--purple);
+  display: flex; align-items: center; gap: .625rem; list-style: none;
+}
+.tpl > summary::-webkit-details-marker { display: none; }
+.tpl > summary::before { content: "+"; color: var(--magenta); font-weight: 700; width: .75rem; }
+.tpl[open] > summary::before { content: "–"; }
+.tpl[open] > summary { border-bottom: 1px solid var(--line); }
+.tpl__body { padding: 1rem 1.125rem 1.25rem; display: grid; gap: .75rem; }
+.fields { display: grid; gap: .375rem; margin: 0; font-size: .9375rem; }
+.fields div { display: grid; grid-template-columns: 13rem minmax(0, 1fr); gap: .75rem; padding-bottom: .375rem; border-bottom: 1px dotted var(--line); }
+.fields dt { font-weight: 600; color: var(--ink-soft); }
+.fields dd { margin: 0; color: var(--ink-mute); }
+@media (max-width: 560px) { .fields div { grid-template-columns: 1fr; gap: .125rem; } }
+
+.footer { margin-top: 3.5rem; padding-top: 1.25rem; border-top: 1px solid var(--line); font-size: .875rem; color: var(--ink-mute); display: grid; gap: .375rem; }
+</style>
+
+<header class="masthead">
+  <div class="masthead__inner">
+    <div class="col stack">
+      <p class="kicker">CGI Retail &amp; Consumer Services · werkdocument</p>
+      <h1>Contentplan voor de vernieuwde retailpagina</h1>
+      <p class="lead">De nieuwe pagina heeft ruimte voor aanzienlijk meer bewijs dan we nu klaar hebben liggen.
+        Dit plan zet op één plek welke content er precies in moet, wie die levert, en hoe we de pagina daarna
+        maandelijks blijven vullen.</p>
+    </div>
+    <div class="meta">
+      <span><b>Voor</b> domeinleads, marketing, recruitment</span>
+      <span><b>Basis</b> 6 weken tot een volledig gevulde pagina</span>
+      <span><b>Run</b> maandcyclus, ± 1 uur per domeinlead</span>
+      <span><b>Status</b> voorstel — aantallen en doelen aanpassen in het teamoverleg</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ===================================================== inventaris ==== -->
+  <section aria-labelledby="s1">
+    <div class="head">
+      <div class="head__row">
+        <span class="num" aria-hidden="true">01</span>
+        <h2 id="s1">Wat de pagina vraagt</h2>
+      </div>
+      <p class="note">Geteld in het prototype. Alles wat nu als concept, dummy of placeholder gemarkeerd staat,
+        moet vervangen worden door goedgekeurde content — dat is de basisopdracht.</p>
+    </div>
+
+    <div class="figures">
+      <div class="figure"><b>20</b><span>blokken met een conceptmarkering</span></div>
+      <div class="figure"><b>9</b><span>use cases (3 per domein)</span></div>
+      <div class="figure"><b>3</b><span>client stories met quote</span></div>
+      <div class="figure"><b>3</b><span>frameworks</span></div>
+      <div class="figure"><b>12</b><span>klantlogo-plekken</span></div>
+      <div class="figure"><b>8</b><span>fotoplekken</span></div>
+      <div class="figure"><b>18</b><span>placeholders in namen en titels</span></div>
+    </div>
+
+    <div class="scroll" style="margin-top:1.25rem">
+      <table>
+        <caption>Contentinventaris per pagina-onderdeel. Doorlooptijd is de kritische kolom: rood begint in week 1.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Pagina-onderdeel</th>
+            <th scope="col">Wat er nodig is</th>
+            <th scope="col">Aantal</th>
+            <th scope="col">Eigenaar</th>
+            <th scope="col">Doorlooptijd</th>
+            <th scope="col">Nu</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Hero</td>
+            <td>Eyebrow, kop, subregel, propositie, 2 CTA's, beeld</td>
+            <td class="num-col">1</td>
+            <td>Unitlead + marketing</td>
+            <td><span class="lt">kort</span></td>
+            <td><span class="pill pill--wait">concept</span></td>
+          </tr>
+          <tr>
+            <td>Voice of Our Clients</td>
+            <td>NL-vertaling van de drie claims, bronregel, link</td>
+            <td class="num-col">3</td>
+            <td>Marketing</td>
+            <td><span class="lt">kort</span></td>
+            <td><span class="pill pill--ok">cijfers echt</span></td>
+          </tr>
+          <tr>
+            <td>Claim-cards</td>
+            <td>Belofte, 5 onderwerpen, 3 uitkomsten per domein</td>
+            <td class="num-col">3</td>
+            <td>Domeinleads</td>
+            <td><span class="lt">kort</span></td>
+            <td><span class="pill pill--wait">concept</span></td>
+          </tr>
+          <tr>
+            <td>Domeinverdieping</td>
+            <td>Klantprobleem, point of view, capabilities, 6 uitkomsten</td>
+            <td class="num-col">3</td>
+            <td>Domeinleads</td>
+            <td><span class="lt">kort</span></td>
+            <td><span class="pill pill--wait">concept</span></td>
+          </tr>
+          <tr>
+            <td>Use cases</td>
+            <td>Thema, titel, één regel uitleg, beeld</td>
+            <td class="num-col">9</td>
+            <td>Domeinleads + accountleads</td>
+            <td><span class="lt lt--mid">middel</span></td>
+            <td><span class="pill pill--wait">concept</span></td>
+          </tr>
+          <tr>
+            <td>Client stories</td>
+            <td>Vraagstuk, aanpak, resultaat, quote, attributie</td>
+            <td class="num-col">3</td>
+            <td>Accountleads + klant</td>
+            <td><span class="lt lt--long">lang — start week 1</span></td>
+            <td><span class="pill pill--gap">ontbreekt</span></td>
+          </tr>
+          <tr>
+            <td>Klantcases (resultaten)</td>
+            <td>Type klant, vraagstuk, aanpak, resultaat</td>
+            <td class="num-col">3</td>
+            <td>Accountleads + klant</td>
+            <td><span class="lt lt--long">lang — start week 1</span></td>
+            <td><span class="pill pill--wait">concept</span></td>
+          </tr>
+          <tr>
+            <td>Klantlogo's</td>
+            <td>Schriftelijke toestemming per logo</td>
+            <td class="num-col">12</td>
+            <td>Accountleads + legal</td>
+            <td><span class="lt lt--long">lang — start week 1</span></td>
+            <td><span class="pill pill--gap">ontbreekt</span></td>
+          </tr>
+          <tr>
+            <td>Frameworks</td>
+            <td>Model, visual, beschrijving, downloadbestand</td>
+            <td class="num-col">3</td>
+            <td>Domeinleads + DTP</td>
+            <td><span class="lt lt--mid">middel</span></td>
+            <td><span class="pill pill--wait">concept</span></td>
+          </tr>
+          <tr>
+            <td>Entry offerings</td>
+            <td>Scope, uitkomst, doorlooptijd, intakeformulier</td>
+            <td class="num-col">3</td>
+            <td>Domeinleads + sales</td>
+            <td><span class="lt lt--mid">middel</span></td>
+            <td><span class="pill pill--wait">concept</span></td>
+          </tr>
+          <tr>
+            <td>Insights</td>
+            <td>Artikelen, viewpoints, briefs met beeld en URL</td>
+            <td class="num-col">6</td>
+            <td>Domeinleads + marketing</td>
+            <td><span class="lt lt--mid">middel</span></td>
+            <td><span class="pill pill--ok">3 echt</span></td>
+          </tr>
+          <tr>
+            <td>Events</td>
+            <td>Format, datum, locatie, programma, inschrijfroute</td>
+            <td class="num-col">3</td>
+            <td>Marketing</td>
+            <td><span class="lt lt--mid">middel</span></td>
+            <td><span class="pill pill--wait">concept</span></td>
+          </tr>
+          <tr>
+            <td>Partners</td>
+            <td>Goedgekeurde partnerlogo's uit de alliancelijst</td>
+            <td class="num-col">6</td>
+            <td>Alliance-manager</td>
+            <td><span class="lt lt--mid">middel</span></td>
+            <td><span class="pill pill--gap">ontbreekt</span></td>
+          </tr>
+          <tr>
+            <td>Experts</td>
+            <td>Naam, functietitel, foto, bio ≤ 50 woorden, LinkedIn</td>
+            <td class="num-col">3</td>
+            <td>De experts zelf</td>
+            <td><span class="lt">kort</span></td>
+            <td><span class="pill pill--gap">placeholder</span></td>
+          </tr>
+          <tr>
+            <td>Vacatures</td>
+            <td>Actuele functies uit het CGI-vacaturesysteem</td>
+            <td class="num-col">3+</td>
+            <td>Recruitment</td>
+            <td><span class="lt">kort</span></td>
+            <td><span class="pill pill--wait">dummy</span></td>
+          </tr>
+          <tr>
+            <td>Beeld</td>
+            <td>Fotografie voor 8 plekken, rest illustratie</td>
+            <td class="num-col">8</td>
+            <td>Marketing + DTP</td>
+            <td><span class="lt lt--long">lang — start week 1</span></td>
+            <td><span class="pill pill--wait">4 aangeleverd</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ========================================================== basis ==== -->
+  <section aria-labelledby="s2">
+    <div class="head">
+      <div class="head__row">
+        <span class="num" aria-hidden="true">02</span>
+        <h2 id="s2">Basis in zes weken</h2>
+      </div>
+      <p class="note">De volgorde volgt de doorlooptijd, niet de pagina. Wat goedkeuring van buiten nodig heeft
+        start in week 1, ook al staat het pas halverwege de pagina. Wat we zelf in de hand hebben, schrijven we
+        in week 2 en 3 — dat is de makkelijke helft.</p>
+    </div>
+
+    <div class="weeks">
+      <div class="week">
+        <div class="week__when"><b>Week 1</b><span>aftrap en aanvragen</span></div>
+        <div class="week__body">
+          <ul>
+            <li>Teamsessie van 90 minuten: positionering en de drie claims vaststellen, eigenaren per onderdeel benoemen.</li>
+            <li><strong>Alle goedkeuringsverzoeken de deur uit</strong>: shortlist van 6 kandidaat-klantcases (NL en internationaal), aanvraag klantlogo's, aanvraag partnerlogo's bij de alliance-manager.</li>
+            <li>Fotografie: shot list vaststellen en bestaande CGI-beeldbank doorzoeken vóór we nieuw laten maken.</li>
+            <li>Bestaande content inventariseren: wat staat er al op cgi.com (NL, UK, Nordics, global) dat we mogen hergebruiken of localiseren?</li>
+          </ul>
+          <p class="owner"><b>Trekker</b> unitlead · <b>Betrokken</b> 3 domeinleads, marketing, accountleads</p>
+        </div>
+      </div>
+
+      <div class="week">
+        <div class="week__when"><b>Week 2</b><span>domeincontent</span></div>
+        <div class="week__body">
+          <ul>
+            <li>Per domein één schrijfsessie van 60 minuten met de intake-template uit sectie 09: klantprobleem, point of view, capabilities, zes uitkomsten.</li>
+            <li>Claim-cards afleiden uit de verdieping — niet apart schrijven, anders lopen ze uit elkaar.</li>
+            <li>Marketing redigeert naar één stem en zet de VOOC-claims om naar Nederlands.</li>
+          </ul>
+          <p class="owner"><b>Trekker</b> domeinleads · <b>Redactie</b> marketing</p>
+        </div>
+      </div>
+
+      <div class="week">
+        <div class="week__when"><b>Week 3</b><span>use cases en bewijs</span></div>
+        <div class="week__body">
+          <ul>
+            <li>Negen use cases schrijven — drie per domein, één regel elk. Bron: afgeronde projecten, lopende programma's, biedingen.</li>
+            <li>Per use case bepalen: publiceerbaar met klantnaam, geanonimiseerd, of alleen als type vraagstuk.</li>
+            <li>Insights-selectie afronden: drie bestaande CGI-items koppelen, drie nieuwe titels vaststellen met auteur en deadline.</li>
+          </ul>
+          <p class="owner"><b>Trekker</b> domeinleads · <b>Betrokken</b> accountleads, bid-team</p>
+        </div>
+      </div>
+
+      <div class="week">
+        <div class="week__when"><b>Week 4</b><span>frameworks en offerings</span></div>
+        <div class="week__body">
+          <ul>
+            <li>Drie frameworks uitwerken tot een publiceerbaar model: één plaat, maximaal drie lagen, met de vaste beschrijving.</li>
+            <li>Drie entry offerings scherpstellen: scope, doorlooptijd, wat de klant krijgt, wat wij nodig hebben.</li>
+            <li>DTP maakt de frameworkvisuals in de huisstijl en levert ze als PDF-download.</li>
+          </ul>
+          <p class="owner"><b>Trekker</b> domeinleads · <b>Betrokken</b> DTP, sales</p>
+        </div>
+      </div>
+
+      <div class="week">
+        <div class="week__when"><b>Week 5</b><span>mensen en beeld</span></div>
+        <div class="week__body">
+          <ul>
+            <li>Expertprofielen: naam, functietitel, bio van maximaal 50 woorden, LinkedIn, portretfoto in dezelfde stijl voor alle drie.</li>
+            <li>Vacatures: recruitment levert de actuele functies of de koppeling naar het vacaturesysteem.</li>
+            <li>Fotoshoot of beeldselectie afronden voor de acht plekken; overige plekken houden een illustratie.</li>
+            <li>Eventsectie vullen met minimaal één bevestigd event — een conceptevent zonder datum overleeft de eerste vraag uit het MT niet.</li>
+          </ul>
+          <p class="owner"><b>Trekker</b> marketing · <b>Betrokken</b> experts, recruitment, DTP</p>
+        </div>
+      </div>
+
+      <div class="week">
+        <div class="week__when"><b>Week 6</b><span>review en live</span></div>
+        <div class="week__body">
+          <ul>
+            <li>Volledige review langs de definition of done en de juridische checklist uit sectie 08.</li>
+            <li>Alle conceptmarkeringen weg die vervangen zijn; de rest blijft staan of het blok gaat eruit.</li>
+            <li>In het CMS zetten, controle op mobiel, en publiceren.</li>
+            <li>Wat er nog niet is: laten zitten als illustratie of blok verbergen — niet met dummy content live.</li>
+          </ul>
+          <p class="owner"><b>Trekker</b> marketing + web/CMS · <b>Goedkeuring</b> unitlead, legal</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel panel--flag" style="margin-top:1.25rem">
+      <h3>De drie dingen die dit plan kunnen laten uitlopen</h3>
+      <ul>
+        <li><strong>Klantgoedkeuring.</strong> Reken op vier tot acht weken, niet op twee. Daarom: zes kandidaten
+          voor drie plekken, en per case een geanonimiseerde variant klaar hebben.</li>
+        <li><strong>Fotografie.</strong> Nieuwe shoot betekent locatie, klanttoestemming en modelrelease.
+          Eerst de bestaande beeldbank uitputten.</li>
+        <li><strong>Logo's.</strong> Een klantlogo zonder schriftelijke toestemming gaat er niet op. Twaalf plekken
+          betekent twaalf keer vragen — dat is één actie in week 1, geen twaalf losse.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ================================================ client stories ==== -->
+  <section aria-labelledby="s3">
+    <div class="head">
+      <div class="head__row">
+        <span class="num" aria-hidden="true">03</span>
+        <h2 id="s3">Client stories en use cases</h2>
+      </div>
+      <p class="note">Dit is het onderdeel waar de pagina op staat of valt, en het onderdeel dat we het minst
+        zelf in de hand hebben. Daarom een vast traject met drie uitwegen, zodat een nee van de klant niet
+        betekent dat het blok leeg blijft.</p>
+    </div>
+
+    <div class="two">
+      <div class="panel">
+        <h3>Drie niveaus van publiceerbaarheid</h3>
+        <ol>
+          <li><strong>Met klantnaam en logo.</strong> Vereist schriftelijke toestemming van de klant en een
+            gecontroleerd resultaat. Sterkste bewijs — mik hier op één per domein.</li>
+          <li><strong>Geanonimiseerd naar type klant.</strong> "Internationale omnichannel retailer, vijf landen."
+            Vereist alleen interne goedkeuring. Dit is de standaard.</li>
+          <li><strong>Als vraagstuk zonder klant.</strong> Beschrijft het probleem en onze aanpak, geen resultaten.
+            Altijd publiceerbaar, en genoeg voor een use-case tegel.</li>
+        </ol>
+      </div>
+      <div class="panel">
+        <h3>Internationaal hergebruiken</h3>
+        <p class="note">CGI heeft wereldwijd retailcases die op de NL-pagina prima werken. Voordeel: de
+          goedkeuring is er al.</p>
+        <ul>
+          <li>Doorzoek de global en UK/Nordics case-libraries op retail, POS, store operations en supply chain.</li>
+          <li>Check bij de betreffende unit of de case voor de NL-markt gebruikt mag worden.</li>
+          <li>Localiseren betekent: Nederlandse tekst, NL-relevante uitkomst benoemd, land expliciet vermelden.</li>
+          <li>Vermeld nooit impliciet dat het een Nederlandse klant is.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:1rem">
+      <h3>Vast traject per case</h3>
+      <ol>
+        <li>Accountlead draagt kandidaat aan met een regel over vraagstuk en resultaat.</li>
+        <li>Domeinlead beslist: welk domein, welk niveau, en of het resultaat verifieerbaar is.</li>
+        <li>Concepttekst in de template (sectie 09), maximaal één A4.</li>
+        <li>Interne check: geen cijfers zonder bron, geen resultaten als feit die conceptueel zijn.</li>
+        <li>Klant ter goedkeuring — inclusief de quote en de attributie, letterlijk zoals die op de pagina komt.</li>
+        <li>Na goedkeuring: publiceren en de datum vastleggen voor de jaarlijkse hercontrole.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ========================================================== beeld ==== -->
+  <section aria-labelledby="s4">
+    <div class="head">
+      <div class="head__row">
+        <span class="num" aria-hidden="true">04</span>
+        <h2 id="s4">Beeld: shot list en specificaties</h2>
+      </div>
+      <p class="note">De verhoudingen staan vast in de CSS met <code>object-fit: cover</code>, dus afwijkende
+        formaten worden netjes gevuld. Lever liever te groot dan te klein aan.</p>
+    </div>
+
+    <div class="scroll">
+      <table>
+        <caption>Acht fotoplekken. De overige posities houden een gegenereerde illustratie in de merkkleuren.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Plek</th>
+            <th scope="col">Gewenst beeld</th>
+            <th scope="col">Verhouding</th>
+            <th scope="col">Minimale breedte</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Hero</td><td>Klant of medewerker in een winkelmoment, ruimte rechts voor het gradientblok</td><td class="num-col">16:10</td><td class="num-col">1200 px</td></tr>
+          <tr><td>Domein 1 — Transformation</td><td>Winkelvloer of werksessie business en IT</td><td class="num-col">16:9</td><td class="num-col">1200 px</td></tr>
+          <tr><td>Domein 2 — Data, Cloud &amp; AI</td><td>Technologie in gebruik in de winkel, niet een abstracte serverkast</td><td class="num-col">16:9</td><td class="num-col">1200 px</td></tr>
+          <tr><td>Domein 3 — Operations</td><td>Winkelpui, kassa-omgeving of field engineer aan het werk</td><td class="num-col">16:9</td><td class="num-col">1200 px</td></tr>
+          <tr><td>Use case POS</td><td>Kassa- of scanmoment</td><td class="num-col">18:11</td><td class="num-col">800 px</td></tr>
+          <tr><td>Use case unified commerce</td><td>Klant met telefoon in of bij de winkel</td><td class="num-col">18:11</td><td class="num-col">800 px</td></tr>
+          <tr><td>Use case supply chain</td><td>Distributiecentrum, voorraad of transport</td><td class="num-col">18:11</td><td class="num-col">800 px</td></tr>
+          <tr><td>Use case support</td><td>Betaalterminal, winkeltechniek of servicemoment</td><td class="num-col">18:11</td><td class="num-col">800 px</td></tr>
+          <tr><td>Expertportretten</td><td>Drie portretten in dezelfde stijl, achtergrond en uitsnede</td><td class="num-col">1:1</td><td class="num-col">600 px</td></tr>
+          <tr><td>Content- en eventcards</td><td>Contextbeeld per item</td><td class="num-col">43:25</td><td class="num-col">860 px</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="panel" style="margin-top:1rem">
+      <h3>Rechten — vóór plaatsing afvinken</h3>
+      <ul>
+        <li>Beeld is eigendom van CGI of onder een licentie die webgebruik dekt.</li>
+        <li>Herkenbare personen: modelrelease aanwezig.</li>
+        <li><strong>Herkenbare winkelformule of merknaam in beeld is feitelijk een klantverwijzing</strong> — dat
+          vraagt dezelfde toestemming als een klantlogo. Geldt ook voor de Rituals-pui die nu bij Operations staat.</li>
+        <li>Geen stockbeeld zonder retailrelevantie; liever een illustratie dan een generieke kantoorfoto.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ==================================== frameworks en offerings ======== -->
+  <section aria-labelledby="s5">
+    <div class="head">
+      <div class="head__row">
+        <span class="num" aria-hidden="true">05</span>
+        <h2 id="s5">Frameworks, offerings en vacatures</h2>
+      </div>
+    </div>
+
+    <div class="two">
+      <div class="panel">
+        <h3>Wanneer is een framework publiceerbaar?</h3>
+        <ul>
+          <li>Het past op één plaat met maximaal drie lagen of fasen.</li>
+          <li>Het is minstens twee keer bij een klant gebruikt — anders is het een idee, geen framework.</li>
+          <li>Er is een downloadbestand: PDF in de huisstijl, geen interne PowerPoint met projectnamen erin.</li>
+          <li>De beschrijving zegt wat de klant eruit haalt, niet hoe wij het invullen.</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h3>Wat een entry offering compleet maakt</h3>
+        <ul>
+          <li>Scope in één zin en een concrete uitkomst ("een overzicht van prioriteiten, afhankelijkheden en vervolgstappen").</li>
+          <li>Doorlooptijd en de tijd die we van de klant vragen.</li>
+          <li>Wie het uitvoert en wie het aanspreekpunt is.</li>
+          <li>Werkend intakeformulier, gekoppeld aan het bestaande CGI-formuliermechanisme met privacytekst.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:1rem">
+      <h3>Vacatures actueel houden</h3>
+      <p class="note">Een verouderde vacature op een sectiepagina kost meer vertrouwen dan drie ontbrekende
+        vacatures. Twee routes, in volgorde van voorkeur:</p>
+      <ul>
+        <li><strong>Koppeling met het centrale CGI-vacaturesysteem</strong>, gefilterd op Retail &amp; Consumer
+          Services. Voorkeursoptie: nooit verouderd, geen handwerk. Vraagt eenmalig inzet van web/CMS.</li>
+        <li><strong>Handmatig, met een wekelijkse controle</strong> door recruitment op een vaste dag. Vaste
+          eigenaar, in de agenda. Het component is zo opgebouwd dat alleen titel, domein, introductie, locatie,
+          ervaringsniveau en de CTA-URL vervangen hoeven te worden.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============================================================ run ==== -->
+  <section aria-labelledby="s6">
+    <div class="head">
+      <div class="head__row">
+        <span class="num" aria-hidden="true">06</span>
+        <h2 id="s6">Run: de maandcyclus</h2>
+      </div>
+      <p class="note">Eén ritme per maand, vier fasen, elk gekoppeld aan een vaste week. Het zwaartepunt zit in
+        de oogst: als die goed loopt, is schrijven een kwestie van uitwerken. Kosten per maand: ongeveer een uur
+        per domeinlead en een halve dag marketing.</p>
+    </div>
+
+    <div class="cycle">
+      <div class="phase">
+        <div class="phase__top"><span class="phase__no" aria-hidden="true">01</span><h3>Oogsten</h3></div>
+        <p>30 minuten per domeinlead: wat is er deze maand gebeurd dat de pagina sterker maakt? Losse regels zijn
+          genoeg, geen kant-en-klare tekst.</p>
+        <p class="phase__who">Week 1 · domeinleads · uitkomst: gevulde backlog</p>
+      </div>
+      <div class="phase">
+        <div class="phase__top"><span class="phase__no" aria-hidden="true">02</span><h3>Kiezen en schrijven</h3></div>
+        <p>Marketing kiest uit de backlog wat past bij de doelen van dit kwartaal en werkt het uit in de
+          templates. Maximaal drie items per maand — meer haalt de review niet.</p>
+        <p class="phase__who">Week 2 · marketing + auteur · uitkomst: concepten</p>
+      </div>
+      <div class="phase">
+        <div class="phase__top"><span class="phase__no" aria-hidden="true">03</span><h3>Goedkeuren</h3></div>
+        <p>Domeinlead op inhoud, unitlead op positionering, legal alleen bij klantnamen, logo's, cijfers of
+          quotes. Vaste doorlooptijd van vijf werkdagen.</p>
+        <p class="phase__who">Week 3 · domeinlead, unitlead, legal · uitkomst: goedgekeurd</p>
+      </div>
+      <div class="phase">
+        <div class="phase__top"><span class="phase__no" aria-hidden="true">04</span><h3>Publiceren en meten</h3></div>
+        <p>In het CMS zetten, oudste item van hetzelfde type eruit of naar het media center, en de cijfers van
+          vorige maand kort langs in het teamoverleg.</p>
+        <p class="phase__who">Week 4 · marketing + web/CMS · uitkomst: live + rapportage</p>
+      </div>
+    </div>
+
+    <div class="scroll" style="margin-top:1.25rem">
+      <table>
+        <caption>Voorstel voor volume per kwartaal. Vaststellen in het teamoverleg — dit is een startpunt, geen norm.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Contenttype</th>
+            <th scope="col">Per kwartaal</th>
+            <th scope="col">Waar het landt</th>
+            <th scope="col">Eigenaar</th>
+            <th scope="col">Inspanning per item</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Client story</td><td class="num-col">1 (roulerend per domein)</td><td>Klantresultaten + domeinblok</td><td>Accountlead</td><td class="num-col">8–12 uur incl. goedkeuring</td></tr>
+          <tr><td>Use case</td><td class="num-col">3 (één per domein)</td><td>Use-case tegels</td><td>Domeinlead</td><td class="num-col">1–2 uur</td></tr>
+          <tr><td>Artikel of viewpoint</td><td class="num-col">3–6</td><td>Insights</td><td>Domeinlead + marketing</td><td class="num-col">4–8 uur</td></tr>
+          <tr><td>Framework</td><td class="num-col">1 nieuw of herzien</td><td>Domeinblok + offerings</td><td>Domeinlead + DTP</td><td class="num-col">8–16 uur</td></tr>
+          <tr><td>Event</td><td class="num-col">1 bevestigd</td><td>Events</td><td>Marketing</td><td class="num-col">variabel</td></tr>
+          <tr><td>Klantlogo</td><td class="num-col">1–2 nieuw goedgekeurd</td><td>Klanten per domein</td><td>Accountlead + legal</td><td class="num-col">2–4 uur</td></tr>
+          <tr><td>Vacatures</td><td class="num-col">wekelijkse controle</td><td>Werken bij CGI</td><td>Recruitment</td><td class="num-col">15 min per week</td></tr>
+          <tr><td>Expertprofielen</td><td class="num-col">halfjaarlijkse check</td><td>Experts</td><td>Marketing</td><td class="num-col">1 uur</td></tr>
+          <tr><td>Voice of Our Clients</td><td class="num-col">jaarlijks bij nieuwe editie</td><td>VOOC-band</td><td>Marketing</td><td class="num-col">2 uur</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="two" style="margin-top:1rem">
+      <div class="panel">
+        <h3>Waar de oogst vandaan komt</h3>
+        <ul>
+          <li>Projectafsluitingen en opleverdocumenten — de rijkste bron, en de minst gebruikte.</li>
+          <li>Kwartaalreviews met klanten: daar valt de quote die je later niet meer krijgt.</li>
+          <li>Biedingen en proposals: het klantprobleem staat er al scherp in.</li>
+          <li>Internationale CGI-units: retailcases die al goedgekeurd zijn.</li>
+          <li>Partnernieuws en analistenrapporten waarin CGI genoemd wordt.</li>
+          <li>Interne demo's, conferentiepresentaties en webinars — bestaand materiaal, andere vorm.</li>
+          <li>Nieuwe VOOC-edities en marktonderzoek.</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h3>Opruimen hoort erbij</h3>
+        <ul>
+          <li>Bij elk nieuw item van een type gaat het oudste item van dat type eruit — de pagina blijft één
+            scanbare lengte.</li>
+          <li>Content ouder dan 18 maanden: herzien of weghalen. Een artikel uit 2024 over "AI-pilots" veroudert snel.</li>
+          <li>Events na de datum meteen weg of vervangen door een recap.</li>
+          <li>Jaarlijks alle klantcases opnieuw langs de accountlead: mag dit er nog op?</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================== rollen === -->
+  <section aria-labelledby="s7">
+    <div class="head">
+      <div class="head__row">
+        <span class="num" aria-hidden="true">07</span>
+        <h2 id="s7">Rollen</h2>
+      </div>
+      <p class="note">Eén eigenaar per rol, niet per stuk content. Zonder vaste eigenaar per contenttype valt de
+        maandcyclus na twee maanden stil.</p>
+    </div>
+
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Rol</th>
+            <th scope="col">Beslist over</th>
+            <th scope="col">Levert</th>
+            <th scope="col">Tijd per maand</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Unitlead</td><td>Positionering en de drie claims</td><td>Eindgoedkeuring, prioriteiten per kwartaal</td><td class="num-col">1 uur</td></tr>
+          <tr><td>Domeinlead (3×)</td><td>Inhoud van het eigen domein</td><td>Oogst, use cases, frameworks, inhoudelijke review</td><td class="num-col">1–2 uur</td></tr>
+          <tr><td>Marketing / content owner</td><td>Redactie, planning, publicatie</td><td>Eindredactie, CMS, rapportage — trekker van de cyclus</td><td class="num-col">halve dag</td></tr>
+          <tr><td>Accountleads</td><td>Wat we over hun klant zeggen</td><td>Kandidaat-cases, klantgoedkeuring, logo's</td><td class="num-col">op aanvraag</td></tr>
+          <tr><td>Recruitment</td><td>Vacatureteksten</td><td>Actuele vacatures, wekelijkse controle</td><td class="num-col">1 uur</td></tr>
+          <tr><td>DTP / design</td><td>Visuele uitwerking</td><td>Frameworkvisuals, beeldbewerking op de juiste verhoudingen</td><td class="num-col">op aanvraag</td></tr>
+          <tr><td>Legal / privacy</td><td>Klantnamen, logo's, cijfers, quotes, formulieren</td><td>Goedkeuring binnen vijf werkdagen</td><td class="num-col">op aanvraag</td></tr>
+          <tr><td>Web / CMS</td><td>Technische inrichting</td><td>Componenten, vacaturekoppeling, formulierkoppeling</td><td class="num-col">op aanvraag</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============================================================ dod ==== -->
+  <section aria-labelledby="s8">
+    <div class="head">
+      <div class="head__row">
+        <span class="num" aria-hidden="true">08</span>
+        <h2 id="s8">Definition of done</h2>
+      </div>
+      <p class="note">Eén lijst voor alle contenttypes. Haalt een item dit niet, dan gaat het niet live — ook
+        niet "even tijdelijk".</p>
+    </div>
+
+    <div class="two">
+      <div class="panel">
+        <h3>Inhoud</h3>
+        <ul>
+          <li>Eén klantprobleem centraal, niet een opsomming van wat wij kunnen.</li>
+          <li>Concreet resultaat benoemd, of expliciet als illustratief gelabeld.</li>
+          <li>Past in het component: titel binnen twee regels, tekst binnen de opgegeven lengte.</li>
+          <li>Gekoppeld aan één van de drie domeinen — anders hoort het hier niet.</li>
+          <li>Eén CTA, en die verwijst naar iets dat bestaat.</li>
+        </ul>
+      </div>
+      <div class="panel panel--flag">
+        <h3>Juridisch en feitelijk</h3>
+        <ul>
+          <li>Geen klantnaam of logo zonder schriftelijke toestemming.</li>
+          <li>Geen omzet-, kosten- of besparingspercentage zonder bron die de klant heeft bevestigd.</li>
+          <li>Quotes letterlijk goedgekeurd, inclusief functietitel en organisatie.</li>
+          <li>Onderzoekscijfers exact overgenomen, met jaar en bronvermelding.</li>
+          <li>Geen partnerlogo buiten de goedgekeurde alliancelijst.</li>
+          <li>Beeldrechten en modelreleases geregeld.</li>
+          <li>Formulieren gekoppeld aan het CGI-privacymechanisme.</li>
+          <li>Geen vacature die niet daadwerkelijk openstaat.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================== templates ==== -->
+  <section aria-labelledby="s9">
+    <div class="head">
+      <div class="head__row">
+        <span class="num" aria-hidden="true">09</span>
+        <h2 id="s9">Intake-templates</h2>
+      </div>
+      <p class="note">De velden komen exact overeen met de plekken in de pagina. Wie deze invult, levert content
+        die er zonder herschrijven in kan.</p>
+    </div>
+
+    <div class="stack stack--tight">
+      <details class="tpl">
+        <summary>Client story</summary>
+        <div class="tpl__body">
+          <dl class="fields">
+            <div><dt>Titel</dt><dd>Van &lt;probleem&gt; naar &lt;resultaat&gt;, maximaal 12 woorden</dd></div>
+            <div><dt>Domein</dt><dd>Transformation · Data, Cloud &amp; AI · Operations</dd></div>
+            <div><dt>Publiceerbaarheid</dt><dd>Met naam · geanonimiseerd · alleen als vraagstuk</dd></div>
+            <div><dt>Type klant</dt><dd>Sector, omvang, landen — zonder naam als niveau 2 of 3</dd></div>
+            <div><dt>Vraagstuk</dt><dd>2–3 zinnen: de situatie zoals de klant die beschreef</dd></div>
+            <div><dt>CGI-aanpak</dt><dd>2–3 zinnen: wat wij deden, in de taal van de klant</dd></div>
+            <div><dt>Resultaat</dt><dd>3–4 punten. Cijfers alleen met bron en klantbevestiging</dd></div>
+            <div><dt>Quote</dt><dd>1–2 zinnen, letterlijk goedgekeurd</dd></div>
+            <div><dt>Attributie</dt><dd>Naam, functietitel, organisatie — of type organisatie</dd></div>
+            <div><dt>Beeld</dt><dd>43:25, minimaal 860 px breed</dd></div>
+            <div><dt>Goedkeuring</dt><dd>Wie, wanneer, en de datum voor de jaarlijkse hercontrole</dd></div>
+          </dl>
+        </div>
+      </details>
+
+      <details class="tpl">
+        <summary>Use case</summary>
+        <div class="tpl__body">
+          <dl class="fields">
+            <div><dt>Thema</dt><dd>Kort label, bijv. "POS &amp; platform" of "Agentic retail"</dd></div>
+            <div><dt>Titel</dt><dd>Het vraagstuk in maximaal 8 woorden</dd></div>
+            <div><dt>Eén regel</dt><dd>Wat er concreet gebeurde. Geen aantallen zonder bron</dd></div>
+            <div><dt>Domein</dt><dd>Eén van de drie</dd></div>
+            <div><dt>Beeld</dt><dd>18:11, minimaal 800 px breed</dd></div>
+          </dl>
+        </div>
+      </details>
+
+      <details class="tpl">
+        <summary>Artikel, viewpoint of executive brief</summary>
+        <div class="tpl__body">
+          <dl class="fields">
+            <div><dt>Contenttype</dt><dd>Artikel · viewpoint · executive brief · research · event recap</dd></div>
+            <div><dt>Titel</dt><dd>Maximaal 10 woorden, geen vraagteken tenzij het de kern is</dd></div>
+            <div><dt>Kernvraag</dt><dd>Welke vraag van een CIO, COO of CDO beantwoordt dit?</dd></div>
+            <div><dt>Samenvatting</dt><dd>2 zinnen voor de card</dd></div>
+            <div><dt>Auteur</dt><dd>Naam en functietitel — één auteur, niet "CGI"</dd></div>
+            <div><dt>Domein</dt><dd>Bepaalt onder welk filter het valt</dd></div>
+            <div><dt>Deadline</dt><dd>Concept, review, publicatie</dd></div>
+            <div><dt>Beeld</dt><dd>43:25, minimaal 860 px breed</dd></div>
+          </dl>
+        </div>
+      </details>
+
+      <details class="tpl">
+        <summary>Framework</summary>
+        <div class="tpl__body">
+          <dl class="fields">
+            <div><dt>Naam</dt><dd>Beschrijvend, geen interne codenaam</dd></div>
+            <div><dt>Waarvoor</dt><dd>Welke beslissing helpt dit model nemen?</dd></div>
+            <div><dt>Lagen of fasen</dt><dd>Maximaal drie, met de naam per laag</dd></div>
+            <div><dt>Beschrijving</dt><dd>2–3 zinnen, gericht op de klantuitkomst</dd></div>
+            <div><dt>Bewijs van gebruik</dt><dd>Bij welke twee klanten of trajecten is dit gebruikt?</dd></div>
+            <div><dt>Download</dt><dd>PDF in huisstijl, zonder interne project- of klantnamen</dd></div>
+            <div><dt>Visual</dt><dd>16:10, door DTP in de huisstijl</dd></div>
+          </dl>
+        </div>
+      </details>
+
+      <details class="tpl">
+        <summary>Expertprofiel</summary>
+        <div class="tpl__body">
+          <dl class="fields">
+            <div><dt>Naam en functietitel</dt><dd>Zoals in het personeelssysteem</dd></div>
+            <div><dt>Expertisedomein</dt><dd>Eén van de drie</dd></div>
+            <div><dt>Bio</dt><dd>Maximaal 50 woorden, in de derde persoon, klantgericht</dd></div>
+            <div><dt>LinkedIn</dt><dd>Publieke profiel-URL</dd></div>
+            <div><dt>Contactroute</dt><dd>Formulier, mailto of intake via marketing</dd></div>
+            <div><dt>Portret</dt><dd>1:1, minimaal 600 px, zelfde stijl voor alle drie</dd></div>
+          </dl>
+        </div>
+      </details>
+
+      <details class="tpl">
+        <summary>Vacature</summary>
+        <div class="tpl__body">
+          <dl class="fields">
+            <div><dt>Functietitel</dt><dd>Zoals in het vacaturesysteem</dd></div>
+            <div><dt>Expertisedomein</dt><dd>Eén van de drie</dd></div>
+            <div><dt>Introductie</dt><dd>2 zinnen: wat je doet en met wie</dd></div>
+            <div><dt>Locatie en niveau</dt><dd>Standplaats en ervaringsniveau</dd></div>
+            <div><dt>CTA-URL</dt><dd>Directe link naar de vacature, niet naar de zoekpagina</dd></div>
+            <div><dt>Geldig tot</dt><dd>Datum waarop de vacature opnieuw gecontroleerd wordt</dd></div>
+          </dl>
+        </div>
+      </details>
+
+      <details class="tpl">
+        <summary>Event</summary>
+        <div class="tpl__body">
+          <dl class="fields">
+            <div><dt>Format</dt><dd>Executive roundtable · breakfast session · flagship event · webinar</dd></div>
+            <div><dt>Titel en pitch</dt><dd>Titel plus 2 zinnen over de opbrengst voor de deelnemer</dd></div>
+            <div><dt>Doelgroep</dt><dd>Functietitels, niet "retailprofessionals"</dd></div>
+            <div><dt>Datum en locatie</dt><dd>Bevestigd — anders niet publiceren</dd></div>
+            <div><dt>Programma</dt><dd>Hoofdlijn en de CGI-spreker</dd></div>
+            <div><dt>Inschrijfroute</dt><dd>Werkende link of formulier</dd></div>
+            <div><dt>Na het event</dt><dd>Wie schrijft de recap, en wanneer?</dd></div>
+          </dl>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ========================================================== meten ==== -->
+  <section aria-labelledby="s10">
+    <div class="head">
+      <div class="head__row">
+        <span class="num" aria-hidden="true">10</span>
+        <h2 id="s10">Meten</h2>
+      </div>
+      <p class="note">Vier cijfers zijn genoeg om te weten of dit werkt. Maandelijks kort in het teamoverleg,
+        per kwartaal met een conclusie: wat schrappen we, waar zetten we meer op?</p>
+    </div>
+
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Wat</th>
+            <th scope="col">Waarom dit cijfer</th>
+            <th scope="col">Bron</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Doorklik per CTA en per offering</td><td>Laat zien welk expertisedomein daadwerkelijk vraag oplevert</td><td>Web-analytics</td></tr>
+          <tr><td>Formulierinzendingen per offering</td><td>De enige harde conversie op deze pagina</td><td>Formuliersysteem</td></tr>
+          <tr><td>Scrolldiepte tot de drie claims en tot contact</td><td>Toetst of de opbouw werkt of dat mensen te vroeg afhaken</td><td>Web-analytics</td></tr>
+          <tr><td>Contentversheid: % items jonger dan 12 maanden</td><td>Het enige cijfer dat meet of de maandcyclus echt loopt</td><td>Contentkalender</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="footer">
+    <p>Contentplan bij het managementprototype van de vernieuwde CGI Retail &amp; Consumer Services-pagina.
+      Aantallen komen uit het prototype; volumedoelen en inspanningsschattingen zijn een voorstel om in het
+      teamoverleg vast te stellen.</p>
+    <p>Werkdocument — niet voor publicatie buiten CGI.</p>
+  </div>
+
+</main>
