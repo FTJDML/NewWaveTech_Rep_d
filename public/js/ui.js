@@ -96,11 +96,15 @@ export async function copyText(text, msg = 'Gekopieerd') {
   catch { const ta = h('textarea', { style: { position: 'fixed', opacity: 0 } }); ta.value = text; document.body.append(ta); ta.select(); document.execCommand('copy'); ta.remove(); }
   toast(msg, 'ok', 1800);
 }
+/** The artifact build routes saves through its `downloads` capability (plain <a download> is inert there). */
+export const hooks = { save: null };
 export function downloadText(name, text, mime = 'text/plain;charset=utf-8') {
+  if (hooks.save) return hooks.save(name, text, mime);
   const url = URL.createObjectURL(new Blob([text], { type: mime }));
   const a = h('a', { href: url, download: name }); document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000);
 }
 export function downloadBlob(name, blob) {
+  if (hooks.save) return hooks.save(name, blob, blob.type);
   const url = URL.createObjectURL(blob);
   const a = h('a', { href: url, download: name }); document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000);
 }

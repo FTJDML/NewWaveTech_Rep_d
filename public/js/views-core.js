@@ -1,10 +1,11 @@
 import { h, icon, toast, modal, confirmBox, fmtDate, relTime, daysUntil, uid, autoGrow, clear } from './ui.js';
-import { S, api, createPursuit, loadList, patch } from './state.js';
+import { S, createPursuit, loadList, patch, getData } from './state.js';
 import { STAGES, todayIso, estimateTokens, fmtTokens } from './engine.js';
 import { ROUTES } from './flows.js';
 import { FW } from './framework.js';
 import { nextModule, progress, stageState, allConditions, dueState, modTitle } from './helpers.js';
 import { sourceAdder, SOURCE_TYPES } from './views-sources.js';
+import { R, go } from './routes.js';
 
 const stagebar = (p) => h('div', { class: 'stagebar', title: 'Voortgang over de 7 stages' }, STAGES.map((s) => h('i', { class: stageState(p, s.n) })));
 
@@ -17,11 +18,11 @@ export async function viewDashboard() {
 
   const hero = h('section', { class: 'hero' },
     h('div', null,
-      h('div', { class: 'eyebrow red' }, 'CGI · AI-Native DCS'),
+      h('div', { class: 'eyebrow red' }, 'AI-Native DCS-framework'),
       h('h1', null, 'Win de opportunity — ', h('em', null, 'niet alleen de RFP.')),
       h('p', { class: 'lead' }, 'Eén werkruimte voor je hele pursuit: lever de RFP en je klantgesprekken aan, doorloop de zeven stages en laat AI kritisch meekijken. Eén Ledger, één waarheid — geen Excel- en Word-bestanden meer.'),
       h('div', { class: 'row', style: { marginTop: '18px' } },
-        h('a', { class: 'btn primary lg', href: '#/new' }, icon('plus', 20), 'Nieuwe pursuit'),
+        h('a', { class: 'btn primary lg', href: R.new() }, icon('plus', 20), 'Nieuwe pursuit'),
         h('button', { class: 'btn outline lg', onclick: loadDemo }, icon('book', 20), 'Probeer de voorbeeldcase'))),
     h('div', { class: 'hero-art' }, h('h4', null, 'Zeven stages, één pursuit'),
       h('div', { class: 'hero-stages' }, STAGES.map((s) => h('div', null, h('b', null, s.n), h('span', null, `${s.name} `, h('small', { style: { opacity: .75 } }, '· ' + s.modules.join(' · '))))))));
@@ -39,9 +40,11 @@ export async function viewDashboard() {
   const c = S.config;
   const noAi = c && c.provider !== 'mock' && (c.provider === 'manual' || !c.hasKey);
   return h('div', null, hero,
-    noAi ? h('div', { class: 'callout amber', style: { marginBottom: '22px' } }, h('b', null, 'Nog geen AI-koppeling'), 'De app werkt nu in kopieer-modus: je plakt prompts zelf in je AI-tool. Stel een koppeling in via ', h('a', { href: '#/settings' }, 'Instellingen'), ' (Claude, Azure OpenAI of een interne gateway) voor de volledig geautomatiseerde flow.') : null,
-    late.length ? h('div', { class: 'callout red', style: { marginBottom: '22px' } }, h('b', null, 'Aandacht nodig'), late.slice(0, 5).map((x) => h('div', null, h('a', { href: '#/p/' + x.s.id }, x.s.meta.client || x.s.meta.title), ' — ', x.c.text, ' ', h('span', { class: 'chip ' + (x.d < 0 ? 'red' : 'amber') }, x.d < 0 ? `${-x.d} d te laat` : x.d === 0 ? 'vandaag' : `over ${x.d} d`), x.c.owner ? h('span', { class: 'muted' }, ' · ' + x.c.owner) : null))) : null,
-    h('div', { class: 'row between', style: { marginBottom: '12px' } }, h('h2', { style: { margin: 0 } }, 'Mijn pursuits'), list.length ? h('a', { class: 'btn ghost sm', href: '#/new' }, icon('plus', 15), 'Nieuw') : null),
+    noAi ? (c.platform === 'artifact'
+      ? h('div', { class: 'callout amber', style: { marginBottom: '22px' } }, h('b', null, 'Claude niet beschikbaar in deze weergave'), 'Open dit artifact in claude.ai (ingelogd) voor de volledig geautomatiseerde flow. Tot dan werkt de app in kopieer-modus: je plakt prompts zelf in je AI-tool. Zie ', h('a', { href: R.settings() }, 'Instellingen'), '.')
+      : h('div', { class: 'callout amber', style: { marginBottom: '22px' } }, h('b', null, 'Nog geen AI-koppeling'), 'De app werkt nu in kopieer-modus: je plakt prompts zelf in je AI-tool. Stel een koppeling in via ', h('a', { href: R.settings() }, 'Instellingen'), ' (Claude, Azure OpenAI of een interne gateway) voor de volledig geautomatiseerde flow.')) : null,
+    late.length ? h('div', { class: 'callout red', style: { marginBottom: '22px' } }, h('b', null, 'Aandacht nodig'), late.slice(0, 5).map((x) => h('div', null, h('a', { href: R.p(x.s.id) }, x.s.meta.client || x.s.meta.title), ' — ', x.c.text, ' ', h('span', { class: 'chip ' + (x.d < 0 ? 'red' : 'amber') }, x.d < 0 ? `${-x.d} d te laat` : x.d === 0 ? 'vandaag' : `over ${x.d} d`), x.c.owner ? h('span', { class: 'muted' }, ' · ' + x.c.owner) : null))) : null,
+    h('div', { class: 'row between', style: { marginBottom: '12px' } }, h('h2', { style: { margin: 0 } }, 'Mijn pursuits'), list.length ? h('a', { class: 'btn ghost sm', href: R.new() }, icon('plus', 15), 'Nieuw') : null),
     cards,
     h('h2', { style: { margin: '36px 0 12px' } }, 'Hoe het werkt'), how);
 }
@@ -50,7 +53,7 @@ function pursuitCard(s) {
   const p = { modules: Object.fromEntries([...(s.done || []).map((m) => [m, { status: 'done' }]), ...(s.doing || []).map((m) => [m, { status: 'doing' }])]) };
   const nx = nextModule(p);
   const sub = daysUntil(s.meta?.submissionDate);
-  return h('a', { class: 'card top pcard', href: '#/p/' + s.id },
+  return h('a', { class: 'card top pcard', href: R.p(s.id) },
     h('div', { class: 'row between nowrap' }, h('span', { class: 'client' }, s.meta?.client || 'Nieuwe klant'), h('span', { class: 'chip purple' }, ROUTES[s.meta?.route] || 'Tender / RFP')),
     h('h3', null, s.meta?.title || '(zonder titel)'),
     stagebar(p),
@@ -63,12 +66,12 @@ function pursuitCard(s) {
 
 async function loadDemo() {
   try {
-    const demo = await (await fetch('/data/demo-velmora.json')).json();
+    const demo = await getData('demo');
     const exists = S.list.find((x) => x.meta?.demo);
-    if (exists) { location.hash = '#/p/' + exists.id; return; }
+    if (exists) { go(R.p(exists.id)); return; }
     const d = await createPursuit({ meta: { ...demo.meta, mode: 'practice', discipline: false }, casepack: demo.casepack });
     toast('Voorbeeldcase geladen (fictieve gegevens)', 'ok');
-    location.hash = '#/p/' + d.id;
+    go(R.p(d.id));
   } catch (e) { toast('Laden mislukt: ' + e.message, 'error'); }
 }
 
@@ -91,11 +94,11 @@ export async function viewNew() {
     const btn = e.submitter; if (btn) btn.disabled = true;
     try {
       const d = await createPursuit({ meta: { ...v, client: v.client.trim(), title: v.title.trim() || v.client.trim(), discipline: false, language: 'en', context: 'both' }, sources: sources.map((s) => ({ ...s, id: uid('s'), addedAt: new Date().toISOString(), include: true })) });
-      location.hash = '#/p/' + d.id + (sources.length ? '/casepack?build=1' : '');
+      go(sources.length ? R.build(d.id) : R.p(d.id));
     } catch (err) { toast(err.message, 'error'); if (btn) btn.disabled = false; }
   };
   return h('div', { style: { maxWidth: '980px' } },
-    h('a', { href: '#/', class: 'small' }, '← Alle pursuits'),
+    h('a', { href: R.home(), class: 'small' }, '← Alle pursuits'),
     h('h1', { style: { margin: '.3em 0' } }, 'Nieuwe pursuit'),
     h('p', { class: 'muted', style: { maxWidth: '62ch' } }, 'Begin met de basis en voeg de bronnen toe: de RFP of opportunity-omschrijving, klantgesprekken en samenvattingen. De app zet ze om in het Case Pack — de vaste vorm waarop alle modules draaien.'),
     h('form', { onsubmit: submit, class: 'stack' },
@@ -107,7 +110,7 @@ export async function viewNew() {
           inp('caseDate', 'Casusdatum (alleen voor een afgesloten casus)', { type: 'date', help: 'Leeg laten bij een lopende pursuit. Bij een casus uit het verleden leest het framework data hiertegen.' }))),
       h('div', { class: 'card top' }, h('div', { class: 'eyebrow' }, '2 · Bronnen'), h('p', { class: 'muted' }, 'RFP, opportunity-omschrijving, klantgesprekken, samenvattingen, e-mails, Q&A. Echte klantgegevens zijn toegestaan — gebruik alleen de door CGI goedgekeurde AI-omgeving (zie Instellingen).'),
         sourceAdder((s) => { sources.push(s); refresh(); }), list),
-      h('div', { class: 'row' }, h('button', { class: 'btn primary lg', type: 'submit' }, 'Pursuit aanmaken', icon('arrowRight', 18)), h('a', { class: 'btn ghost lg', href: '#/' }, 'Annuleren'))));
+      h('div', { class: 'row' }, h('button', { class: 'btn primary lg', type: 'submit' }, 'Pursuit aanmaken', icon('arrowRight', 18)), h('a', { class: 'btn ghost lg', href: R.home() }, 'Annuleren'))));
 }
 
 // ------------------------------------------------------------------------------------------------

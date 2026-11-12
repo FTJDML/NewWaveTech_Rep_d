@@ -1,5 +1,5 @@
-import { h, icon, toast, modal, confirmBox, fmtDate, fmtDateTime, relTime, daysUntil, uid, autoGrow, clear, copyText, downloadText, downloadBlob, slugify, refreshApp } from './ui.js';
-import { S, api, patch, streamAI, saveUser, flush } from './state.js';
+import { h, append, icon, toast, modal, confirmBox, fmtDate, fmtDateTime, relTime, daysUntil, uid, autoGrow, clear, copyText, downloadText, downloadBlob, slugify, refreshApp } from './ui.js';
+import { S, patch, streamAI, saveUser, flush, previewUrl, exportDocx, removePursuit, saveFile, platform } from './state.js';
 import { FW } from './framework.js';
 import { mountMarkdown, renderMarkdown } from './md.js';
 import {
@@ -11,14 +11,15 @@ import { viewSources } from './views-sources.js';
 import { builderMessage, parseCasePack, packChecks } from './casepack.js';
 import { settingsOf, manualAsk, makeCtx, runStep, runGate, saveGate, composeGate, explainError } from './runtime.js';
 import { viewModule } from './views-module.js';
+import { R, go } from './routes.js';
 
 // ------------------------------------------------------------------------------------------------
 export function previewHtml(html, title = 'Prototype') {
   const frame = h('iframe', { class: 'preview-frame', sandbox: 'allow-scripts', title });
   let url = null;
-  api('/preview', { method: 'POST', body: { html } }).then((r) => { url = r.url; frame.src = r.url; }).catch((e) => toast('Voorbeeld mislukt: ' + e.message, 'error'));
+  previewUrl(html).then((u) => { if (u) { url = u; frame.src = u; } else frame.srcdoc = html; }).catch((e) => toast('Voorbeeld mislukt: ' + e.message, 'error'));
   modal({ title, wide: true, body: h('div', { class: 'stack' }, h('div', { class: 'callout' }, h('b', null, 'Sandbox'), 'Het prototype draait geïsoleerd: geen netwerk, geen toegang tot de app of je gegevens. Klik de hele storyline door en controleer wat het doet voor je het laat zien.'), frame),
-    actions: [{ label: 'Open in nieuw tabblad', kind: 'ghost', keep: true, onClick: () => { if (url) window.open(url, '_blank', 'noopener'); } }, { label: 'Download .html', kind: 'ghost', keep: true, onClick: () => downloadText(slugify(title) + '.html', html, 'text/html') }, { label: 'Sluiten', kind: 'primary' }] });
+    actions: [platform.kind === 'server' ? { label: 'Open in nieuw tabblad', kind: 'ghost', keep: true, onClick: () => { if (url) window.open(url, '_blank', 'noopener'); } } : null, { label: 'Download .html', kind: 'ghost', keep: true, onClick: () => saveFile(slugify(title) + '.html', html, 'text/html') }, { label: 'Sluiten', kind: 'primary' }].filter(Boolean) });
 }
 
 export async function exportDossier(p, which = 'all') {
@@ -45,34 +46,34 @@ export async function exportDossier(p, which = 'all') {
     if (parts.length) sections.push({ title: `${id} · ${modTitle(id)}`, markdown: parts.join('\n\n'), pageBreak: true });
   }
   for (const a of p.artefacts || []) if (a.kind === 'md' && !/Build Package|Client pack/.test(a.name)) sections.push({ title: 'Artefact — ' + a.name, markdown: a.content });
-  const res = await api('/export/docx', { method: 'POST', body: { title: `${m.client || 'Pursuit'} — ${m.title || 'dossier'}`, subtitle: 'CGI Pursuit Navigator · AI-Native DCS', sections, filename: slugify(m.client + '-' + m.title) + '-dossier' } });
-  downloadBlob(slugify(m.client + '-' + m.title) + '-dossier.docx', await res.blob());
+  const brand = S.config && S.config.brand !== undefined ? S.config.brand : 'CGI'; // artifact: only what the team has set
+  const blob = await exportDocx({ title: `${m.client || 'Pursuit'} — ${m.title || 'dossier'}`, subtitle: `${brand ? brand + ' ' : ''}Pursuit Navigator · AI-Native DCS`, brand, sections, filename: slugify(m.client + '-' + m.title) + '-dossier' });
+  saveFile(slugify(m.client + '-' + m.title) + '-dossier.docx', blob);
 }
 
 // ------------------------------------------------------------------------------------------------
 export function wsLayout(p, active, content) {
   const link = (href, ic, label, key, badge) => h('a', { class: 'nl' + (active === key ? ' on' : ''), href }, icon(ic, 18), label, badge ? h('span', { class: 'badge-num', style: { marginLeft: 'auto' } }, badge) : null);
-  const base = '#/p/' + p.id;
   const gaps = Object.values(p.casepack?.docs || {}).reduce((a, d) => a + (d?.text ? (d.text.match(/Not provided\s*[—–-]\s*needs validation/gi) || []).length : 0), 0);
   const modLinks = [];
   const m0 = modStatus(p, 'M0');
-  const modItem = (id) => h('a', { class: 'mod' + (active === id ? ' on' : '') + (available(id) ? '' : ' soon'), href: `${base}/m/${id}`, title: available(id) ? '' : 'Officiële prompts nog niet toegevoegd' }, h('span', { class: 'sdot ' + modStatus(p, id) }, modStatus(p, id) === 'done' ? icon('check', 11) : null), h('span', null, id + ' · ' + modTitle(id)), available(id) ? null : h('span', { class: 'xs muted', style: { marginLeft: 'auto' } }, 'binnenkort'));
+  const modItem = (id) => h('a', { class: 'mod' + (active === id ? ' on' : '') + (available(id) ? '' : ' soon'), href: R.mod(p.id, id), title: available(id) ? '' : 'Officiële prompts nog niet toegevoegd' }, h('span', { class: 'sdot ' + modStatus(p, id) }, modStatus(p, id) === 'done' ? icon('check', 11) : null), h('span', null, id + ' · ' + modTitle(id)), available(id) ? null : h('span', { class: 'xs muted', style: { marginLeft: 'auto' } }, 'binnenkort'));
   modLinks.push(h('div', { class: 'stg' }, 'FUNDAMENT'), modItem('M0'));
   for (const s of STAGES) { modLinks.push(h('div', { class: 'stg' }, `${s.n} · ${s.name.toUpperCase()}`)); s.modules.forEach((id) => modLinks.push(modItem(id))); }
   const prog = progress(p);
   const side = h('aside', { class: 'side' },
-    h('a', { href: '#/', class: 'small' }, '← Alle pursuits'),
+    h('a', { href: R.home(), class: 'small' }, '← Alle pursuits'),
     h('div', { style: { margin: '10px 0 4px' } }, h('div', { class: 'pclient' }, p.meta.client || 'Klant'), h('div', { class: 'ptitle' }, p.meta.title || '')),
     h('div', { class: 'row', style: { gap: '6px', margin: '6px 0' } }, h('span', { class: 'chip purple' }, ROUTES[p.meta.route] || 'Tender / RFP'), p.meta.demo ? h('span', { class: 'chip amber' }, 'voorbeeldcase') : null),
     h('div', { class: 'progress', title: `${prog.done} van ${prog.total} modules` }, h('i', { style: { width: prog.pct + '%' } })), h('div', { class: 'xs muted', style: { marginTop: '4px' } }, `${prog.done} van ${prog.total} modules afgerond`),
     h('h4', null, 'Cockpit'),
     h('div', { class: 'cockpit' },
-      link(base, 'home', 'Overzicht', 'overview'),
-      link(base + '/sources', 'folder', 'Bronnen', 'sources', null),
-      link(base + '/casepack', 'layers', 'Case Pack', 'casepack', gaps || null),
-      link(base + '/ledger', 'book', 'Pursuit Ledger', 'ledger'),
-      link(base + '/map', 'map', 'Workflow-map', 'map'),
-      link(base + '/artefacts', 'file', 'Artefacten', 'artefacts', null)),
+      link(R.p(p.id), 'home', 'Overzicht', 'overview'),
+      link(R.view(p.id, 'sources'), 'folder', 'Bronnen', 'sources', null),
+      link(R.view(p.id, 'casepack'), 'layers', 'Case Pack', 'casepack', gaps || null),
+      link(R.view(p.id, 'ledger'), 'book', 'Pursuit Ledger', 'ledger'),
+      link(R.view(p.id, 'map'), 'map', 'Workflow-map', 'map'),
+      link(R.view(p.id, 'artefacts'), 'file', 'Artefacten', 'artefacts', null)),
     h('details', { class: 'modnav', open: !window.matchMedia('(max-width: 980px)').matches || /^M\d+$/.test(active) && false }, h('summary', null, 'Modules'), ...modLinks),
     h('h4', null, 'Beheer'),
     h('a', { class: 'nl', href: '#', onclick: (e) => { e.preventDefault(); pursuitSettings(p); } }, icon('gear', 18), 'Pursuit-instellingen'),
@@ -96,25 +97,21 @@ function pursuitSettings(p) {
       h('div', { class: 'field', style: { marginTop: '12px' } }, h('label', { class: 'f' }, 'Banner in prototypes'), h('input', { type: 'text', value: m.banner || '', placeholder: 'Demonstrator — synthetic data — not production', oninput: (e) => { m.banner = e.target.value; } })),
       h('div', { class: 'field' }, h('label', { class: 'f' }, 'Antwoordtaal van de AI'), lang, h('div', { class: 'help' }, 'Kies bij de start; wissel niet halverwege (de Ledger wordt woordelijk doorgegeven).')),
       h('label', { class: 'check' }, h('input', { type: 'checkbox', checked: m.gateHint !== false, onchange: (e) => { m.gateHint = e.target.checked; } }), h('span', null, 'Opmaakhint voor de app toevoegen aan het gate (helpt het resultaat automatisch te verwerken; wijzigt de inhoud niet).')),
-      h('hr'), h('button', { class: 'btn danger', onclick: async () => { if (await confirmBox('Pursuit verwijderen?', 'Deze pursuit wordt verwijderd (een kopie blijft in de map data/trash op de server).', 'Verwijderen')) { await api('/pursuits/' + p.id, { method: 'DELETE' }); location.hash = '#/'; } } }, icon('trash', 16), 'Pursuit verwijderen')),
+      h('hr'), h('button', { class: 'btn danger', onclick: async () => { if (await confirmBox('Pursuit verwijderen?', 'Deze pursuit wordt verwijderd (op de server blijft een kopie in de map data/trash).', 'Verwijderen')) { await removePursuit(p.id); go(R.home()); } } }, icon('trash', 16), 'Pursuit verwijderen')),
     actions: [{ label: 'Annuleren', kind: 'ghost' }, { label: 'Opslaan', kind: 'primary', onClick: async () => { await patch([{ op: 'set', path: ['meta'], value: m }]); toast('Opgeslagen', 'ok'); refreshApp(); } }],
   });
 }
 
 // ------------------------------------------------------------------------------------------------
-export async function viewPursuit(rest) {
+export async function viewPursuit(route) {
   const p = S.p;
-  let [a, b] = rest;
-  let query = '';
-  if (a && a.includes('?')) [a, query] = a.split('?');
-  if (b && b.includes('?')) [b, query] = b.split('?');
-  if (!a) return wsLayout(p, 'overview', overview(p));
-  if (a === 'sources') return wsLayout(p, 'sources', viewSources());
-  if (a === 'casepack') return wsLayout(p, 'casepack', viewCasePack(p, query));
-  if (a === 'ledger') return wsLayout(p, 'ledger', viewLedger(p));
-  if (a === 'map') return wsLayout(p, 'map', viewMap(p));
-  if (a === 'artefacts') return wsLayout(p, 'artefacts', viewArtefacts(p));
-  if (a === 'm' && FLOWS[b]) return wsLayout(p, b, await viewModule(p, b));
+  const v = route.view;
+  if (v === 'sources') return wsLayout(p, 'sources', viewSources());
+  if (v === 'casepack') return wsLayout(p, 'casepack', viewCasePack(p, !!route.build));
+  if (v === 'ledger') return wsLayout(p, 'ledger', viewLedger(p));
+  if (v === 'map') return wsLayout(p, 'map', viewMap(p));
+  if (v === 'artefacts') return wsLayout(p, 'artefacts', viewArtefacts(p));
+  if (v === 'module' && FLOWS[route.mod]) return wsLayout(p, route.mod, await viewModule(p, route.mod));
   return wsLayout(p, 'overview', overview(p));
 }
 
@@ -135,13 +132,13 @@ function overview(p) {
 
   // ---- next step
   let nextCard;
-  if (!hasSrc && !hasCP) nextCard = h('div', { class: 'nextstep' }, h('div', null, h('div', { class: 'eyebrow' }, 'Eerste stap'), h('h2', null, 'Voeg de RFP en je klantgesprekken toe'), h('p', null, 'Zonder bronnen heeft de AI niets om kritisch mee te kijken. Upload de RFP / opportunity-omschrijving en plak je gespreksnotities.')), h('a', { class: 'btn primary lg', href: `#/p/${p.id}/sources` }, 'Bronnen toevoegen', icon('arrowRight', 18)));
-  else if (!hasCP) nextCard = h('div', { class: 'nextstep' }, h('div', null, h('div', { class: 'eyebrow' }, 'Volgende stap'), h('h2', null, 'Bouw het Case Pack'), h('p', null, 'De AI zet je bronnen om in de zes documenten (01–06), de canvas en de header — met F/A/H-labels en een lijst van wat ontbreekt.')), h('a', { class: 'btn primary lg', href: `#/p/${p.id}/casepack?build=1` }, 'Case Pack bouwen', icon('arrowRight', 18)));
+  if (!hasSrc && !hasCP) nextCard = h('div', { class: 'nextstep' }, h('div', null, h('div', { class: 'eyebrow' }, 'Eerste stap'), h('h2', null, 'Voeg de RFP en je klantgesprekken toe'), h('p', null, 'Zonder bronnen heeft de AI niets om kritisch mee te kijken. Upload de RFP / opportunity-omschrijving en plak je gespreksnotities.')), h('a', { class: 'btn primary lg', href: R.view(p.id, 'sources') }, 'Bronnen toevoegen', icon('arrowRight', 18)));
+  else if (!hasCP) nextCard = h('div', { class: 'nextstep' }, h('div', null, h('div', { class: 'eyebrow' }, 'Volgende stap'), h('h2', null, 'Bouw het Case Pack'), h('p', null, 'De AI zet je bronnen om in de zes documenten (01–06), de canvas en de header — met F/A/H-labels en een lijst van wat ontbreekt.')), h('a', { class: 'btn primary lg', href: R.build(p.id) }, 'Case Pack bouwen', icon('arrowRight', 18)));
   else if (nx) {
     const mod = FW.modules[nx];
     const quick = nx === 'M0' && !p.ledger?.current;
     nextCard = h('div', { class: 'nextstep' }, h('div', null, h('div', { class: 'eyebrow' }, modStatus(p, nx) === 'doing' ? 'Je bent bezig' : 'Volgende module'), h('h2', null, `${nx} · ${mod.title}`), h('p', null, mod.question + ' ' + mod.intro.split('. ')[0] + '.')),
-      h('div', { class: 'row' }, quick ? h('button', { class: 'btn ghost lg', onclick: () => quickstart(p) }, icon('spark', 18), 'Snelstart M0 (automatisch)') : null, h('a', { class: 'btn primary lg', href: `#/p/${p.id}/m/${nx}` }, modStatus(p, nx) === 'doing' ? 'Verder' : 'Start', icon('arrowRight', 18))));
+      h('div', { class: 'row' }, quick ? h('button', { class: 'btn ghost lg', onclick: () => quickstart(p) }, icon('spark', 18), 'Snelstart M0 (automatisch)') : null, h('a', { class: 'btn primary lg', href: R.mod(p.id, nx) }, modStatus(p, nx) === 'doing' ? 'Verder' : 'Start', icon('arrowRight', 18))));
   } else {
     const pending = ORDER.filter((m) => !available(m));
     nextCard = h('div', { class: 'nextstep' }, h('div', null, h('div', { class: 'eyebrow' }, 'Klaar'), h('h2', null, pending.length ? 'Alle beschikbare modules zijn afgerond' : 'Alle modules zijn afgerond'),
@@ -151,11 +148,11 @@ function overview(p) {
   // ---- journey
   const nxStage = nx ? STAGES.find((s) => s.modules.includes(nx))?.n : null;
   const journey = h('div', { class: 'journey' }, STAGES.map((s) => h('div', { class: 'jstage ' + (stageState(p, s.n) === 'done' ? 'done' : stageState(p, s.n) === 'doing' ? 'doing' : s.n === nxStage ? 'next' : '') },
-    h('div', { class: 'n' }, 'STAGE ' + s.n), h('h4', null, s.name), s.modules.map((id) => h('a', { href: `#/p/${p.id}/m/${id}`, title: `${id} · ${modTitle(id)}` + (available(id) ? '' : ' — officiële prompts nog niet toegevoegd'), style: available(id) ? null : { opacity: .5 } }, h('span', { class: 'sdot ' + modStatus(p, id), style: { width: '14px', height: '14px' } }, modStatus(p, id) === 'done' ? icon('check', 9) : null), h('b', null, id), h('span', { class: 'xs muted jt' }, modTitle(id)))))));
+    h('div', { class: 'n' }, 'STAGE ' + s.n), h('h4', null, s.name), s.modules.map((id) => h('a', { href: R.mod(p.id, id), title: `${id} · ${modTitle(id)}` + (available(id) ? '' : ' — officiële prompts nog niet toegevoegd'), style: available(id) ? null : { opacity: .5 } }, h('span', { class: 'sdot ' + modStatus(p, id), style: { width: '14px', height: '14px' } }, modStatus(p, id) === 'done' ? icon('check', 9) : null), h('b', null, id), h('span', { class: 'xs muted jt' }, modTitle(id)))))));
 
   // ---- strategy on a page
   const L = p.ledger?.current ? parseLedger(p.ledger.current.text) : null;
-  const strat = h('div', { class: 'card top' }, h('div', { class: 'card-head' }, icon('target', 22), h('h3', null, 'Strategie op één pagina'), h('a', { class: 'btn ghost sm', style: { marginLeft: 'auto' }, href: `#/p/${p.id}/ledger` }, 'Volledige Ledger')));
+  const strat = h('div', { class: 'card top' }, h('div', { class: 'card-head' }, icon('target', 22), h('h3', null, 'Strategie op één pagina'), h('a', { class: 'btn ghost sm', style: { marginLeft: 'auto' }, href: R.view(p.id, 'ledger') }, 'Volledige Ledger')));
   if (L) {
     const fv = (n) => { const d = h('div', { class: 'md' }); mountMarkdown(d, L.fields[n] || '—'); return d; };
     strat.append(h('div', { class: 'stack' }, h('div', null, h('div', { class: 'eyebrow' }, '1 · Case'), fv(1)), h('div', null, h('div', { class: 'eyebrow red' }, '3 · One truth — besluit, scope, budget, metric, win themes'), fv(3))));
@@ -171,12 +168,12 @@ function overview(p) {
       conds.length ? h('div', null, conds.map((c) => condRow(p, c))) : h('div', { class: 'muted small' }, 'Nog geen besluiten met voorwaarden. Ze ontstaan bij het gate van M3 en volgende modules.')),
     open.length ? h('div', { class: 'card top' }, h('div', { class: 'card-head' }, icon('alert', 22), h('h3', null, 'Open — to validate'), h('span', { class: 'chip' }, open.length)), h('ul', { style: { margin: 0, paddingLeft: '1.1em' } }, open.slice(0, 8).map((o) => h('li', { class: 'small' }, o.what, o.who ? h('span', { class: 'muted' }, ' — ' + o.who) : null, o.when ? h('span', { class: 'chip amber', style: { marginLeft: '6px' } }, o.when) : null)))) : null,
     needs.length ? h('div', { class: 'card top' }, h('div', { class: 'card-head' }, icon('arrowRight', 22), h('h3', null, 'Volgende stage heeft nodig')), needs.map((n) => h('div', { class: 'small', style: { marginBottom: '6px' } }, h('span', { class: 'chip next' }, 'for ' + n.for), ' ' + n.text))) : null,
-    gapList.length ? h('div', { class: 'card' }, h('div', { class: 'card-head' }, h('span', { class: 'chip gap' }, 'Not provided'), h('h3', null, `${gapList.length} gaten in het Case Pack`)), h('ul', { style: { margin: 0, paddingLeft: '1.1em' } }, gapList.slice(0, 6).map((x) => h('li', { class: 'small' }, h('b', null, x.k + ' · '), x.g.slice(0, 120)))), h('a', { class: 'small', href: `#/p/${p.id}/casepack` }, 'Alle gaten bekijken →')) : null);
+    gapList.length ? h('div', { class: 'card' }, h('div', { class: 'card-head' }, h('span', { class: 'chip gap' }, 'Not provided'), h('h3', null, `${gapList.length} gaten in het Case Pack`)), h('ul', { style: { margin: 0, paddingLeft: '1.1em' } }, gapList.slice(0, 6).map((x) => h('li', { class: 'small' }, h('b', null, x.k + ' · '), x.g.slice(0, 120)))), h('a', { class: 'small', href: R.view(p.id, 'casepack') }, 'Alle gaten bekijken →')) : null);
 
   let calls = 0, tin = 0, tout = 0;
   for (const mod of Object.values(p.modules || {})) for (const arr of Object.values(mod.threads || {})) for (const x of arr) if (x.role === 'assistant' && x.usage) { calls++; tin += x.usage.in || 0; tout += x.usage.out || 0; }
   const ask = clientAsk(p);
-  box.append(head, nextCard, h('div', null, h('h3', { style: { margin: '6px 0 10px' } }, 'De route'), journey), ask, h('div', { class: 'grid', style: { gridTemplateColumns: 'minmax(0,1.35fr) minmax(0,1fr)', alignItems: 'start' } }, strat, attention), calls ? h('div', { class: 'xs muted' }, `AI-gebruik in deze pursuit: ${calls} aanroepen · ${fmtTokens(tin)} tokens in · ${fmtTokens(tout)} tokens uit (schatting op basis van de provider; kosten volgens jullie tarief)`) : null);
+  append(box, [head, nextCard, h('div', null, h('h3', { style: { margin: '6px 0 10px' } }, 'De route'), journey), ask, h('div', { class: 'grid', style: { gridTemplateColumns: 'minmax(0,1.35fr) minmax(0,1fr)', alignItems: 'start' } }, strat, attention), calls ? h('div', { class: 'xs muted' }, `AI-gebruik in deze pursuit: ${calls} aanroepen · ${fmtTokens(tin)} tokens in · ${fmtTokens(tout)} tokens uit (schatting op basis van de provider; kosten volgens jullie tarief)`) : null]);
   return box;
 }
 
@@ -190,7 +187,7 @@ function clientAsk(p) {
   const critT = tabs.find((t) => t.header.some((x) => /criteri/i.test(x)) && t.header.some((x) => /weight|gewicht/i.test(x)));
   const dateT = tabs.find((t) => t.header.some((x) => /event|milestone|datum|date/i.test(x)) && t.header.length <= 3 && t.rows.some((r) => !isNaN(Date.parse(cell(r, 1)))));
   if (!reqT && !critT && !dateT) return null;
-  const card = h('div', { class: 'card top' }, h('div', { class: 'card-head' }, icon('target', 22), h('h3', null, 'Wat de klant vraagt'), h('a', { class: 'btn ghost sm', style: { marginLeft: 'auto' }, href: `#/p/${p.id}/casepack` }, 'Case Pack 02')));
+  const card = h('div', { class: 'card top' }, h('div', { class: 'card-head' }, icon('target', 22), h('h3', null, 'Wat de klant vraagt'), h('a', { class: 'btn ghost sm', style: { marginLeft: 'auto' }, href: R.view(p.id, 'casepack') }, 'Case Pack 02')));
   const body = h('div', { class: 'grid g3', style: { alignItems: 'start' } });
   if (critT) {
     const pi = critT.header.findIndex((x) => /weight|gewicht/i.test(x));
@@ -248,20 +245,19 @@ async function quickstart(p) {
     if (!r2.ok) throw new Error(r2.error || 'Gate mislukt');
     setP(100, 'Klaar');
     m.close();
-    location.hash = `#/p/${p.id}/m/M0`;
+    go(R.mod(p.id, 'M0'));
   } catch (e) { m.close(); toast(e.message, 'error', 7000); }
 }
 
 // ------------------------------------------------------------------------------------------------
-function viewCasePack(p, query) {
+function viewCasePack(p, autoBuild) {
   const box = h('div', { class: 'stack' });
   let cur = CASEPACK_KEYS.find((k) => p.casepack?.docs?.[k]?.text) || '01';
   let editing = false, building = false;
-  const params = new URLSearchParams(query || '');
 
   async function build(mode, newIds) {
     if (building) return; building = true; render();
-    const content = builderMessage(p, { mode, newSources: newIds || [] });
+    const content = builderMessage(p, { mode, newSources: newIds || [], maxBytes: S.config.maxPromptBytes ? S.config.maxPromptBytes - 6000 : undefined });
     const live = h('div', { class: 'out streaming md' }, h('p', { class: 'muted dots' }, 'De AI leest je bronnen en schrijft het Case Pack'));
     const mdl = modal({ title: mode === 'update' ? 'Case Pack bijwerken' : 'Case Pack bouwen', wide: true, body: h('div', { class: 'stack' }, h('p', { class: 'muted' }, 'Dit kan een minuut duren bij een lange RFP. Je kunt ondertussen niets kwijtraken: het resultaat wordt pas bewaard als het compleet is.'), live), onClose: () => { ac.abort(); } });
     const ac = new AbortController();
@@ -294,7 +290,7 @@ function viewCasePack(p, query) {
     box.append(h('div', { class: 'row between' }, h('div', null, h('div', { class: 'eyebrow' }, 'Case Pack'), h('h2', { style: { margin: 0 } }, 'De zes documenten waarop alle modules draaien')),
       h('div', { class: 'row' }, h('button', { class: 'btn primary', disabled: building || !(p.sources || []).length, onclick: async () => { if (any && !(await confirmBox('Case Pack opnieuw bouwen?', 'Bestaande documenten worden vervangen (de vorige versie blijft per document herstelbaar). Handmatige wijzigingen gaan verloren.', 'Opnieuw bouwen', 'primary'))) return; build('build'); } }, icon('spark', 16), any ? 'Opnieuw bouwen uit bronnen' : 'Bouw Case Pack uit bronnen'),
         any ? h('button', { class: 'btn ghost', disabled: building || !(p.sources || []).length, onclick: () => pickNew() }, icon('refresh', 16), 'Bijwerken met nieuwe bron') : null)));
-    if (!(p.sources || []).length && !any) box.append(h('div', { class: 'callout amber' }, h('b', null, 'Eerst bronnen'), 'Voeg de RFP en gespreksnotities toe op de pagina ', h('a', { href: `#/p/${p.id}/sources` }, 'Bronnen'), '. Je kunt de documenten ook handmatig schrijven (kies hieronder een document en klik Bewerk).'));
+    if (!(p.sources || []).length && !any) box.append(h('div', { class: 'callout amber' }, h('b', null, 'Eerst bronnen'), 'Voeg de RFP en gespreksnotities toe op de pagina ', h('a', { href: R.view(p.id, 'sources') }, 'Bronnen'), '. Je kunt de documenten ook handmatig schrijven (kies hieronder een document en klik Bewerk).'));
     box.append(h('div', { class: 'card tint' }, h('div', { class: 'row between' }, h('b', null, 'Check je pack'),
       h('div', { class: 'row' }, h('span', { class: 'chip ' + (chk.missing.length ? 'amber' : 'green') }, `${chk.present.length}/8 onderdelen`), h('span', { class: 'chip ' + (chk.gaps ? 'gap' : 'green') }, `${chk.gaps} × Not provided — needs validation`), chk.weights ? h('span', { class: 'chip ' + (Math.round(chk.weights.total) === 100 ? 'green' : 'red') }, `gewichten totaal ${chk.weights.total}%`) : null)),
       h('div', { class: 'small muted', style: { marginTop: '6px' } }, 'Elk gat is een vraag voor je volgende klantcontact. Controleer ook: één outcome-metric in 03 met baseline en target in dezelfde eenheid, en geen cijfer of datum dat niet uit de bron komt.')));
@@ -318,7 +314,7 @@ function viewCasePack(p, query) {
     modal({ title: 'Welke nieuwe bron(nen) verwerken?', body: h('div', { class: 'stack' }, h('p', { class: 'muted' }, 'De AI past alleen de documenten aan die door de nieuwe bron veranderen en markeert elke wijziging.'), list), actions: [{ label: 'Annuleren', kind: 'ghost' }, { label: 'Bijwerken', kind: 'primary', onClick: () => { if (!sel.size) { toast('Kies minimaal één bron', 'error'); return false; } setTimeout(() => build('update', [...sel]), 50); } }] });
   }
   render();
-  if (params.get('build') === '1' && (p.sources || []).length && !Object.keys(p.casepack?.docs || {}).length) setTimeout(() => build('build'), 200);
+  if (autoBuild && (p.sources || []).length && !Object.keys(p.casepack?.docs || {}).length) setTimeout(() => build('build'), 200);
   return box;
 }
 

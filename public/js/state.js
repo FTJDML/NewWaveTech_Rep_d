@@ -1,6 +1,6 @@
 // Client state: config, current pursuit (optimistic ops synced to the server), personal workflow, AI streaming.
 import { applyOps } from './ops.js';
-import { toast } from './ui.js';
+import { toast, downloadBlob, downloadText } from './ui.js';
 
 export const S = { config: null, me: null, list: [], p: null, user: null, listeners: new Set(), saving: 0, saveError: null };
 export const onChange = (fn) => { S.listeners.add(fn); return () => S.listeners.delete(fn); };
@@ -110,3 +110,36 @@ export async function streamAI({ system, messages, maxTokens, onDelta, signal })
   if (err) throw Object.assign(new Error(err), { partial: text });
   return { text, usage };
 }
+
+// ---------------------------------------------------------------------------------------------
+// Backend helpers. The server build implements them with fetch; the artifact build (artifact/state.js)
+// replaces this whole module with an in-browser implementation of the same exports.
+// ---------------------------------------------------------------------------------------------
+export const platform = { kind: 'server' };
+export async function getData(name) { return (await fetch(name === 'skills' ? '/data/skills.json' : '/data/demo-velmora.json')).json(); }
+export async function loadPrompts() { try { return await (await fetch('/api/prompts')).json(); } catch { return {}; } }
+export async function savePrompts(o) {
+  const r = await fetch('/api/prompts', { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify(o) });
+  if (!r.ok) throw new Error('Opslaan van prompts mislukt');
+  return r.json();
+}
+export async function extractFile(file) {
+  if (file.size > 40 * 1024 * 1024) throw new Error(`${file.name} is groter dan 40 MB`);
+  const buf = await file.arrayBuffer();
+  const un = userName();
+  const res = await fetch('/api/extract', { method: 'POST', headers: { 'x-filename': encodeURIComponent(file.name), ...(un ? { 'x-user-name': encodeURIComponent(un) } : {}) }, body: buf });
+  const j = await res.json();
+  if (!res.ok) throw new Error(j.error || 'Lezen mislukt');
+  return j;
+}
+export async function exportDocx(payload) { return (await api('/export/docx', { method: 'POST', body: payload })).blob(); }
+/** URL of a sandboxed copy of an AI-written prototype, or null (the caller then uses srcdoc). */
+export async function previewUrl(html) { return (await api('/preview', { method: 'POST', body: { html } })).url; }
+export async function removePursuit(id) { await api('/pursuits/' + id, { method: 'DELETE' }); S.list = S.list.filter((x) => x.id !== id); }
+export function saveFile(name, data, mime) { return data instanceof Blob ? downloadBlob(name, data) : downloadText(name, data, mime); }
+export async function backupDownload() { const j = await api('/backup'); downloadText('pursuit-navigator-backup.json', JSON.stringify(j), 'application/json'); }
+export async function backupRestore(obj) { return api('/backup', { method: 'POST', body: obj }); }
+export async function saveConfig(f) { await api('/config', { method: 'PUT', body: f }); await loadConfig(); }
+export async function testConnection() { return api('/config/test', { method: 'POST', body: {} }); }
+export function setModelTier() { /* the server build picks the model in Settings → provider */ }
+export function setBrand() { /* server build: branding is fixed in the page */ }

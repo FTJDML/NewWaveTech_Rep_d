@@ -1,24 +1,21 @@
 // Loads the extracted framework (skills.json, exact text of the guides) and merges the cards of M10–M14
 // (their official prompts are added later through the Prompt Library).
 import { RECONSTRUCTED } from './reconstructed.js';
+import { getData, loadPrompts, savePrompts } from './state.js';
 
 export const FW = { modules: {}, loaded: false, overrides: {} };
 
-export async function loadOverrides() { try { return await (await fetch('/api/prompts')).json(); } catch { return {}; } }
+export const loadOverrides = loadPrompts;
 /** Teammates can add official prompts at any time: re-read them whenever a pursuit or the library is opened. */
-export async function refreshOverrides() { FW.overrides = await loadOverrides(); return FW.overrides; }
-export async function saveOverrides(o) {
-  const r = await fetch('/api/prompts', { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify(o) });
-  if (!r.ok) throw new Error('Opslaan van prompts mislukt');
-  FW.overrides = await r.json();
-}
+export async function refreshOverrides() { FW.overrides = await loadPrompts(); return FW.overrides; }
+export async function saveOverrides(o) { FW.overrides = await savePrompts(o); }
 
 const HC = /HUMAN CHECK[^\n]*\n((?:- .*\n?)+)/;
 export const humanChecksIn = (text) => ((HC.exec(text || '') || [, ''])[1]).split('\n').map((l) => l.replace(/^- /, '').trim()).filter(Boolean);
 
 export async function loadFramework() {
   if (FW.loaded) return FW;
-  const r = await fetch('/data/skills.json'); const j = await r.json();
+  const j = await getData('skills');
   FW.source = j.source;
   const mods = j.modules;
   for (const [k, v] of Object.entries(RECONSTRUCTED)) mods[k] = v;

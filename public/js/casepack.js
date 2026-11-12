@@ -1,6 +1,6 @@
 // Case Pack: the six documents + canvas + header. Derived from the Case Builder prompt (Step 2) for REAL pursuits:
 // same structure and §-numbering, but real names and figures are used as given and nothing is invented.
-import { CASEPACK_KEYS, CASEPACK_TITLES, workspaceFiles, dateEn } from './engine.js';
+import { CASEPACK_KEYS, CASEPACK_TITLES, workspaceFiles, dateEn, utf8Bytes } from './engine.js';
 import { ROUTES } from './flows.js';
 
 export const BUILDER_PROMPT = `CASE PACK BUILDER — live case
@@ -55,19 +55,21 @@ export function parseCasePack(text) {
   return out;
 }
 
-export function builderMessage(p, { mode = 'build', newSources = [] } = {}) {
+export function builderMessage(p, { mode = 'build', newSources = [], maxBytes } = {}) {
   const m = p.meta || {};
   const lines = [BUILDER_PROMPT, '', `ROUTE: ${ROUTES[m.route] || 'Tender / RFP'}.${m.role ? ' MY ROLE: ' + m.role + '.' : ''}${m.client ? ' CLIENT: ' + m.client + '.' : ''}${m.title ? ' OPPORTUNITY: ' + m.title + '.' : ''}${m.caseDate ? ' CASE DATE: ' + dateEn(m.caseDate) + ' (the case is in the past — read dates against it).' : ''}`];
   if (m.submissionDate) lines.push(`Known dates: submission ${dateEn(m.submissionDate)}${m.decisionDate ? ', decision ' + dateEn(m.decisionDate) : ''}.`);
+  // sources are shortened to fit one AI call where the platform limits the size of a call (artifact build)
+  const room = () => (maxBytes ? Math.max(8000, maxBytes - utf8Bytes(lines.join('\n')) - 600) : undefined);
   if (mode === 'update') {
     lines.push('', UPDATE_TAIL, '', 'CURRENT CASE PACK');
     for (const k of CASEPACK_KEYS) { const d = p.casepack?.docs?.[k]; if (d?.text) lines.push(`=== ${/^\d/.test(k) ? k + ' ' : ''}${CASEPACK_TITLES[k]} ===`, d.text); }
     lines.push('', 'NEW SOURCES');
     const subset = { ...p, sources: (p.sources || []).filter((s) => newSources.includes(s.id)) };
-    lines.push(...workspaceFiles(subset, { scope: 'sources' }));
+    lines.push(...workspaceFiles(subset, { scope: 'sources', maxBytes: room() }));
   } else {
     lines.push('', 'SOURCES');
-    const srcs = workspaceFiles(p, { scope: 'sources' });
+    const srcs = workspaceFiles(p, { scope: 'sources', maxBytes: room() });
     lines.push(...(srcs.length ? srcs : ['(no sources — write only the structure with "Not provided — needs validation")']));
   }
   return lines.join('\n');

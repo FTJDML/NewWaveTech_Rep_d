@@ -77,6 +77,27 @@ de app zet het automatisch achter de aan/uit-schakelaar). Zodra P1 erin staat, i
 De placeholders die het werkboek noemt (`[CONFIRMED]`, `[FIRST RELEASE]`, `[MY LINES]`, `[FIGURES]`, `[SIGN-OFF]`, `[COMMERCIAL FACTS]`, `[MEETING]`) worden met je invoer gevuld; invoer waarvan de
 placeholder anders heet, wordt onderaan het bericht als "INPUTS FROM THE APP" meegestuurd. Liever in bulk? Ververs `public/data/skills.json` met `tools/build-skills.py`.
 
+## Als claude.ai-artifact (geen server, geen API-sleutel)
+
+Dezelfde app draait ook als **één artifact-pagina** op claude.ai: Claude komt via het eigen account van de kijker, de pursuits staan in de gedeelde opslag van het artifact.
+
+```bash
+npm install
+node tools/build-artifact.mjs      # → dist/artifact.html (dit bestand publiceren) + dist/artifact-test.html (testharnas)
+node tests/e2e-artifact.cjs        # artifact tegen een nagebouwde claude.ai-runtime: db-limieten, sample-limieten, downloads, zonder capabilities
+```
+
+Publiceren met `capabilities: {db: {}, user: {scopes: ['profile']}, sample: {}, downloads: true}`.
+
+| Onderdeel | In het artifact |
+|---|---|
+| **AI** | `sample`-capability: Claude via het account van wie de pagina opent. De eerste aanroep vraagt toestemming; elke aanroep telt mee in *diens* Claude-gebruik. Geheugenloos en max. 256 KiB per aanroep: de app bouwt de werkruimte per aanroep opnieuw op en kort bronnen zo nodig automatisch in (met melding; zie `fitParts` in `public/js/engine.js`). Wordt een antwoord afgekapt, dan biedt de app *Doorgaan* aan. Zonder `sample` valt de app terug op kopieer-modus. |
+| **Opslag** | `db`-capability: per pursuit één kern-document plus sub-collecties (berichten, Case Pack, modules, gates …), elk ≤ 256 KiB. Wijzigingen worden gebundeld weggeschreven; wijzigingen van collega's komen binnen via `onSnapshot`. Zonder `db` werkt de app in het geheugen (met waarschuwing). |
+| **Identiteit** | `user`-capability (naam en id van de kijker); geen naam-prompt. |
+| **Bestanden** | Word, tekst, Markdown en HTML worden in de browser gelezen (eigen zip-lezer); PDF via pdf.js van cdnjs (lukt dat niet: plak de tekst). Export als Word-dossier, back-up (.json, zelfde formaat als de server-versie) en tekst loopt via `downloads`. |
+| **Delen** | Via het deelmenu van claude.ai: *Editors* en *Contributors* kunnen schrijven, *Viewers* alleen lezen. De prompt-bibliotheek (o.a. M10–M14 later plakken) wordt gedeeld met het team. |
+| **Merk** | Standaard geen logo of merknaam in de kop; het team kan onder *Instellingen* een korte merktekst invullen (ook in het Word-dossier). |
+
 ## Teamgebruik
 
 * **Opslag:** JSON-bestanden in `DATA_DIR` (één bestand per pursuit; verwijderde pursuits gaan naar `trash/`). Maak back-ups via *Instellingen → Back-up downloaden* of kopieer de map.
@@ -107,7 +128,8 @@ python3 -I tools/verify-skills.py "<map met de gidsen>" public/data/skills.json 
 Het officiële CGI-logo? Zet het als `public/brand/logo.svg`; de app gebruikt het dan in plaats van de tekst-wordmark.
 
 Structuur: `server/` (HTTP, opslag, AI-proxy met streaming, tekstextractie, Word-export) · `public/js/` (app, `engine.js` = prompt-opbouw en parsers, `flows.js` = orkestratie per module,
-`runtime.js` = uitvoeren en gate, `views-*.js` = schermen) · `public/data/skills.json` (de prompts, letterlijk uit de gidsen).
+`runtime.js` = uitvoeren en gate, `views-*.js` = schermen; `state.js` = de server-adapter) · `public/data/skills.json` (de prompts, letterlijk uit de gidsen) ·
+`artifact/` (artifact-adapter: `state.js` vervangt `public/js/state.js` bij het bundelen, plus db-sharding, zip/docx/extractie in de browser) · `tests/harness/` (nagebouwde `window.claude`).
 
 ## Bekende beperkingen
 

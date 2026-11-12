@@ -27,18 +27,18 @@ const jpost = async (u, body, method = 'POST') => (await fetch(u, { method, head
 
   // a pursuit with one source, created through the API
   const mk = async (base, name) => (await jpost(base + '/api/pursuits', { meta: { client: name, title: 'Edge case ' + name, route: 'tender', mode: 'practice', discipline: false, context: 'both' }, sources: [{ id: 's_1', name: 'RFP.txt', type: 'rfp', text: 'The client wants faster leak detection. Budget EUR 1.2M. Decision by 1 March 2027. Criteria: value 60%, price 40%.', include: true }], casepack: { docs: { '01': { text: '§1 Client\nF [RFP.txt] Leak detection.' } } } }));
-  const P = await mk(BASE, 'Edge Water'); const base = `${BASE}/#/p/${P.id}`;
+  const P = await mk(BASE, 'Edge Water'); const base = `${BASE}/#${P.id}`;
 
   console.log('Guards');
-  await page.goto(`${base}/m/M3`); await page.waitForSelector('.mhead h1');
+  await page.goto(`${base}-M3`); await page.waitForSelector('.mhead h1');
   ok(await page.locator('.callout.red', { hasText: 'Nog geen Ledger' }).count() === 1, 'zonder Ledger: waarschuwing bovenaan de module');
   const s3 = await openStep('Beoordeel de opportunity'); await s3.locator('.run-btn').click(); await page.waitForTimeout(400);
   ok(/Ledger/.test(await step('Beoordeel').innerText()), 'zonder Ledger: skill draait niet, melding getoond');
 
   console.log('M0 snelstart + truncation/continue');
-  await page.goto(base); await page.click('text=Snelstart M0'); await page.waitForURL(/\/m\/M0/, { timeout: 30000 }); await page.waitForSelector('.gate button:has-text("Bevestigen en opslaan")');
+  await page.goto(base); await page.click('text=Snelstart M0'); await page.waitForURL(/-M0$/, { timeout: 30000 }); await page.waitForSelector('.gate button:has-text("Bevestigen en opslaan")');
   await page.click('.gate button:has-text("Bevestigen en opslaan")'); await page.waitForSelector('.gate .callout.green');
-  await page.goto(`${base}/m/M3`); await page.waitForSelector('.mhead h1');
+  await page.goto(`${base}-M3`); await page.waitForSelector('.mhead h1');
   const a = await openStep('Beoordeel de opportunity'); await fieldIn(a, 'Notities').fill('MOCK_TRUNCATE'); await a.locator('.run-btn').click();
   await page.waitForSelector('.err button:has-text("Doorgaan")', { timeout: 20000 });
   ok(true, 'afgekapt antwoord → knop "Doorgaan"');
@@ -70,14 +70,14 @@ const jpost = async (u, body, method = 'POST') => (await fetch(u, { method, head
   await page.locator('button:has-text("Voldaan…")').first().click();
   await page.locator('.modal input[type=text]').fill('mail from client, reference approved');
   await page.locator('.modal button:has-text("Vastleggen")').click(); await page.waitForTimeout(800);
-  await page.goto(`${base}/m/M4`); await page.waitForSelector('.mhead h1');
+  await page.goto(`${base}-M4`); await page.waitForSelector('.mhead h1');
   const m4 = await openStep('v1 van je zwakste'); await m4.locator('details summary').first().click(); await page.waitForSelector('details pre.code');
   const prompt = await m4.locator('details pre.code').first().innerText();
   ok(/Met: condition 1 \(Reference approved\) — mail from client, reference approved, /.test(prompt), 'bewijsregel "Met: condition 1 …" staat onder de Ledger in de volgende skill');
   ok(/--- My Pursuit Ledger \(latest\) ---/.test(prompt) && !/Workshop output discipline/.test(prompt) && !/Anonymised or synthetic/.test(prompt), 'praktijkmodus: geen discipline-blok, geen anonimiseringsregel');
 
   console.log('Truncated gate → continue → complete Ledger');
-  await page.goto(`${base}/m/M5`); await page.waitForSelector('.mhead h1');
+  await page.goto(`${base}-M5`); await page.waitForSelector('.mhead h1');
   await run('Waarde en contractvorm');
   const lean = await openStep('Jouw voorkeursvorm'); await lean.locator('.quick button', { hasText: 'Fixed price' }).click(); await lean.locator('.run-btn').first().click(); await doneWait('Jouw voorkeursvorm');
   await page.locator('.gate input[placeholder*="form and parts"]').fill('MOCK_TRUNCATE fixed price build');
@@ -95,24 +95,24 @@ const jpost = async (u, body, method = 'POST') => (await fetch(u, { method, head
   await page.locator('.modal select').nth(1).selectOption('workshop');
   await page.locator('.modal label.check', { hasText: 'Workshop output discipline' }).locator('input').check();
   await page.locator('.modal button:has-text("Opslaan")').click(); await page.waitForTimeout(800);
-  await page.goto(`${base}/m/M4`); await page.waitForSelector('.mhead h1');
+  await page.goto(`${base}-M4`); await page.waitForSelector('.mhead h1');
   const m4b = await openStep('v1 van je zwakste'); await m4b.locator('details summary').first().click(); await page.waitForSelector('details pre.code');
   const prompt2 = await m4b.locator('details pre.code').first().innerText();
   ok(/Workshop output discipline/.test(prompt2) && /Anonymised or synthetic material only/.test(prompt2), 'workshopmodus: origineel inclusief discipline en anonimisering');
 
   console.log('Leaving while a call runs');
-  const Q = await mk(BASE, 'Leave Co'); const baseQ = `${BASE}/#/p/${Q.id}`;
-  await page.goto(baseQ); await page.click('text=Snelstart M0'); await page.waitForURL(/\/m\/M0/, { timeout: 30000 }); await page.waitForSelector('.gate button:has-text("Bevestigen en opslaan")'); await page.click('.gate button:has-text("Bevestigen en opslaan")'); await page.waitForSelector('.gate .callout.green');
-  await page.goto(`${baseQ}/m/M2`); await page.waitForSelector('.mhead h1');
+  const Q = await mk(BASE, 'Leave Co'); const baseQ = `${BASE}/#${Q.id}`;
+  await page.goto(baseQ); await page.click('text=Snelstart M0'); await page.waitForURL(/-M0$/, { timeout: 30000 }); await page.waitForSelector('.gate button:has-text("Bevestigen en opslaan")'); await page.click('.gate button:has-text("Bevestigen en opslaan")'); await page.waitForSelector('.gate .callout.green');
+  await page.goto(`${baseQ}-M2`); await page.waitForSelector('.mhead h1');
   const m2 = await openStep('Ontdek de klant'); await fieldIn(m2, 'Notities').fill('MOCK_SLOW'); await m2.locator('.run-btn').click();
-  await page.waitForSelector('.streaming'); await page.goto(BASE + '/#/'); await page.waitForSelector('.hero h1');
+  await page.waitForSelector('.streaming'); await page.goto(BASE + '/#home'); await page.waitForSelector('.hero h1');
   await page.waitForTimeout(6000);
   const doc = await (await fetch(`${BASE}/api/pursuits/${Q.id}`)).json();
   const thread = doc.modules.M2?.threads?.main || [];
   ok(thread.some((m) => m.role === 'assistant' && m.step === 's1'), 'antwoord is bewaard ook nadat je wegnavigeerde');
 
   console.log('Prompt library override');
-  await page.goto(`${BASE}/#/library/M3`); await page.waitForSelector('pre.code');
+  await page.goto(`${BASE}/#library-M3`); await page.waitForSelector('pre.code');
   await page.locator('.card.top', { hasText: 'P2 ·' }).locator('button:has-text("Bewerk")').click();
   const ta = page.locator('.modal textarea'); await ta.fill((await ta.inputValue()) + '\nOFFICIAL-TEXT-MARKER'); await page.locator('.modal button:has-text("Opslaan")').click(); await page.waitForTimeout(500);
   const ov = await (await fetch(BASE + '/api/prompts')).json();
@@ -120,7 +120,7 @@ const jpost = async (u, body, method = 'POST') => (await fetch(u, { method, head
   await jpost(BASE + '/api/prompts', {}, 'PUT');
 
   console.log('Sources & Case Pack editing');
-  await page.goto(`${base}/sources`); await page.waitForSelector('.src-item');
+  await page.goto(`${base}-sources`); await page.waitForSelector('.src-item');
   await page.locator('.src-item button[title="Bekijk / bewerk"]').click(); await page.locator('.modal textarea').fill('Edited source text with new budget EUR 2M.'); await page.locator('.modal button:has-text("Opslaan")').click(); await page.waitForTimeout(800);
   const d2 = await (await fetch(`${BASE}/api/pursuits/${P.id}`)).json();
   ok(d2.sources[0].text.startsWith('Edited source'), 'bron bewerkt en bewaard');
@@ -131,7 +131,7 @@ const jpost = async (u, body, method = 'POST') => (await fetch(u, { method, head
 
   console.log('Copy (manual) mode');
   const R = await mk(MANUAL, 'Manual Co');
-  await page.goto(`${MANUAL}/#/p/${R.id}/m/M0`); await page.waitForSelector('.mhead h1');
+  await page.goto(`${MANUAL}/#${R.id}-M0`); await page.waitForSelector('.mhead h1');
   ok(await page.locator('.ai-chip', { hasText: 'Kopieer-modus' }).count() === 1, 'AI-chip toont kopieer-modus');
   const m0 = await openStep('Mijn case in vijf regels'); await m0.locator('.run-btn').click();
   await page.waitForSelector('.modal textarea');

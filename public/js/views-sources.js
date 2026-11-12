@@ -1,5 +1,5 @@
 import { h, icon, toast, modal, confirmBox, fmtDate, relTime, uid, autoGrow, clear, copyText, refreshApp } from './ui.js';
-import { S, api, patch, userName } from './state.js';
+import { S, patch, extractFile } from './state.js';
 import { estimateTokens, fmtTokens, buildSystem } from './engine.js';
 import { settingsOf } from './runtime.js';
 import { mountMarkdown } from './md.js';
@@ -10,15 +10,7 @@ export const SOURCE_TYPES = {
 };
 const guessType = (name) => (/rfp|tender|aanbesteding|itt|rfi|bestek|inschrijv/i.test(name) ? 'rfp' : /transcript|opname/i.test(name) ? 'transcript' : /notule|minutes|gesprek|meeting|call|samenvatting|summary/i.test(name) ? 'conversation' : /mail|eml|q&a|vragen/i.test(name) ? 'email' : 'other');
 
-async function readFile(file) {
-  if (file.size > 40 * 1024 * 1024) throw new Error(`${file.name} is groter dan 40 MB`);
-  const buf = await file.arrayBuffer();
-  const un = userName();
-  const res = await fetch('/api/extract', { method: 'POST', headers: { 'x-filename': encodeURIComponent(file.name), ...(un ? { 'x-user-name': encodeURIComponent(un) } : {}) }, body: buf });
-  const j = await res.json();
-  if (!res.ok) throw new Error(j.error || 'Lezen mislukt');
-  return j;
-}
+const readFile = extractFile;
 
 export function pasteForm(onAdd, preset = {}) {
   const name = h('input', { type: 'text', value: preset.name || '', placeholder: 'bijv. Gespreksnotitie intake 12 nov' });

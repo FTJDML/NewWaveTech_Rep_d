@@ -1,0 +1,9 @@
+
+/* ---- artifact additions: safe areas, gutters, theme-aware chrome ---- */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--surface)}
+.topbar{top:env(safe-area-inset-top,0px)}
+.topbar-in,.wrap,.footer{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+#toasts{right:max(20px,env(safe-area-inset-right,0px));bottom:calc(20px + env(safe-area-inset-bottom,0px))}
+.modal-back{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.brand .name{white-space:nowrap}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

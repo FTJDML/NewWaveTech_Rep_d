@@ -10,7 +10,7 @@ const T_DIR = path.join(DATA_DIR, 'trash');
 for (const d of [DATA_DIR, P_DIR, U_DIR, T_DIR]) fs.mkdirSync(d, { recursive: true });
 
 const ID_RE = /^[a-z0-9_-]{6,64}$/i;
-export const newId = (prefix = 'p') => prefix + '_' + crypto.randomBytes(6).toString('hex');
+export const newId = (prefix = 'p') => prefix + crypto.randomBytes(6).toString('hex'); // letters+digits only: usable in a plain #hash
 export const validId = (id) => typeof id === 'string' && ID_RE.test(id);
 
 function atomicWrite(file, data) {

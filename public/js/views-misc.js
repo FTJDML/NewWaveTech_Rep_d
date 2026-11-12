@@ -1,5 +1,5 @@
 import { h, icon, toast, modal, confirmBox, fmtDate, fmtDateTime, uid, autoGrow, clear, copyText, downloadText, debounce, esc, append } from './ui.js';
-import { S, api, saveUser, loadUser, userName } from './state.js';
+import { S, saveUser, loadUser, userName, saveConfig, testConnection, backupDownload, backupRestore, platform, setModelTier, setBrand } from './state.js';
 import { FW, getPrompt, saveOverrides, moduleAvailable } from './framework.js';
 import { STAGES, practicePatches, patchText, hoursSummary, parseHours, DEFAULT_BANNER } from './engine.js';
 import { HOURS_STAGES } from './flows.js';
@@ -102,6 +102,43 @@ export async function viewLibrary(sel) {
 
 // ------------------------------------------------------------------------------------------------
 export async function viewSettings() {
+  return S.config.platform === 'artifact' ? settingsArtifact() : settingsServer();
+}
+
+function backupCard() {
+  return h('div', { class: 'card top', style: { marginTop: '20px' } }, h('h3', null, 'Back-up'), h('p', { class: 'muted' }, 'Maak regelmatig een back-up van al je pursuits (JSON). Terugzetten voegt toe en overschrijft pursuits met hetzelfde id.'),
+    h('div', { class: 'row' }, h('button', { class: 'btn ghost', onclick: async () => { try { await backupDownload(); } catch (e) { toast(e.message, 'error'); } } }, icon('download', 16), 'Back-up downloaden'),
+      h('label', { class: 'btn ghost', style: { cursor: 'pointer' } }, icon('upload', 16), 'Back-up terugzetten', h('input', { type: 'file', accept: '.json,application/json', class: 'hidden', onchange: async (e) => { const file = e.target.files[0]; if (!file) return; if (!(await confirmBox('Back-up terugzetten?', 'Pursuits met hetzelfde id worden overschreven.', 'Terugzetten', 'primary'))) return; try { const j = JSON.parse(await file.text()); const r = await backupRestore(j); toast(`${r.imported} pursuits teruggezet`, 'ok'); } catch (err) { toast(err.message, 'error'); } } }))));
+}
+
+function settingsArtifact() {
+  const c = S.config;
+  const box = h('div', { style: { maxWidth: '980px' } });
+  const tiers = [['quick', 'Snel', 'Kortste wachttijd; voor lichte stappen en simulaties.'], ['default', 'Standaard', 'Evenwichtig; de aanbevolen keuze voor alle modules.'], ['complex', 'Complex', 'Denkt het langst na; voor zware beoordelingen zoals M3 en M6 (duurt langer, kost meer van je Claude-gebruik).']];
+  function render() {
+    clear(box);
+    box.append(h('div', { class: 'eyebrow red' }, 'Instellingen'), h('h1', null, 'AI, opslag en team'),
+      h('div', { class: 'card top' }, h('h3', null, 'AI via je eigen Claude-account'),
+        h('p', { class: 'muted' }, 'Er is geen API-sleutel nodig: de pagina vraagt Claude via je eigen account. De eerste keer vraagt het scherm om toestemming; elke aanroep telt mee in het gebruik van je Claude-abonnement. Gebruik alleen een door CGI goedgekeurde Claude-omgeving.'),
+        h('div', { class: 'row' }, h('span', { class: 'chip ' + (c.hasKey ? 'green' : 'amber') }, c.hasKey ? 'Claude beschikbaar' : 'Claude niet beschikbaar in deze weergave'), c.hasKey ? h('button', { class: 'btn ghost sm', onclick: async (e) => { const b = e.currentTarget; b.disabled = true; b.textContent = 'Testen…'; try { const r = await testConnection(); toast(r.ok ? `Claude werkt (${r.ms} ms): "${r.reply}"` : 'Mislukt: ' + r.error, r.ok ? 'ok' : 'error', 7000); } catch (err) { toast(err.message, 'error'); } b.disabled = false; b.textContent = 'Test Claude'; } }, 'Test Claude') : null),
+        !c.hasKey ? h('div', { class: 'callout amber', style: { marginTop: '12px' } }, h('b', null, 'Kopieer-modus'), 'Zonder Claude-koppeling stelt de pagina elke prompt samen, jij plakt hem in je goedgekeurde AI-tool en plakt het antwoord terug.') : null,
+        h('h4', { style: { marginTop: '18px' } }, 'Denkniveau'),
+        h('div', { class: 'grid g3' }, tiers.map(([k, t, d]) => h('label', { class: 'card', style: { cursor: 'pointer', borderColor: c.modelTier === k ? 'var(--purple)' : '', background: c.modelTier === k ? 'var(--tint-2)' : '' } }, h('div', { class: 'check' }, h('input', { type: 'radio', name: 'tier', checked: c.modelTier === k, onchange: () => { setModelTier(k); render(); } }), h('span', null, h('b', null, t), h('div', { class: 'small muted' }, d))))))),
+      h('div', { class: 'card top', style: { marginTop: '20px' } }, h('h3', null, 'Opslag en samenwerken'),
+        h('dl', { class: 'kv' }, h('dt', null, 'Opslag'), h('dd', null, c.storage === 'db' ? 'Gedeelde opslag van dit artifact (blijft bewaard, ook na een nieuwe versie)' : 'Alleen deze sessie — niets wordt bewaard. Exporteer je werk met de back-up.'),
+          h('dt', null, 'Schrijfrechten'), h('dd', null, c.canWrite === false ? 'Alleen lezen: je hebt in dit artifact geen schrijfrechten.' : 'Je kunt pursuits maken en wijzigen.'),
+          h('dt', null, 'Jij'), h('dd', null, S.me?.name || 'Gebruiker')),
+        h('p', { class: 'muted small', style: { marginTop: '10px' } }, 'Samenwerken: deel dit artifact via het deelmenu van claude.ai. Editors en Contributors schrijven mee; Viewers en Commenters lezen alleen. Wijzigingen van collega\'s verschijnen vanzelf.')),
+      h('div', { class: 'card top', style: { marginTop: '20px' } }, h('h3', null, 'Merknaam in de kop'), h('p', { class: 'muted' }, 'Optioneel: de naam of het woordmerk van je organisatie, links in de kop. Voor het hele team.'),
+        h('div', { class: 'row' }, h('input', { type: 'text', id: 'brand-input', value: c.brand || '', placeholder: 'bijv. de naam van je organisatie', style: { maxWidth: '280px' } }), h('button', { class: 'btn ghost', onclick: async () => { await setBrand(document.getElementById('brand-input').value.trim()); toast('Opgeslagen', 'ok', 1800); } }, 'Opslaan'))),
+      backupCard(),
+      h('div', { class: 'card', style: { marginTop: '20px' } }, h('h3', null, 'Over'), h('dl', { class: 'kv' }, h('dt', null, 'Versie'), h('dd', null, c.version), h('dt', null, 'Framework'), h('dd', null, FW.source || '—'), h('dt', null, 'Nog toe te voegen'), h('dd', null, ['M10', 'M11', 'M12', 'M13', 'M14'].filter((m) => !moduleAvailable(m)).join(', ') || 'niets — alle modules hebben prompts'))));
+  }
+  render();
+  return box;
+}
+
+function settingsServer() {
   const c = S.config;
   const f = { maxOutputTokens: String(c.maxOut || ''), provider: c.provider === 'manual' ? 'manual' : c.provider, anthropicKey: '', anthropicModel: c.anthropic.model, anthropicBaseUrl: c.anthropic.baseUrl, openaiKey: '', openaiModel: c.openai.model, openaiBaseUrl: c.openai.baseUrl, openaiAuthHeader: c.openai.authHeader, openaiApiVersion: c.openai.apiVersion, openaiTokenParam: c.openai.tokenParam };
   const box = h('div', { style: { maxWidth: '980px' } });
@@ -117,11 +154,9 @@ export async function viewSettings() {
         f.provider === 'anthropic' ? h('div', { style: { marginTop: '14px' } }, h('div', { class: 'grid g2' }, inp('anthropicKey', 'API-sleutel', { password: true, ph: c.anthropic.hasKey ? '•••••••• (ingesteld — leeg laten om te behouden)' : 'sk-ant-…', help: 'Wordt alleen op de server bewaard (data/config.json, alleen leesbaar voor de serveraccount) en nooit naar de browser gestuurd.' }), inp('anthropicModel', 'Model', { ph: 'claude-sonnet-5-5', help: 'bijv. claude-sonnet-5-5 (snel/goed), claude-opus-5-5 (zwaarste redeneer-modules)' })), inp('anthropicBaseUrl', 'Base URL (optioneel, voor een gateway)')) : null,
         f.provider === 'openai' ? h('div', { style: { marginTop: '14px' } }, h('div', { class: 'grid g2' }, inp('openaiKey', 'API-sleutel', { password: true, ph: c.openai.hasKey ? '•••••••• (ingesteld)' : '' }), inp('openaiModel', 'Model / deployment')), inp('openaiBaseUrl', 'Base URL', { help: 'OpenAI: https://api.openai.com/v1 · Azure: https://<resource>.openai.azure.com/openai/deployments/<deployment>' }), h('div', { class: 'grid g3' }, inp('openaiAuthHeader', 'Auth-header', { help: 'Authorization (Bearer) of api-key (Azure)' }), inp('openaiApiVersion', 'api-version (Azure)'), inp('openaiTokenParam', 'Token-parameter', { help: 'max_completion_tokens of max_tokens' }))) : null,
         f.provider === 'anthropic' || f.provider === 'openai' ? h('div', { style: { maxWidth: '320px', marginTop: '6px' } }, inp('maxOutputTokens', 'Maximum aantal output-tokens', { help: 'Bovengrens per antwoord. Pas aan als je model minder toestaat (bijv. 16000 voor GPT-4o).' })) : null,
-        h('div', { class: 'row', style: { marginTop: '14px' } }, c.locked ? null : h('button', { class: 'btn primary', onclick: async () => { try { await api('/config', { method: 'PUT', body: f }); const { loadConfig } = await import('./state.js'); await loadConfig(); toast('Instellingen opgeslagen', 'ok'); render(); } catch (e) { toast(e.message, 'error'); } } }, 'Opslaan'),
-          h('button', { class: 'btn ghost', onclick: async (e) => { const b = e.currentTarget; b.disabled = true; b.textContent = 'Testen…'; try { const r = await api('/config/test', { method: 'POST', body: {} }); toast(r.ok ? `Verbinding werkt (${r.ms} ms): "${r.reply}"` : 'Mislukt: ' + r.error, r.ok ? 'ok' : 'error', 7000); } catch (err) { toast(err.message, 'error'); } b.disabled = false; b.textContent = 'Test verbinding'; } }, 'Test verbinding'))),
-      h('div', { class: 'card top', style: { marginTop: '20px' } }, h('h3', null, 'Gegevens'), h('p', { class: 'muted' }, 'Pursuits staan als JSON-bestanden in de data-map van de server. Maak regelmatig een back-up (ook bij het wisselen van server).'),
-        h('div', { class: 'row' }, h('a', { class: 'btn ghost', href: '/api/backup', download: 'pursuit-navigator-backup.json' }, icon('download', 16), 'Back-up downloaden'),
-          h('label', { class: 'btn ghost', style: { cursor: 'pointer' } }, icon('upload', 16), 'Back-up terugzetten', h('input', { type: 'file', accept: '.json', class: 'hidden', onchange: async (e) => { const file = e.target.files[0]; if (!file) return; if (!(await confirmBox('Back-up terugzetten?', 'Pursuits met hetzelfde id worden overschreven.', 'Terugzetten', 'primary'))) return; try { const j = JSON.parse(await file.text()); const r = await api('/backup', { method: 'POST', body: j }); toast(`${r.imported} pursuits teruggezet`, 'ok'); } catch (err) { toast(err.message, 'error'); } } })))),
+        h('div', { class: 'row', style: { marginTop: '14px' } }, c.locked ? null : h('button', { class: 'btn primary', onclick: async () => { try { await saveConfig(f); toast('Instellingen opgeslagen', 'ok'); render(); } catch (e) { toast(e.message, 'error'); } } }, 'Opslaan'),
+          h('button', { class: 'btn ghost', onclick: async (e) => { const b = e.currentTarget; b.disabled = true; b.textContent = 'Testen…'; try { const r = await testConnection(); toast(r.ok ? `Verbinding werkt (${r.ms} ms): "${r.reply}"` : 'Mislukt: ' + r.error, r.ok ? 'ok' : 'error', 7000); } catch (err) { toast(err.message, 'error'); } b.disabled = false; b.textContent = 'Test verbinding'; } }, 'Test verbinding'))),
+      backupCard(),
       h('div', { class: 'card', style: { marginTop: '20px' } }, h('h3', null, 'Over'), h('dl', { class: 'kv' }, h('dt', null, 'Versie'), h('dd', null, c.version), h('dt', null, 'Gebruiker'), h('dd', null, `${S.me?.name} (${S.me?.source === 'sso' ? 'via SSO' : 'lokaal ingesteld'})`), h('dt', null, 'Framework'), h('dd', null, FW.source || '—'), h('dt', null, 'Nog toe te voegen'), h('dd', null, ['M10', 'M11', 'M12', 'M13', 'M14'].filter((m) => !moduleAvailable(m)).join(', ') || 'niets — alle modules hebben prompts'))));
   }
   render();

@@ -60,20 +60,20 @@ const ok = (c, m) => { if (!c) { failures++; console.log('  ✗ FAIL:', m); } el
     await page.locator('.gate button:has-text("Bevestigen en opslaan")').click();
     await page.waitForSelector('.gate .callout.green', { timeout: 10000 });
   }
-  const mod = async (id) => { await page.goto(`${BASE}/#/p/${PID}/m/${id}`); await page.waitForSelector('.mhead h1'); };
+  const mod = async (id) => { await page.goto(`${BASE}/#${PID}-${id}`); await page.waitForSelector('.mhead h1'); };
   let PID;
 
   // ---------- 1 dashboard + demo ----------
   console.log('Dashboard & voorbeeldcase');
   await page.goto(BASE + '/'); await page.waitForSelector('.hero h1');
   await page.click('text=Probeer de voorbeeldcase'); await page.waitForSelector('.nextstep');
-  PID = page.url().split('/p/')[1].split('/')[0];
+  PID = page.url().split('#')[1].split('-')[0];
   ok(!!PID, 'voorbeeldcase aangemaakt: ' + PID);
   await shot('10-overview');
 
   // ---------- 2 M0 quickstart ----------
   console.log('M0 snelstart');
-  await page.click('text=Snelstart M0'); await page.waitForURL(/\/m\/M0/, { timeout: 30000 }); await page.waitForSelector('.gate button:has-text("Bevestigen en opslaan")');
+  await page.click('text=Snelstart M0'); await page.waitForURL(/-M0$/, { timeout: 30000 }); await page.waitForSelector('.gate button:has-text("Bevestigen en opslaan")');
   await page.click('.gate button:has-text("Bevestigen en opslaan")'); await page.waitForSelector('.gate .callout.green');
   ok(true, 'M0 gate opgeslagen (Ledger v0)');
 
@@ -141,14 +141,14 @@ const ok = (c, m) => { if (!c) { failures++; console.log('  ✗ FAIL:', m); } el
   await run('Deel 1');
   await run('Deel 2');
   await gate();
-  await page.goto(`${BASE}/#/p/${PID}/artefacts`); await page.waitForSelector('.src-item');
+  await page.goto(`${BASE}/#${PID}-artefacts`); await page.waitForSelector('.src-item');
   ok((await page.locator('.src-item', { hasText: 'M6 Build Package' }).count()) === 1, 'M6 Build Package artefact opgeslagen');
   await mod('M7');
   await run('Bouw het klikbare prototype');
   await run('Review in zes punten');
   await run('Wijzig precies één ding');
   await gate();
-  await page.goto(`${BASE}/#/p/${PID}/artefacts`); await page.waitForSelector('.src-item');
+  await page.goto(`${BASE}/#${PID}-artefacts`); await page.waitForSelector('.src-item');
   ok((await page.locator('.src-item', { hasText: 'Prototype v2' }).count()) === 1, 'Prototype v1/v2 artefacten');
   await shot('20-artefacts');
 
@@ -173,10 +173,10 @@ const ok = (c, m) => { if (!c) { failures++; console.log('  ✗ FAIL:', m); } el
   await mod('M10');
   ok(await page.locator('.callout.amber', { hasText: 'Nog niet beschikbaar' }).count() === 1, 'M10 zonder officiële prompts: uitleg in plaats van verzonnen prompt');
   ok(await step('AI-annex').locator('.run-btn').first().isDisabled(), 'M10: uitvoeren staat uit zolang de prompt ontbreekt');
-  await page.goto(`${BASE}/#/p/${PID}`); await page.waitForSelector('.nextstep');
+  await page.goto(`${BASE}/#${PID}`); await page.waitForSelector('.nextstep');
   ok(!/M1[0-4]/.test(await page.locator('.nextstep h2').innerText()), 'volgende-stap slaat modules zonder prompts over');
   const stub = JSON.parse(fs.readFileSync(__dirname + '/fixtures/stub-prompts-m10-m14.json', 'utf8'));
-  await page.goto(`${BASE}/#/library/M10`); await page.waitForSelector('.empty-slot');
+  await page.goto(`${BASE}/#library-M10`); await page.waitForSelector('.empty-slot');
   await page.locator('.card.top', { hasText: 'P1 ·' }).locator('button:has-text("Plak de officiële prompt")').click();
   await page.locator('.modal textarea').fill(stub['M10:P1'].text + '\n\nWorkshop output discipline — Return only what is requested above. Max 50 words.');
   await page.locator('.modal button:has-text("Opslaan")').click(); await page.waitForTimeout(600);
@@ -184,7 +184,7 @@ const ok = (c, m) => { if (!c) { failures++; console.log('  ✗ FAIL:', m); } el
   ok(cur['M10:P1'] && /Workshop output discipline/.test(cur['M10:P1'].text), 'officiële prompt via de bibliotheek bewaard (gedeeld op de server)');
   const merged = { ...stub, ...cur };
   await fetch(BASE + '/api/prompts', { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify(merged) });
-  await page.goto(`${BASE}/#/p/${PID}/m/M10`); await page.waitForSelector('.mhead h1');
+  await page.goto(`${BASE}/#${PID}-M10`); await page.waitForSelector('.mhead h1');
   ok(await page.locator('.callout.amber', { hasText: 'Nog niet beschikbaar' }).count() === 0, 'M10 is actief zodra de prompt is toegevoegd');
   await mod('M10');
   await run('AI-annex', { 'Eerste release': 'site A, week 6' });
@@ -219,31 +219,31 @@ const ok = (c, m) => { if (!c) { failures++; console.log('  ✗ FAIL:', m); } el
 
   // ---------- 11 cockpit pages ----------
   console.log('Cockpit');
-  await page.goto(`${BASE}/#/p/${PID}`); await page.waitForSelector('.nextstep');
+  await page.goto(`${BASE}/#${PID}`); await page.waitForSelector('.nextstep');
   ok(/Alle modules zijn afgerond/.test(await page.locator('.nextstep').innerText()), 'overzicht: alle modules afgerond');
   ok((await page.locator('.card.top.red .src-item').count()) >= 4, 'voorwaarden zichtbaar in cockpit');
   await shot('30-overview-done');
-  await page.goto(`${BASE}/#/p/${PID}/ledger`); await page.waitForSelector('.lfields');
+  await page.goto(`${BASE}/#${PID}-ledger`); await page.waitForSelector('.lfields');
   ok((await page.locator('.lfield').count()) === 8, 'Ledger: 8 velden');
   await shot('31-ledger');
-  await page.goto(`${BASE}/#/p/${PID}/map`); await page.waitForSelector('.wmap');
+  await page.goto(`${BASE}/#${PID}-map`); await page.waitForSelector('.wmap');
   ok((await page.locator('.wmap th.lit').count()) >= 6, 'Workflow-map: stages lit');
   await shot('32-map');
   const dl = page.waitForEvent('download');
-  await page.goto(`${BASE}/#/p/${PID}`);
+  await page.goto(`${BASE}/#${PID}`);
   await page.locator('.side a', { hasText: 'Exporteer dossier' }).click();
   const d = await dl; const path = await d.path(); const buf = fs.readFileSync(path);
   ok(buf.length > 8000 && buf.slice(0, 2).toString() === 'PK', `dossier .docx (${buf.length} bytes)`);
 
   // ---------- 12 library / me / settings / help ----------
-  for (const [r, sel] of [['library', '.ws'], ['me', '.card.top'], ['settings', '.card.top'], ['help', '.card.top']]) { await page.goto(`${BASE}/#/${r}`); await page.waitForSelector(sel); }
+  for (const [r, sel] of [['library', '.ws'], ['me', '.card.top'], ['instellingen', '.card.top'], ['help', '.card.top']]) { await page.goto(`${BASE}/#${r}`); await page.waitForSelector(sel); }
   ok(true, 'bibliotheek, werkwijze, instellingen, help laden');
-  await page.goto(`${BASE}/#/library/M10`); await page.waitForSelector('.card.top .code, pre.code');
+  await page.goto(`${BASE}/#library-M10`); await page.waitForSelector('.card.top .code, pre.code');
   await shot('40-library');
 
   // ---------- 13 new pursuit with upload + casepack build ----------
   console.log('Nieuwe pursuit met upload');
-  await page.goto(BASE + '/#/new'); await page.waitForSelector('form');
+  await page.goto(BASE + '/#new'); await page.waitForSelector('form');
   await page.locator('.field', { hasText: 'Klant' }).first().locator('input').fill('Acme Water');
   await page.locator('.field', { hasText: 'Opportunity' }).first().locator('input').fill('Leak detection');
   if (FILE) { await page.setInputFiles('input[type=file]', FILE); await page.waitForSelector('.src-item', { timeout: 20000 }); ok(true, 'PDF-bron gelezen'); }

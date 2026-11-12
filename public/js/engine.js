@@ -103,32 +103,81 @@ export const CASEPACK_TITLES = {
   '05': 'User reality', '06': 'Evidence themes', canvas: 'Case canvas', header: 'Case header',
 };
 
-export function workspaceFiles(p, { scope } = {}) {
+// A "part" is one file of the workspace: a Case Pack document or a source. Parts can be shortened to fit a byte budget
+// (the artifact build has a 256 KiB limit per Claude call; the server build has none).
+export function workspaceParts(p, { scope } = {}) {
   const sc = scope || p.meta?.context || 'both';
   const parts = [];
   const docs = p.casepack?.docs || {};
   if (sc !== 'sources') {
     for (const k of CASEPACK_KEYS) {
       const d = docs[k];
-      if (d && d.text && d.include !== false) parts.push(`<file name="Case Pack — ${/^\d/.test(k) ? k + ' ' : ''}${CASEPACK_TITLES[k]}">\n${d.text.trim()}\n</file>`);
+      if (d && d.text && d.include !== false) parts.push({ kind: 'cp', name: `Case Pack — ${/^\d/.test(k) ? k + ' ' : ''}${CASEPACK_TITLES[k]}`, head: `<file name="Case Pack — ${/^\d/.test(k) ? k + ' ' : ''}${CASEPACK_TITLES[k]}">`, text: d.text.trim() });
     }
   }
   if (sc !== 'casepack') {
     for (const s of p.sources || []) {
       if (s.include === false || !s.text) continue;
-      parts.push(`<file name="Source — ${s.name}" type="${s.type || 'document'}"${s.date ? ` date="${s.date}"` : ''}>\n${s.text.trim()}\n</file>`);
+      parts.push({ kind: 'src', name: s.name, head: `<file name="Source — ${s.name}" type="${s.type || 'document'}"${s.date ? ` date="${s.date}"` : ''}>`, text: s.text.trim() });
     }
   }
   return parts;
 }
+const renderPart = (x) => `${x.head}\n${x.text}\n</file>`;
+export const utf8Bytes = (s) => (typeof TextEncoder !== 'undefined' ? new TextEncoder().encode(s).length : String(s).length);
 
-export function buildSystem(p, settings, scope) {
-  const files = workspaceFiles(p, { scope });
-  let s = standingInstructions(settings);
-  s += '\n\n# WORKSPACE FILES\nThese files are "my case documents in this workspace". Cite them in F tags by number and section (e.g. F [02 §3]) or by file name and page (e.g. F [Tender.pdf p.4]).\n\n';
-  s += files.length ? files.join('\n\n') : '(No files in this workspace yet.)';
-  return s;
+/** Shorten parts so that they fit `budget` bytes: Case Pack first (kept whole when possible), sources share the rest equally. */
+export function fitParts(parts, budget) {
+  const OVER = 40;
+  const sized = parts.map((x) => ({ ...x, bytes: utf8Bytes(x.text) + utf8Bytes(x.head) + OVER, total: x.text.length }));
+  const total = sized.reduce((a, x) => a + x.bytes, 0);
+  if (!budget || total <= budget) return { parts: sized, truncated: [], total, budget };
+  const cut = (x, capBytes) => {
+    if (x.bytes <= capBytes) return x;
+    const ratio = utf8Bytes(x.text) / Math.max(1, x.text.length);
+    const chars = Math.max(500, Math.floor((capBytes - utf8Bytes(x.head) - OVER - 160) / ratio));
+    const shown = x.text.slice(0, chars).replace(/\s+\S*$/, '');
+    return { ...x, text: shown + `\n[… ingekort: ${shown.length} van ${x.text.length} tekens meegestuurd; de rest paste niet in één aanroep]`, bytes: capBytes, shown: shown.length };
+  };
+  let cp = sized.filter((x) => x.kind === 'cp'), src = sized.filter((x) => x.kind === 'src');
+  const cpBytes = cp.reduce((a, x) => a + x.bytes, 0);
+  let srcBudget = budget - cpBytes;
+  if (src.length && srcBudget < budget * 0.3) { // leave sources at least 30%: shorten the Case Pack proportionally
+    const scale = (budget * 0.7) / cpBytes;
+    cp = cp.map((x) => cut(x, Math.floor(x.bytes * scale)));
+    srcBudget = budget - cp.reduce((a, x) => a + x.bytes, 0);
+  } else if (!src.length && cpBytes > budget) cp = cp.map((x) => cut(x, Math.floor(x.bytes * (budget / cpBytes))));
+  // water-filling for the sources
+  const order = src.map((x, i) => ({ x, i })).sort((a, b) => a.x.bytes - b.x.bytes);
+  const out = new Array(src.length);
+  let remaining = Math.max(0, srcBudget), left = order.length;
+  for (const { x, i } of order) {
+    const share = remaining / left;
+    const r = x.bytes <= share ? x : cut(x, Math.max(1500, Math.floor(share)));
+    out[i] = r; remaining -= r.bytes; left--;
+  }
+  const result = [...cp, ...out];
+  const byName = new Map(sized.map((x) => [x.name, x]));
+  const truncated = result.filter((x) => x.shown !== undefined).map((x) => ({ name: x.name, shown: x.shown, total: byName.get(x.name).total }));
+  // keep the original order (Case Pack first, then sources — as produced by workspaceParts)
+  return { parts: result, truncated, total, budget };
 }
+
+export function workspaceFiles(p, opts = {}) {
+  const fitted = opts.maxBytes ? fitParts(workspaceParts(p, opts), opts.maxBytes).parts : workspaceParts(p, opts);
+  return fitted.map(renderPart);
+}
+
+/** System prompt of a workspace chat; `maxBytes` = how much a single AI call may carry for the system part. */
+export function buildSystemEx(p, settings, scope, { maxBytes } = {}) {
+  let head = standingInstructions(settings);
+  head += '\n\n# WORKSPACE FILES\nThese files are "my case documents in this workspace". Cite them in F tags by number and section (e.g. F [02 §3]) or by file name and page (e.g. F [Tender.pdf p.4]).\n\n';
+  const parts = workspaceParts(p, { scope });
+  const fit = fitParts(parts, maxBytes ? Math.max(5000, maxBytes - utf8Bytes(head) - 100) : 0);
+  const body = fit.parts.length ? fit.parts.map(renderPart).join('\n\n') : '(No files in this workspace yet.)';
+  return { text: head + body, truncated: fit.truncated, total: fit.total, bytes: utf8Bytes(head) + utf8Bytes(body) };
+}
+export function buildSystem(p, settings, scope, opts) { return buildSystemEx(p, settings, scope, opts).text; }
 
 /** Merge consecutive same-role messages, drop UI-only ones and empty ones, make sure the first is a user turn. */
 export function normalizeMessages(msgs) {

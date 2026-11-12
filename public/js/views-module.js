@@ -10,6 +10,7 @@ import { makeCtx, runStep, runGate, saveGate, stopRunning, running, previewStep,
 import { modStatus, modTitle, nextModule, OPTIONAL } from './helpers.js';
 import { previewHtml } from './views-pursuit.js';
 import { hoursEditor } from './views-misc.js';
+import { R } from './routes.js';
 
 const stripDemo = (t) => String(t || '').replace(/^> \*\*DEMO-OUTPUT\*\*[^\n]*\n\n?/, '');
 
@@ -47,8 +48,8 @@ export async function viewModule(p, modId) {
       h('p', { class: 'muted', style: { maxWidth: '78ch' } }, mod.intro),
       h('div', { class: 'row' }, h('span', { class: 'chip purple' }, icon('clock', 12), ` ± ${mod.minutes} min`), h('span', { class: 'chip ' + (st === 'done' ? 'green' : st === 'doing' ? 'amber' : '') }, st === 'done' ? 'afgerond' : st === 'doing' ? 'bezig' : 'nog niet gestart'), OPTIONAL.has(modId) ? h('span', { class: 'chip' }, 'persoonlijke module — optioneel per pursuit') : null,
         !moduleAvailable(modId) ? h('span', { class: 'chip amber', title: 'De officiële prompts van deze module zijn nog niet toegevoegd' }, 'prompts ontbreken nog') : null),
-      !moduleAvailable(modId) ? h('div', { class: 'callout amber', style: { marginTop: '12px' } }, h('b', null, 'Nog niet beschikbaar'), `De officiële prompts van ${modId} zijn nog niet toegevoegd; de app verzint ze niet. De kaart hieronder (stappen, checks, tips) komt letterlijk uit het werkboek. Plak de prompts uit de deelnemersgids in via `, h('a', { href: `#/library/${modId}` }, `Bibliotheek → ${modId}`), ' — de module is dan meteen actief voor het hele team.') : null,
-      !ctx.hasLedger && modId !== 'M0' ? h('div', { class: 'callout red', style: { marginTop: '12px' } }, h('b', null, 'Nog geen Ledger'), 'Elke skill leest de Pursuit Ledger. Draai eerst ', h('a', { href: `#/p/${p.id}/m/M0` }, 'M0'), ' (of gebruik "Snelstart" op het overzicht).') : null,
+      !moduleAvailable(modId) ? h('div', { class: 'callout amber', style: { marginTop: '12px' } }, h('b', null, 'Nog niet beschikbaar'), `De officiële prompts van ${modId} zijn nog niet toegevoegd; de app verzint ze niet. De kaart hieronder (stappen, checks, tips) komt letterlijk uit het werkboek. Plak de prompts uit de deelnemersgids in via `, h('a', { href: R.library(modId) }, `Bibliotheek → ${modId}`), ' — de module is dan meteen actief voor het hele team.') : null,
+      !ctx.hasLedger && modId !== 'M0' ? h('div', { class: 'callout red', style: { marginTop: '12px' } }, h('b', null, 'Nog geen Ledger'), 'Elke skill leest de Pursuit Ledger. Draai eerst ', h('a', { href: R.mod(p.id, 'M0') }, 'M0'), ' (of gebruik "Snelstart" op het overzicht).') : null,
       !ctx.hasDocs ? h('div', { class: 'callout amber', style: { marginTop: '12px' } }, h('b', null, 'Lege werkruimte'), 'Er zijn nog geen bronnen of Case Pack. Voeg eerst de RFP en gesprekken toe — anders antwoordt elke skill met "Not provided — needs validation".') : null);
   }
 
@@ -296,7 +297,7 @@ export async function viewModule(p, modId) {
       body.append(h('div', { class: 'callout green' }, h('b', null, 'Gate afgerond'), `Opgeslagen op ${fmtDateTime(g.savedAt)}. De Ledger en je workflow-map zijn bijgewerkt.`));
       body.append(reviewView(g, true));
       const nx = nextModule(p);
-      body.append(h('div', { class: 'row' }, nx ? h('a', { class: 'btn primary', href: `#/p/${p.id}/m/${nx}` }, `Volgende: ${nx} · ${modTitle(nx)}`, icon('arrowRight', 16)) : null, h('button', { class: 'btn ghost', onclick: async () => { if (await confirmBox('Gate opnieuw doen?', 'De module wordt weer "bezig". De Ledger blijft de laatst opgeslagen versie tot je het gate opnieuw bevestigt.', 'Opnieuw', 'primary')) { await patch([{ op: 'set', path: ['modules', modId, 'gate'], value: null }, { op: 'set', path: ['modules', modId, 'status'], value: 'doing' }]); rerender(); } } }, 'Gate opnieuw uitvoeren')));
+      body.append(h('div', { class: 'row' }, nx ? h('a', { class: 'btn primary', href: R.mod(p.id, nx) }, `Volgende: ${nx} · ${modTitle(nx)}`, icon('arrowRight', 16)) : null, h('button', { class: 'btn ghost', onclick: async () => { if (await confirmBox('Gate opnieuw doen?', 'De module wordt weer "bezig". De Ledger blijft de laatst opgeslagen versie tot je het gate opnieuw bevestigt.', 'Opnieuw', 'primary')) { await patch([{ op: 'set', path: ['modules', modId, 'gate'], value: null }, { op: 'set', path: ['modules', modId, 'status'], value: 'doing' }]); rerender(); } } }, 'Gate opnieuw uitvoeren')));
       return wrap;
     }
     const hcBlock = () => {

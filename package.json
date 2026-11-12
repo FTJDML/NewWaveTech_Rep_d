@@ -12,10 +12,15 @@
     "test": "node --test tests/unit.mjs tests/providers.mjs",
     "e2e": "node tests/e2e.cjs"
   },
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
     "docx": "^9.0.0",
     "mammoth": "^1.8.0",
     "pdf-parse": "^1.1.1"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
   }
 }

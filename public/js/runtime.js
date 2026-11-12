@@ -3,7 +3,7 @@ import { S, patch, streamAI, saveUser } from './state.js';
 import { FW, getPrompt } from './framework.js';
 import { FLOWS, art } from './flows.js';
 import {
-  buildSystem, normalizeMessages, ledgerBlock, resolvePrompt, parseGate, nextStageNeeds, decisionLine, DEFAULT_BANNER,
+  buildSystem, buildSystemEx, utf8Bytes, normalizeMessages, ledgerBlock, resolvePrompt, parseGate, nextStageNeeds, decisionLine, DEFAULT_BANNER,
   hoursSummary, estimateTokens, todayIso, dateEn,
 } from './engine.js';
 import { uid, modal, h, copyText, icon, toast, autoGrow, downloadText } from './ui.js';
@@ -39,13 +39,20 @@ function ensureModule(P, modId) {
   return ops;
 }
 
+/** Workspace system prompt, shortened to the per-call limit of the platform (artifact: 256 KiB for everything one call carries). */
+export function sysFor(P, settings, scope, otherBytes = 0) {
+  const limit = S.config?.maxPromptBytes || 0;
+  const maxBytes = limit ? Math.max(30000, limit - otherBytes - 8000) : undefined;
+  return buildSystemEx(P, settings, scope === 'casepack' ? 'casepack' : undefined, { maxBytes });
+}
+
 /** Build the exact user message of a step (also used by the "Bekijk prompt" preview). */
 export function previewStep(modId, step, values) {
   const ctx = makeCtx(modId);
   const b = step.build(ctx, values || {});
   const content = typeof b === 'string' ? b : b.content + attachText(b.attach);
   const scope = step.scope || 'workspace';
-  const system = scope === 'private' ? '' : buildSystem(S.p, ctx.settings, scope === 'casepack' ? 'casepack' : undefined);
+  const system = scope === 'private' ? '' : sysFor(S.p, ctx.settings, scope, utf8Bytes(content)).text;
   return { content, system, tokens: estimateTokens(system) + estimateTokens(content), ctx };
 }
 
@@ -88,8 +95,10 @@ export async function runStep(modId, step, values, { freeText, onUpdate, regener
   if (step.noReply) { await patch([...ensureModule(P, modId), { op: 'push', path: basePath, value: userMsg }], { pid }); onUpdate && onUpdate({ phase: 'done' }); return { ok: true }; }
 
   const scope = step.scope || 'workspace';
-  const system = scope === 'private' ? '' : buildSystem(S.p, ctx.settings, scope === 'casepack' ? 'casepack' : undefined);
   const messages = normalizeMessages([...existing, userMsg]);
+  const sys = scope === 'private' ? { text: '', truncated: [] } : sysFor(P, ctx.settings, scope, messages.reduce((a, m) => a + utf8Bytes(m.content), 0));
+  const system = sys.text;
+  if (sys.truncated.length) toast('Niet alles paste in één Claude-aanroep: ' + sys.truncated.map((x) => `${x.name} (${Math.round((x.shown / x.total) * 100)}%)`).join(', ') + ' is ingekort. Het Case Pack blijft compleet; zet bronnen uit of splits ze voor meer.', 'info', 9000);
   const maxTokens = step.maxTokens || 12000;
   const t0 = Date.now();
   let text, usage;
@@ -132,8 +141,8 @@ export async function continueMessage(modId, step, msg, { onUpdate } = {}) {
   if (idx < 0) throw new Error('Bericht niet gevonden');
   const ctx = makeCtx(modId);
   const scope = step.scope || 'workspace';
-  const system = scope === 'private' ? '' : buildSystem(S.p, ctx.settings, scope === 'casepack' ? 'casepack' : undefined);
   const messages = normalizeMessages([...arr.slice(0, idx + 1), { role: 'user', content: 'Continue from where you stopped.' }]);
+  const system = scope === 'private' ? '' : sysFor(P, ctx.settings, scope, messages.reduce((a, m) => a + utf8Bytes(m.content), 0)).text;
   const ac = new AbortController(); running.id = 'cont'; running.abort = () => ac.abort();
   onUpdate && onUpdate({ phase: 'start' });
   try {
