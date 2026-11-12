@@ -1,0 +1,21 @@
+{
+  "name": "cgi-pursuit-navigator",
+  "version": "1.0.0",
+  "description": "CGI AI-Native DCS Pursuit Navigator — guided pursuit workspace that runs the Academy framework (Workflow Skills, Gates, Pursuit Ledger) with AI.",
+  "private": true,
+  "type": "module",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "demo": "AI_PROVIDER=mock node server/index.js",
+    "test": "node --test tests/unit.mjs tests/providers.mjs",
+    "e2e": "node tests/e2e.cjs"
+  },
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "docx": "^9.0.0",
+    "mammoth": "^1.8.0",
+    "pdf-parse": "^1.1.1"
+  }
+}
