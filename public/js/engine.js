@@ -146,7 +146,16 @@ export function normalizeMessages(msgs) {
 // ---------------------------------------------------------------------------------------------
 // Markdown helpers for parsing model output
 // ---------------------------------------------------------------------------------------------
-const splitRow = (l) => l.trim().replace(/^\|/, '').replace(/\|$/, '').split(/(?<!\\)\|/).map((c) => c.trim());
+function splitRow(l) {
+  const s = l.trim().replace(/^\|/, '').replace(/\|$/, '');
+  const out = []; let cur = '';
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i];
+    if (ch === '\\' && s[i + 1] === '|') { cur += '|'; i++; } else if (ch === '|') { out.push(cur.trim()); cur = ''; } else cur += ch;
+  }
+  out.push(cur.trim());
+  return out;
+}
 
 export function findTables(md) {
   const lines = String(md || '').split('\n');

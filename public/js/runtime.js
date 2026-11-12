@@ -237,3 +237,16 @@ export async function reparseGate(modId) {
   await patch([{ op: 'set', path: ['modules', modId, 'gate'], value: { ...g, raw: msg.content, parsed: parseGate(msg.content), truncated: !!msg.usage?.truncated } }]);
 }
 export function gateStep(modId) { return { id: 'gate', title: 'Gate', thread: 'main', scope: 'workspace', maxTokens: 16000 }; }
+
+/** Add a practical hint to the most common provider errors. */
+export function explainError(msg) {
+  const m = String(msg || '');
+  let hint = '';
+  if (/prompt is too long|too long|context.{0,20}(length|window)|maximum context|too many tokens/i.test(m)) hint = 'De werkruimte is te groot voor het model. Zet bronnen uit bij Bronnen (vinkje "meenemen") of kies "Alleen Case Pack".';
+  else if (/401|403|invalid.{0,12}(api.?key|x-api-key)|authentication|unauthori[sz]ed|permission/i.test(m)) hint = 'Controleer de API-sleutel en de rechten bij Instellingen → AI-koppeling.';
+  else if (/429|rate.?limit|too many requests|quota/i.test(m)) hint = 'Limiet bereikt. Probeer het over een minuut opnieuw, of vraag een hogere limiet aan.';
+  else if (/overload|529|503|502|temporar/i.test(m)) hint = 'De AI-provider is tijdelijk overbelast. Probeer het opnieuw.';
+  else if (/model.{0,30}(not.?found|does not exist|unknown)|not_found/i.test(m)) hint = 'Controleer de modelnaam bij Instellingen → AI-koppeling.';
+  else if (/failed to fetch|network|ENOTFOUND|ECONNREFUSED|fetch failed|getaddrinfo/i.test(m)) hint = 'De server kan de AI-provider niet bereiken. Controleer netwerk, proxy en base URL.';
+  return hint ? m + ' — ' + hint : m;
+}

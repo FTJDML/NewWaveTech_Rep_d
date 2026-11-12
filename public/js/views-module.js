@@ -6,7 +6,7 @@ import { ROUTES, FLOWS, FORMS, moduleCards, lastMsg, art, artHtmlList, hoursText
 import {
   STAGES, stageOf, extractStarQuestions, parseLedger, parseGate, decisionLine, todayIso, estimateTokens, fmtTokens, nextStageNeeds, dateEn, LEDGER_FIELDS,
 } from './engine.js';
-import { makeCtx, runStep, runGate, saveGate, stopRunning, running, previewStep, editMessage, resetFrom, continueMessage, composeGate, markModuleDone, threadOf, reparseGate, gateStep } from './runtime.js';
+import { makeCtx, runStep, runGate, saveGate, stopRunning, running, previewStep, editMessage, resetFrom, continueMessage, composeGate, markModuleDone, threadOf, reparseGate, gateStep, explainError } from './runtime.js';
 import { modStatus, modTitle, nextModule, OPTIONAL } from './helpers.js';
 import { previewHtml } from './views-pursuit.js';
 import { hoursEditor } from './views-misc.js';
@@ -183,7 +183,7 @@ export async function viewModule(p, modId) {
       document.querySelectorAll('.run-btn').forEach((b) => (b.disabled = false));
       streamNode.remove();
       if (res.aborted) { toast('Gestopt', 'info'); }
-      else { errs[step.id] = res.error; }
+      else { errs[step.id] = explainError(res.error); }
       rerender(); return;
     }
     const idx = flow.steps.findIndex((s) => s.id === step.id);
@@ -345,7 +345,7 @@ export async function viewModule(p, modId) {
     document.querySelectorAll('.run-btn').forEach((b) => (b.disabled = true));
     const res = await runGate(modId, gateOpts(gs, gk), { onUpdate: (u) => { if (u.phase === 'delta' && Date.now() - last > 160) { last = Date.now(); mountMarkdown(bodyEl, u.text); } } }).catch((e) => ({ ok: false, error: e.message }));
     document.querySelectorAll('.run-btn').forEach((b) => (b.disabled = false));
-    if (!res.ok) { streamNode.remove(); if (!res.aborted) { errs.gate = res.error; holder.append(h('div', { class: 'err' }, res.error)); } return; }
+    if (!res.ok) { streamNode.remove(); if (!res.aborted) { errs.gate = explainError(res.error); holder.append(h('div', { class: 'err' }, errs.gate)); } return; }
     rerender();
   }
 

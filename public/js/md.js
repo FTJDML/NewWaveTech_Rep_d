@@ -26,7 +26,16 @@ export function inline(raw) {
 }
 
 const isTableSep = (l) => /^\s*\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?\s*$/.test(l);
-const splitRow = (l) => l.trim().replace(/^\|/, '').replace(/\|$/, '').split(/(?<!\\)\|/).map((c) => c.trim().replace(/\\\|/g, '|'));
+function splitRow(l) {
+  const s = l.trim().replace(/^\|/, '').replace(/\|$/, '');
+  const out = []; let cur = '';
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i];
+    if (ch === '\\' && s[i + 1] === '|') { cur += '|'; i++; } else if (ch === '|') { out.push(cur.trim()); cur = ''; } else cur += ch;
+  }
+  out.push(cur.trim());
+  return out;
+}
 
 export function renderMarkdown(md) {
   const lines = String(md ?? '').replace(/\r/g, '').split('\n');

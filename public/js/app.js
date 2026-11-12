@@ -4,6 +4,7 @@ import { loadFramework } from './framework.js';
 import { viewDashboard, viewNew, viewHelp } from './views-core.js';
 import { viewPursuit } from './views-pursuit.js';
 import { viewLibrary, viewMe, viewSettings } from './views-misc.js';
+import { running } from './runtime.js';
 
 const root = document.getElementById('app');
 let mainEl;
@@ -80,7 +81,14 @@ async function route() {
 
 window.addEventListener('hashchange', route);
 window.addEventListener('pn:refresh', route);
-onChange((w) => { if (w === 'config') renderChrome(); });
+onChange((w) => {
+  if (w === 'config') renderChrome();
+  if (w === 'remote') { // a teammate changed this pursuit: refresh the view unless you are typing or a call is running
+    const a = document.activeElement;
+    if (running.id || document.querySelector('.modal-back') || (a && ['INPUT', 'TEXTAREA', 'SELECT'].includes(a.tagName))) return;
+    route();
+  }
+});
 
 (async function boot() {
   shell();

@@ -9,7 +9,7 @@ import { ROUTES, HOURS_STAGES, FLOWS } from './flows.js';
 import { ORDER, OPTIONAL, modTitle, modStatus, nextModule, stageState, progress, allConditions, dueState, refDate } from './helpers.js';
 import { viewSources } from './views-sources.js';
 import { builderMessage, parseCasePack, packChecks } from './casepack.js';
-import { settingsOf, manualAsk, makeCtx, runStep, runGate, saveGate, composeGate } from './runtime.js';
+import { settingsOf, manualAsk, makeCtx, runStep, runGate, saveGate, composeGate, explainError } from './runtime.js';
 import { viewModule } from './views-module.js';
 
 // ------------------------------------------------------------------------------------------------
@@ -277,7 +277,7 @@ function viewCasePack(p, query) {
       await patch(ops);
       toast(`Case Pack ${mode === 'update' ? 'bijgewerkt' : 'gebouwd'} (${keys.length} onderdelen). Controleer het — jij bent de menselijke check.`, 'ok', 6000);
       cur = keys.includes('01') ? '01' : keys[0];
-    } catch (e) { try { mdl.close(); } catch { /* closed */ } if (!ac.signal.aborted) toast(e.message, 'error', 8000); }
+    } catch (e) { try { mdl.close(); } catch { /* closed */ } if (!ac.signal.aborted) toast(explainError(e.message), 'error', 9000); }
     building = false; render();
   }
   function showRaw(text) { modal({ title: 'Ruw antwoord', wide: true, body: h('pre', { class: 'code small' }, text), actions: [{ label: 'Kopieer', kind: 'ghost', keep: true, onClick: () => copyText(text) }, { label: 'Sluiten', kind: 'primary' }] }); }
@@ -336,6 +336,9 @@ function viewLedger(p) {
     } else if (L) {
       box.append(h('div', { class: 'lfields' }, LEDGER_FIELDS.map((f) => h('div', { class: 'lfield' + (f.n <= 3 ? ' fixed' : '') }, h('h4', null, h('span', { class: 'num' }, f.n), f.name, f.n <= 3 ? h('span', { class: 'chip red' }, 'vast blok') : null), (() => { const d = h('div', { class: 'md' }); mountMarkdown(d, L.fields[f.n] || '—'); return d; })()))));
     } else { const d = h('div', { class: 'card md' }); mountMarkdown(d, cur.text); box.append(d); }
+    const decs = (p.decisions || []).slice().sort((a, b) => (a.at || '').localeCompare(b.at || ''));
+    if (decs.length) box.append(h('div', { class: 'card top red' }, h('h3', null, 'Wat jij hebt vastgelegd'), h('p', { class: 'small muted' }, 'Alleen wat je zelf als besluit, voorkeur of notitie typte — de rest blijft "Open".'),
+      decs.map((d) => h('div', { class: 'src-item' }, h('div', { class: 'grow' }, h('span', { class: 'chip ' + (d.kind === 'decision' ? 'red' : 'purple') }, d.module + ' · ' + (d.kind === 'decision' ? 'besluit' : d.kind === 'lean' ? 'voorkeur (H)' : 'notitie')), ' ', h('b', null, d.text), (d.conditions || []).map((c) => h('div', { class: 'small muted' }, '• ' + c.text + ' — ' + (c.owner || '?') + (c.due ? ' — ' + fmtDate(c.due) : '') + (c.status === 'met' ? ' ✓ voldaan' : ''))), d.flip ? h('div', { class: 'small muted' }, '⚑ flip fact: ' + d.flip.text) : null), h('div', { class: 'xs muted' }, fmtDate(d.at))))));
     const ev = (p.evidence || []).filter((e) => !e.applied);
     if (ev.length) box.append(h('div', { class: 'card' }, h('h3', null, 'Bewijsregels onder de Ledger'), h('p', { class: 'small muted' }, 'Gaan mee onder elke skill tot het volgende gate ze verwerkt.'), ev.map((e) => h('div', { class: 'small' }, '• ' + e.text))));
     const hist = (p.ledger.history || []).slice().reverse();
