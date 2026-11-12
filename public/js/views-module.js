@@ -1,6 +1,6 @@
 import { h, icon, toast, modal, confirmBox, fmtDate, fmtDateTime, uid, autoGrow, clear, copyText, debounce } from './ui.js';
 import { S, patch, saveUser } from './state.js';
-import { FW, getPrompt } from './framework.js';
+import { FW, getPrompt, moduleAvailable, humanChecksOf } from './framework.js';
 import { mountMarkdown } from './md.js';
 import { ROUTES, FLOWS, FORMS, moduleCards, lastMsg, art, artHtmlList, hoursText } from './flows.js';
 import {
@@ -46,8 +46,8 @@ export async function viewModule(p, modId) {
       h('p', { class: 'q' }, '“' + mod.question + '”'),
       h('p', { class: 'muted', style: { maxWidth: '78ch' } }, mod.intro),
       h('div', { class: 'row' }, h('span', { class: 'chip purple' }, icon('clock', 12), ` ± ${mod.minutes} min`), h('span', { class: 'chip ' + (st === 'done' ? 'green' : st === 'doing' ? 'amber' : '') }, st === 'done' ? 'afgerond' : st === 'doing' ? 'bezig' : 'nog niet gestart'), OPTIONAL.has(modId) ? h('span', { class: 'chip' }, 'persoonlijke module — optioneel per pursuit') : null,
-        mod.reconstructed ? h('span', { class: 'chip amber', title: 'De officiële gids voor deze module zat niet in het aangeleverde materiaal' }, 'prompts gereconstrueerd uit werkboek') : null),
-      mod.reconstructed ? h('div', { class: 'callout amber', style: { marginTop: '12px' } }, h('b', null, 'Let op'), `De deelnemersgids van ${modId} is niet meegeleverd. De kaart (stappen, checks, tips) is letterlijk uit het werkboek; de Workflow Skill-prompts zijn daaruit gereconstrueerd in dezelfde opbouw. Vervang ze door de officiële tekst via Bibliotheek → ${modId} → Bewerk zodra je die hebt.`) : null,
+        !moduleAvailable(modId) ? h('span', { class: 'chip amber', title: 'De officiële prompts van deze module zijn nog niet toegevoegd' }, 'prompts ontbreken nog') : null),
+      !moduleAvailable(modId) ? h('div', { class: 'callout amber', style: { marginTop: '12px' } }, h('b', null, 'Nog niet beschikbaar'), `De officiële prompts van ${modId} zijn nog niet toegevoegd; de app verzint ze niet. De kaart hieronder (stappen, checks, tips) komt letterlijk uit het werkboek. Plak de prompts uit de deelnemersgids in via `, h('a', { href: `#/library/${modId}` }, `Bibliotheek → ${modId}`), ' — de module is dan meteen actief voor het hele team.') : null,
       !ctx.hasLedger && modId !== 'M0' ? h('div', { class: 'callout red', style: { marginTop: '12px' } }, h('b', null, 'Nog geen Ledger'), 'Elke skill leest de Pursuit Ledger. Draai eerst ', h('a', { href: `#/p/${p.id}/m/M0` }, 'M0'), ' (of gebruik "Snelstart" op het overzicht).') : null,
       !ctx.hasDocs ? h('div', { class: 'callout amber', style: { marginTop: '12px' } }, h('b', null, 'Lege werkruimte'), 'Er zijn nog geen bronnen of Case Pack. Voeg eerst de RFP en gesprekken toe — anders antwoordt elke skill met "Not provided — needs validation".') : null);
   }
@@ -230,7 +230,7 @@ export async function viewModule(p, modId) {
     if (showForm) {
       const label = step.noReply ? 'Toevoegen aan chat' : step.chat ? 'Start de simulatie' : done ? 'Opnieuw uitvoeren' : 'Uitvoeren';
       const missingNow = () => (step.inputs || []).filter((x) => x.required && (!sv[x.key] || !String(sv[x.key]).trim()) && !(x.show && !x.show(ctx))).map((x) => x.label);
-      const btn = h('button', { class: 'btn primary run-btn', onclick: async () => { const missing = missingNow(); if (missing.length) { toast('Vul eerst in: ' + missing[0], 'error'); return; } if (done && !step.chat) { if (!(await confirmBox('Opnieuw uitvoeren?', 'Het huidige antwoord van deze stap (en latere stappen) wordt vervangen.', 'Opnieuw uitvoeren', 'primary'))) return; await resetFrom(modId, i); } exec(step); } }, step.noReply ? icon('check', 16) : icon('play', 16), label);
+      const btn = h('button', { class: 'btn primary run-btn', disabled: !moduleAvailable(modId), title: moduleAvailable(modId) ? '' : 'Voeg eerst de officiële prompts toe (Bibliotheek)', onclick: async () => { const missing = missingNow(); if (missing.length) { toast('Vul eerst in: ' + missing[0], 'error'); return; } if (done && !step.chat) { if (!(await confirmBox('Opnieuw uitvoeren?', 'Het huidige antwoord van deze stap (en latere stappen) wordt vervangen.', 'Opnieuw uitvoeren', 'primary'))) return; await resetFrom(modId, i); } exec(step); } }, step.noReply ? icon('check', 16) : icon('play', 16), label);
       body.append(h('div', { class: 'runbar' }, btn, guard ? h('span', { class: 'small', style: { color: 'var(--red-700)' } }, icon('alert', 15), ' ' + guard) : null, S.config.provider !== 'mock' && (S.config.provider === 'manual' || !S.config.hasKey) ? h('span', { class: 'chip amber' }, 'kopieer-modus') : null));
     }
     if (errs[step.id]) body.append(h('div', { class: 'err' }, h('b', null, 'Mislukt: '), errs[step.id]));
@@ -301,7 +301,9 @@ export async function viewModule(p, modId) {
     }
     const hcBlock = () => {
       const hc = state().checks || {};
-      return h('div', null, h('h4', null, 'Menselijke checks — de jouwe, vóór je bevestigt'), h('div', { class: 'hc' }, mod.humanChecks.map((c, i) => h('label', null, h('input', { type: 'checkbox', checked: !!hc[i], onchange: (e) => patch([...(p.modules?.[modId] ? [] : [{ op: 'set', path: ['modules', modId], value: { status: 'todo', threads: {}, data: {}, page: {} } }]), { op: 'set', path: ['modules', modId, 'checks', i], value: e.target.checked }], { silent: true }) }), h('span', null, c)))));
+      const checks = humanChecksOf(modId);
+      if (!checks.length) return h('div');
+      return h('div', null, h('h4', null, 'Menselijke checks — de jouwe, vóór je bevestigt'), h('div', { class: 'hc' }, checks.map((c, i) => h('label', null, h('input', { type: 'checkbox', checked: !!hc[i], onchange: (e) => patch([...(p.modules?.[modId] ? [] : [{ op: 'set', path: ['modules', modId], value: { status: 'todo', threads: {}, data: {}, page: {} } }]), { op: 'set', path: ['modules', modId, 'checks', i], value: e.target.checked }], { silent: true }) }), h('span', null, c)))));
     };
     if (g?.parsed && !g.saved) { body.append(hcBlock(), reviewView(g, false)); return wrap; }
 

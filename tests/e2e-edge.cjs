@@ -21,7 +21,7 @@ const jpost = async (u, body, method = 'POST') => (await fetch(u, { method, head
   const step = (t) => page.locator('.step', { has: page.locator('.step-head h3', { hasText: t }) }).first();
   const openStep = async (t) => { const s = step(t); if (!(await s.evaluate((e) => e.classList.contains('open')))) await s.locator('.step-head').click(); return s; };
   const fieldIn = (scope, label) => scope.locator('.field', { has: page.locator('label.f', { hasText: label }) }).first().locator('input,textarea,select').first();
-  const doneWait = (t) => page.waitForFunction((t) => { const st = [...document.querySelectorAll('.step')].find((x) => x.querySelector('.step-head h3')?.textContent.includes(t)); return st && st.classList.contains('done') && !document.querySelector('.streaming'); }, t, { timeout: 30000 });
+  const doneWait = (t) => page.waitForFunction((t) => { const st = [...document.querySelectorAll('.step')].find((x) => x.querySelector('.step-head h3')?.textContent.includes(t)); return st && st.classList.contains('done') && !document.querySelector('.streaming') && !document.querySelector('.run-btn[disabled]'); }, t, { timeout: 30000 });
   async function run(t, fills = {}) { const s = await openStep(t); for (const [l, v] of Object.entries(fills)) await fieldIn(s, l).fill(v); await s.locator('.run-btn').first().click(); await doneWait(t); }
   const toast = () => page.locator('#toasts').innerText().catch(() => '');
 
@@ -112,11 +112,11 @@ const jpost = async (u, body, method = 'POST') => (await fetch(u, { method, head
   ok(thread.some((m) => m.role === 'assistant' && m.step === 's1'), 'antwoord is bewaard ook nadat je wegnavigeerde');
 
   console.log('Prompt library override');
-  await page.goto(`${BASE}/#/library/M10`); await page.waitForSelector('pre.code');
+  await page.goto(`${BASE}/#/library/M3`); await page.waitForSelector('pre.code');
   await page.locator('.card.top', { hasText: 'P2 ·' }).locator('button:has-text("Bewerk")').click();
   const ta = page.locator('.modal textarea'); await ta.fill((await ta.inputValue()) + '\nOFFICIAL-TEXT-MARKER'); await page.locator('.modal button:has-text("Opslaan")').click(); await page.waitForTimeout(500);
   const ov = await (await fetch(BASE + '/api/prompts')).json();
-  ok(ov['M10:P2']?.text.includes('OFFICIAL-TEXT-MARKER'), 'prompt-override wordt gedeeld op de server bewaard');
+  ok(ov['M3:P2']?.text.includes('OFFICIAL-TEXT-MARKER'), 'prompt-override wordt gedeeld op de server bewaard');
   await jpost(BASE + '/api/prompts', {}, 'PUT');
 
   console.log('Sources & Case Pack editing');

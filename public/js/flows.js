@@ -1,5 +1,5 @@
 // Orchestration of every module: which Workflow Skill / prompt runs when, with which inputs, in which thread,
-// and what the result feeds. The prompt texts themselves live in skills.json / reconstructed.js (verbatim).
+// and what the result feeds. The prompt texts themselves live in skills.json (verbatim from the guides); M10–M14 get theirs via the Prompt Library.
 import { getPrompt, FW } from './framework.js';
 import { resolvePrompt, ledgerBlock, extractBlock, extractStarQuestions, extractHtml, cleanInline, findTables, nextStageNeeds, hoursSummary, dateEn } from './engine.js';
 
@@ -33,7 +33,14 @@ export const caseFile = (p, suffix, ext = 'html') => `${caseSlug(p)}_${suffix}.$
 
 function renderP(ctx, modId, pid, vals) {
   const pr = getPrompt(modId, pid);
+  if (!pr || !String(pr.text || '').trim()) throw new Error(`De officiële prompt ${modId} · ${pid} is nog niet toegevoegd. Plak hem in de Bibliotheek (${modId} → Bewerk); daarna werkt deze module direct.`);
   return resolvePrompt(pr, ctx.settings, vals);
+}
+/** M10–M14: the official prompts are added later and may name their placeholders differently — make sure every typed input
+ *  reaches the model even if a placeholder is not recognised. (No effect when the placeholder was filled.) */
+function ensure(text, pairs) {
+  const missing = pairs.filter(([, v]) => String(v ?? '').trim() && !text.includes(String(v).trim()));
+  return missing.length ? text + '\n\nINPUTS FROM THE APP (use these wherever the skill asks for them)\n' + missing.map(([k, v]) => `- ${k}: ${String(v).trim()}`).join('\n') : text;
 }
 const skillMsg = (ctx, modId, pid, vals, { ledger = true, before = '', after = '' } = {}) => {
   let t = renderP(ctx, modId, pid, vals);
@@ -295,7 +302,7 @@ export const FLOWS = {
       { id: 's1', title: 'AI-annex en herziene offerte', min: 12, maxTokens: 14000,
         desc: 'Beantwoordt de zes vragen van een AI-geletterde koper (D1–D6) zonder iets te claimen zonder bron, voegt de governance van je contractvorm toe en herziet de offerte.',
         inputs: [{ key: 'CONFIRMED', type: 'text', label: 'Schriftelijk bevestigd (policy, clausule, goedgekeurde tool)', default: () => 'none' }, { key: 'FIRST', type: 'text', label: 'Eerste release — waar en wanneer', placeholder: 'bijv. site A, week 6', required: true }],
-        build: (c, v) => skillMsg(c, 'M10', 'P1', { CONFIRMED: (v.CONFIRMED || '').trim() || 'none', 'FIRST RELEASE': v.FIRST }) },
+        build: (c, v) => ensure(skillMsg(c, 'M10', 'P1', { CONFIRMED: (v.CONFIRMED || '').trim() || 'none', 'FIRST RELEASE': v.FIRST }), [['[CONFIRMED]', (v.CONFIRMED || '').trim() || 'none'], ['[FIRST RELEASE]', v.FIRST]]) },
       { id: 's2', title: 'De DPO — en dan hardop in 30 seconden', min: 9, maxTokens: 5000,
         desc: 'De DPO van de klant toetst het annex. Lees blok (5) en zeg het hardop in 30 seconden; beantwoord dan de vervolgvraag "who pays if your AI gets it wrong?".',
         build: (c) => renderP(c, 'M10', 'P2', {}),
@@ -319,7 +326,7 @@ export const FLOWS = {
         desc: 'Privé-chat met alleen het prototype en je M11-regels. Een sceptische gebruiker die het nog nooit zag.',
         inputs: [{ key: 'FILE', type: 'proto', label: 'Prototype' }, { key: 'LINES', type: 'textarea', rows: 4, label: 'M11-regels en persona', default: (c) => c.needsFor('M11').join('\n') || 'none — use my primary user' }],
         guard: (c, v) => (v?.FILE?.html || artHtmlList(c.p).length ? null : 'Geen prototype gevonden.'),
-        build: (c, v) => ({ content: renderP(c, 'M11', 'P2', { 'M11 LINES': v.LINES }), attach: [{ name: v.FILE.name || 'prototype.html', text: v.FILE.html }] }) },
+        build: (c, v) => ({ content: ensure(renderP(c, 'M11', 'P2', { 'M11 LINES': v.LINES, 'MY LINES': v.LINES }), [['[MY LINES]', v.LINES]]), attach: [{ name: v.FILE.name || 'prototype.html', text: v.FILE.html }] }) },
       { id: 's4', title: 'Wijzig precies één ding → frozen', min: 5, thread: 'tester', scope: 'private', maxTokens: 32000,
         desc: 'De fix van de gesimuleerde gebruiker, één zin. Het resultaat is je bevroren bestand; klik daarna wat je veranderde en je taak 1 opnieuw.',
         inputs: [{ key: 'CHANGE', type: 'textarea', rows: 2, required: true, label: 'Wijziging (één zin)', default: (c) => firstFix(lastMsg(c.mod, 'tester', 'assistant', 's3'), true) }],
@@ -340,7 +347,7 @@ export const FLOWS = {
         desc: 'Compliance, de cijfers van finance woord voor woord tegen de cap, delivery en elke eerdere voorwaarde — en een besluit dat het model nooit zelf neemt.',
         inputs: [{ key: 'FIG', type: 'textarea', rows: 3, required: true, label: 'Cijfers van finance (woordelijk), "illustrative" of "not yet"', placeholder: 'not yet', default: () => 'not yet' }, { key: 'SIGN', type: 'text', required: true, label: 'Wie tekent, en wanneer', placeholder: 'bijv. VP Consulting + Delivery Lead, 18 Dec' },
           { key: 'TPL', type: 'textarea', rows: 3, label: 'Eigen bid-board template (optioneel)' }],
-        build: (c, v) => skillMsg(c, 'M12', 'P1', { FIGURES: v.FIG, 'SIGN-OFF': v.SIGN }, { after: String(v.TPL || '').trim() ? 'MY UNIT\'S BID-BOARD TEMPLATE:\n' + v.TPL.trim() : '' }) },
+        build: (c, v) => ensure(skillMsg(c, 'M12', 'P1', { FIGURES: v.FIG, 'SIGN-OFF': v.SIGN }, { after: String(v.TPL || '').trim() ? 'MY UNIT\'S BID-BOARD TEMPLATE:\n' + v.TPL.trim() : '' }), [['[FIGURES]', v.FIG], ['[SIGN-OFF]', v.SIGN]]) },
       { id: 's2', title: 'De delivery lead (simulatie)', min: 8, maxTokens: 4000,
         desc: 'Vier vragen, één voor één: scope en schatting · team en key roles · afhankelijkheden · eerste release en wat bij uitloop. Eindig met "end the rehearsal".',
         build: (c) => renderP(c, 'M12', 'P2', {}),
@@ -354,7 +361,7 @@ export const FLOWS = {
       { id: 's1', title: 'Vijf slides', min: 10, maxTokens: 12000,
         desc: 'Vijf slides waarvan de titels alleen al het betoog dragen, met je commerciële feiten woord voor woord. Lees de vijf titels los.',
         inputs: [{ key: 'FACTS', type: 'textarea', rows: 3, required: true, label: 'Commerciële feiten zoals ingediend', default: () => 'see Ledger' }, { key: 'MEETING', type: 'text', required: true, label: 'De meeting: wie (rollen), hoeveel minuten, wanneer', placeholder: 'bijv. COO + CFO, 20 min, 12 Jan' }],
-        build: (c, v) => skillMsg(c, 'M13', 'P1', { 'COMMERCIAL FACTS': v.FACTS, MEETING: v.MEETING }) },
+        build: (c, v) => ensure(skillMsg(c, 'M13', 'P1', { 'COMMERCIAL FACTS': v.FACTS, MEETING: v.MEETING }), [['[COMMERCIAL FACTS]', v.FACTS], ['[MEETING]', v.MEETING]]) },
       { id: 's2', title: 'De repetitie — beslisser, dan CFO', min: 13, maxTokens: 4000,
         desc: 'Twee antwoorden aan de beslisser, dan "switch to the CFO", twee antwoorden, dan "end the rehearsal". Zeg elk antwoord eerst hardop: wat ontbrak als eerste — bewijs of een grens?',
         build: (c) => renderP(c, 'M13', 'P2', {}),
@@ -368,11 +375,11 @@ export const FLOWS = {
       { id: 's1', title: 'Sluit mijn workflow af', min: 9, maxTokens: 10000,
         desc: 'Foutenlogboek, menselijke checks, de drie stages waarmee je maandag begint en een eerste echt gebruik binnen zeven dagen. De app levert je gate-rijen, uren en First-use-regels zelf aan.',
         inputs: [{ key: 'OCC', type: 'text', required: true, label: 'Echte gelegenheid (vergadering, deadline of besluit)', placeholder: 'bijv. bid review opportunity X, 3 Dec' }, { key: 'REV', type: 'text', required: true, label: 'Reviewer (een rol)', placeholder: 'bijv. Senior Pursuit Manager' }],
-        build: (c, v) => skillMsg(c, 'M14', 'P1', { OCCASION: v.OCC, REVIEWER: v.REV }, { after: 'MY WORKFLOW ROWS\n' + workflowRowsText(c.p) + '\n\nMY HOURS (sheet Hours)\n' + hoursText(c.user) + '\nHours with this workflow: ' + [1, 2, 3, 4, 5, 6, 7].map((i) => `${HOURS_STAGES[i - 1]}: ${c.user?.hours?.['g' + i] || ''}`).join(' · ') + '\n\nFIRST USE\n' + Object.entries(c.user?.firstUse || {}).map(([k, v]) => `${k}: ${v}`).join('\n') }) },
+        build: (c, v) => ensure(skillMsg(c, 'M14', 'P1', { OCCASION: v.OCC, REVIEWER: v.REV }, { after: 'MY WORKFLOW ROWS\n' + workflowRowsText(c.p) + '\n\nMY HOURS (sheet Hours)\n' + hoursText(c.user) + '\nHours with this workflow: ' + [1, 2, 3, 4, 5, 6, 7].map((i) => `${HOURS_STAGES[i - 1]}: ${c.user?.hours?.['g' + i] || ''}`).join(' · ') + '\n\nFIRST USE\n' + Object.entries(c.user?.firstUse || {}).map(([k, v]) => `${k}: ${v}`).join('\n') }), [['my occasion for the first real use', v.OCC], ['my reviewer (a role)', v.REV]]) },
       { id: 's2', title: 'Mijn Workflow Portrait', min: 9, maxTokens: 24000,
         desc: 'Eén pagina, voor en na, als HTML-bestand — met je uren precies zoals je ze gaf.',
         inputs: [{ key: 'DATE', type: 'date', required: true, label: '30-dagen review op' }, { key: 'ROLE', type: 'text', required: true, label: 'Wie vertel je het (rol)' }],
-        build: (c, v) => renderP(c, 'M14', 'P2', { DATE: dateEn(v.DATE), ROLE: v.ROLE }) + '\n\nMY HOURS SHEET (A3:J17)\n' + hoursText(c.user) + '\nHours with this workflow: ' + [1, 2, 3, 4, 5, 6, 7].map((i) => `${HOURS_STAGES[i - 1]}: ${c.user?.hours?.['g' + i] || ''}`).join(' · ') + '\n\n' + workflowRowsText(c.p),
+        build: (c, v) => ensure(renderP(c, 'M14', 'P2', { DATE: dateEn(v.DATE), ROLE: v.ROLE }), [['my 30-day review date', dateEn(v.DATE)], ['who I tell (a role)', v.ROLE]]) + '\n\nMY HOURS SHEET (A3:J17)\n' + hoursText(c.user) + '\nHours with this workflow: ' + [1, 2, 3, 4, 5, 6, 7].map((i) => `${HOURS_STAGES[i - 1]}: ${c.user?.hours?.['g' + i] || ''}`).join(' · ') + '\n\n' + workflowRowsText(c.p),
         onResult: (c, text) => { const h = extractHtml(text); return h ? [artefactOp('M14', 'm14-portrait', 'Workflow Portrait', 'html', h.html)] : []; } },
       { id: 's3', title: 'Eén play, case B (transfer-run)', min: 10, thread: 'caseB', scope: 'private', maxTokens: 14000,
         desc: 'Kies één Workflow Skill en draai hem op nieuw materiaal dat hij nooit zag — zonder Ledger van deze case. Resultaat: een gelabeld concept, of een stop die benoemt wat ontbreekt.',

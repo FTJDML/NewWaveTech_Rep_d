@@ -24,21 +24,24 @@ const ok = (c, m) => { if (!c) { failures++; console.log('  ✗ FAIL:', m); } el
   const fieldIn = (scope, label) => scope.locator('.field', { has: page.locator('label.f', { hasText: label }) }).first().locator('input,textarea,select').first();
   const stepDone = (t) => page.waitForFunction((t) => {
     const st = [...document.querySelectorAll('.step')].find((x) => x.querySelector('.step-head h3')?.textContent.includes(t));
-    return st && st.classList.contains('done') && !document.querySelector('.streaming');
+    return st && st.classList.contains('done') && !document.querySelector('.streaming') && !document.querySelector('.run-btn[disabled]'); // buttons are re-enabled by the re-render that follows a finished call
   }, t, { timeout: 30000 });
   async function run(t, fills = {}, { btn, clicks = [] } = {}) {
     const s = await openStep(t);
     for (const [label, val] of Object.entries(fills)) await fieldIn(s, label).fill(val);
     for (const c of clicks) await s.locator('button', { hasText: c }).first().click();
     await s.locator('.run-btn', { hasText: btn || '' }).first().click();
-    await stepDone(t);
+    try { await stepDone(t); } catch (e) {
+      const diag = await page.evaluate((t) => { const st = [...document.querySelectorAll('.step')].find((x) => x.querySelector('.step-head h3')?.textContent.includes(t)); return { cls: st?.className, err: [...document.querySelectorAll('.err')].map((x) => x.innerText.slice(0, 200)), disabled: [...document.querySelectorAll('.run-btn[disabled]')].length, streaming: !!document.querySelector('.streaming'), toasts: document.getElementById('toasts')?.innerText }; }, t);
+      console.log('  … diagnose stap "' + t + '":', JSON.stringify(diag)); throw e;
+    }
   }
   async function chat(t, text) {
     const s = await openStep(t);
     await s.locator('.chatbox textarea').fill(text);
     const before = await s.locator('.out').count();
     await s.locator('.chatbox .run-btn').click();
-    await page.waitForFunction(({ t, before }) => { const st = [...document.querySelectorAll('.step')].find((x) => x.querySelector('.step-head h3')?.textContent.includes(t)); return st && st.querySelectorAll('.out:not(.streaming)').length > before; }, { t, before }, { timeout: 30000 });
+    await page.waitForFunction(({ t, before }) => { const st = [...document.querySelectorAll('.step')].find((x) => x.querySelector('.step-head h3')?.textContent.includes(t)); return st && st.querySelectorAll('.out:not(.streaming)').length > before && !document.querySelector('.run-btn[disabled]'); }, { t, before }, { timeout: 30000 });
   }
   async function gate({ decision, conds = [], flip, note } = {}) {
     const g = page.locator('.gate');
@@ -166,6 +169,23 @@ const ok = (c, m) => { if (!c) { failures++; console.log('  ✗ FAIL:', m); } el
   await run('Team en skills');
   await run('Deel 2');
   await gate();
+  console.log('M10–M14: no official prompts yet → add them later through the library');
+  await mod('M10');
+  ok(await page.locator('.callout.amber', { hasText: 'Nog niet beschikbaar' }).count() === 1, 'M10 zonder officiële prompts: uitleg in plaats van verzonnen prompt');
+  ok(await step('AI-annex').locator('.run-btn').first().isDisabled(), 'M10: uitvoeren staat uit zolang de prompt ontbreekt');
+  await page.goto(`${BASE}/#/p/${PID}`); await page.waitForSelector('.nextstep');
+  ok(!/M1[0-4]/.test(await page.locator('.nextstep h2').innerText()), 'volgende-stap slaat modules zonder prompts over');
+  const stub = JSON.parse(fs.readFileSync(__dirname + '/fixtures/stub-prompts-m10-m14.json', 'utf8'));
+  await page.goto(`${BASE}/#/library/M10`); await page.waitForSelector('.empty-slot');
+  await page.locator('.card.top', { hasText: 'P1 ·' }).locator('button:has-text("Plak de officiële prompt")').click();
+  await page.locator('.modal textarea').fill(stub['M10:P1'].text + '\n\nWorkshop output discipline — Return only what is requested above. Max 50 words.');
+  await page.locator('.modal button:has-text("Opslaan")').click(); await page.waitForTimeout(600);
+  const cur = await (await fetch(BASE + '/api/prompts')).json();
+  ok(cur['M10:P1'] && /Workshop output discipline/.test(cur['M10:P1'].text), 'officiële prompt via de bibliotheek bewaard (gedeeld op de server)');
+  const merged = { ...stub, ...cur };
+  await fetch(BASE + '/api/prompts', { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify(merged) });
+  await page.goto(`${BASE}/#/p/${PID}/m/M10`); await page.waitForSelector('.mhead h1');
+  ok(await page.locator('.callout.amber', { hasText: 'Nog niet beschikbaar' }).count() === 0, 'M10 is actief zodra de prompt is toegevoegd');
   await mod('M10');
   await run('AI-annex', { 'Eerste release': 'site A, week 6' });
   await run('De DPO');

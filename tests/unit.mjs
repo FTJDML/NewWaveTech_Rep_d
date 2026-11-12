@@ -11,19 +11,44 @@ const skills = JSON.parse(fs.readFileSync(path.join(root, 'public/data/skills.js
 globalThis.fetch = async (u) => ({ ok: true, json: async () => (String(u).includes('skills.json') ? skills : {}) });
 
 const E = await import('../public/js/engine.js');
-const { FW, loadFramework, getPrompt } = await import('../public/js/framework.js');
+const { FW, loadFramework, getPrompt, moduleAvailable, humanChecksOf } = await import('../public/js/framework.js');
+const stub = JSON.parse(fs.readFileSync(path.join(root, 'tests/fixtures/stub-prompts-m10-m14.json'), 'utf8'));
 const { FLOWS } = await import('../public/js/flows.js');
-const { RECONSTRUCTED } = await import('../public/js/reconstructed.js');
 const { parseCasePack } = await import('../public/js/casepack.js');
 await loadFramework();
 
-const allPrompts = () => Object.entries(FW.modules).flatMap(([m, mod]) => mod.prompts.map((p) => ({ m, p })));
+const allPrompts = () => Object.entries(FW.modules).flatMap(([m, mod]) => mod.prompts.filter((p) => p.text).map((p) => ({ m, p })));
 
-test('framework: 15 modules, M0–M9 verbatim from the guides, M10–M14 flagged as reconstructed', () => {
+test('framework: 15 modules; M0–M9 verbatim from the guides; M10–M14 have no invented prompts', () => {
   assert.equal(Object.keys(FW.modules).length, 15);
-  for (let i = 0; i <= 9; i++) assert.ok(!FW.modules['M' + i].reconstructed, 'M' + i);
-  for (let i = 10; i <= 14; i++) assert.ok(FW.modules['M' + i].reconstructed, 'M' + i);
+  for (let i = 0; i <= 9; i++) { assert.ok(!FW.modules['M' + i].pending, 'M' + i); assert.ok(moduleAvailable('M' + i), 'M' + i + ' available'); }
+  for (let i = 10; i <= 14; i++) {
+    const m = FW.modules['M' + i];
+    assert.ok(m.pending && m.prompts.length > 0 && m.prompts.every((p) => !p.text), 'M' + i + ' has empty slots only');
+    assert.ok(!moduleAvailable('M' + i), 'M' + i + ' not available');
+    assert.ok(m.steps.length === 3 && m.good.length && m.leaveWith, 'M' + i + ' keeps the workbook card');
+  }
   assert.ok(FW.gate.text.includes('GATE — close this module'));
+});
+
+test('M10–M14: a missing official prompt gives a clear error; pasting it activates the module (discipline block split off)', () => {
+  const step = FLOWS.M12.steps[0];
+  const ctx = { p: { meta: {}, artefacts: [] }, settings: { mode: 'practice', discipline: false }, ledger: 'L', user: { hours: {} }, mod: { threads: {}, data: {} }, needsFor: () => [] };
+  assert.throws(() => step.build(ctx, { FIG: 'not yet', SIGN: 'VP' }), /officiële prompt M12 · P1 is nog niet toegevoegd/);
+  const official = 'WORKFLOW SKILL M12 · Official\n\nINPUTS\n2. Finance: [FIGURES — finance figures]\n3. Sign-off: [SIGN-OFF — roles and date]\n\nHUMAN CHECK — mine, before the gate\n- Figures word for word\n- Conditions carry evidence\n\nWorkshop output discipline — Return only what is requested above. Max 100 words.';
+  FW.overrides = { 'M12:P1': { text: official } };
+  try {
+    assert.ok(moduleAvailable('M12'));
+    assert.deepEqual(humanChecksOf('M12'), ['Figures word for word', 'Conditions carry evidence']);
+    const p1 = getPrompt('M12', 'P1');
+    assert.ok(p1.text.includes('{{DISCIPLINE}}') && p1.discipline.startsWith('Workshop output discipline —'));
+    const out = step.build(ctx, { FIG: 'EUR 1.2M max', SIGN: 'VP, 18 Dec' });
+    assert.ok(out.includes('Finance: EUR 1.2M max') && out.includes('Sign-off: VP, 18 Dec') && !/Workshop output discipline/.test(out));
+    // a differently named placeholder in the official text must not lose the typed input
+    FW.overrides = { 'M12:P1': { text: 'WORKFLOW SKILL M12\n\nUse [BOARD DATE] and [FINANCE NUMBERS].' } };
+    const out2 = step.build(ctx, { FIG: 'EUR 1.2M max', SIGN: 'VP, 18 Dec' });
+    assert.ok(out2.includes('INPUTS FROM THE APP') && out2.includes('[FIGURES]: EUR 1.2M max') && out2.includes('[SIGN-OFF]: VP, 18 Dec'));
+  } finally { FW.overrides = {}; }
 });
 
 test('every module has a flow and every flow step builds a prompt that exists', () => {
@@ -57,6 +82,7 @@ test('placeholders are filled; nothing is left unresolved by any flow step', () 
   const SAMPLE = { NOTES: 'n', FIG: 'f', 'BID EFFORT': '350 h', MARGIN: 'standard', CRITERION: 'from the Ledger', DRAFT: 'draft text', FIGURES: 'x', FIRST: 'week 6', CONFIRMED: 'none', OCC: 'o', REV: 'r', DATE: '2026-12-20', ROLE: 'VP', CASEB: 'case b text', SIGN: 's', FACTS: 'see Ledger', MEETING: 'm', CHANGE: 'one fix', V2: 'v2', PACK: 'pack', CARD: 'card', RS: 'rs', Q1: 'first q', BLIND: 'not run', LINES: 'none', T1: 'a', T2: 'b', DEC: 'a: phase 2 for R5 — cap', LEAN: 'Fixed price', HOURS: '', PKG: 'pkg', TOUCH: '', ROLES: '', COST: '', TPL: '' };
   const ctx = { p: { meta: { route: 'tender' }, artefacts: [{ id: 'm6-package', content: 'pkg' }], modules: {} }, settings: { mode: 'practice', discipline: false, banner: 'B' }, ledger: '**1 Case** x', hasDocs: true, hasLedger: true, user: { hours: { s1: '12' }, firstUse: {} }, mod: { threads: {}, data: { evaluatorPack: 'pack', scorecard: 'sc', v2: 'v2', review: '' } }, needsFor: () => [], modId: 'M3' };
   let n = 0;
+  FW.overrides = stub; // M10–M14 official prompts are added later: test the wiring with a stand-in text
   for (const [id, flow] of Object.entries(FLOWS)) {
     for (const step of flow.steps) {
       const vals = {};
@@ -70,6 +96,7 @@ test('placeholders are filled; nothing is left unresolved by any flow step', () 
       n++;
     }
   }
+  FW.overrides = {};
   assert.ok(n >= 35);
 });
 

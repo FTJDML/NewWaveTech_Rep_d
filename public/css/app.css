@@ -291,3 +291,7 @@ table.tbl{border-collapse:collapse;width:100%;font-size:.92rem}table.tbl th{text
   .bubble-u{margin-left:0}
   .modal{max-height:96vh}.preview-frame{height:420px}
 }
+
+.side a.mod.soon{opacity:.55}
+.side a.mod.soon.on{opacity:1}
+.empty-slot{border:2px dashed #e5c76b;background:var(--amber);border-radius:6px;padding:18px;text-align:center;color:var(--amber-ink)}

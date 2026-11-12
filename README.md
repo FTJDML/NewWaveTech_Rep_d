@@ -67,11 +67,15 @@ De standaardmodus is **Praktijk**. De prompts zijn woordelijk de workshop-prompt
 het model rekent geen cijfer uit dat je niet gaf, beslist nooit over bid/prijs/marge/staffing/juridisch en beoordeelt geen persoon met naam; elke simulatie is
 *rehearsed — not validated*; elk besluit heeft per voorwaarde een eigenaar en een datum.
 
-### Let op: M10–M14
+### M10–M14: voeg de officiële prompts later toe
 
-De deelnemersgidsen van **M10–M14** zaten niet in het aangeleverde materiaal (M0–M9 wel). De kaarten (stappen, "good looks like", "stuck", "not a tender") komen letterlijk uit het
-werkboek; de **prompts zijn gereconstrueerd** uit die beschrijvingen, in dezelfde opbouw (RULES / STEPS / OUTPUT / HUMAN CHECK). Ze zijn in de app gemarkeerd. Plak de officiële
-tekst in via **Bibliotheek → module → Bewerk** (gedeeld met het hele team; terugzetten kan altijd), of ververs `public/data/skills.json` met `tools/build-skills.py` als je de gidsen hebt.
+De deelnemersgidsen van **M10–M14** zaten niet in het aangeleverde materiaal (M0–M9 wel). De app verzint hun prompts niet: de modules tonen wel de kaart uit het werkboek
+(stappen, "good looks like", "stuck", "not a tender"), maar staan **uit** en worden bij *volgende stap*, voortgang en cockpit overgeslagen.
+
+Toevoegen als je de gidsen hebt: **Bibliotheek → M10 → "Plak de officiële prompt"** (de hele box uit Appendix A, woordelijk; het blok *Workshop output discipline* mag erin blijven —
+de app zet het automatisch achter de aan/uit-schakelaar). Zodra P1 erin staat, is de module actief voor het hele team; andere teamleden zien het bij hun volgende navigatie.
+De placeholders die het werkboek noemt (`[CONFIRMED]`, `[FIRST RELEASE]`, `[MY LINES]`, `[FIGURES]`, `[SIGN-OFF]`, `[COMMERCIAL FACTS]`, `[MEETING]`) worden met je invoer gevuld; invoer waarvan de
+placeholder anders heet, wordt onderaan het bericht als "INPUTS FROM THE APP" meegestuurd. Liever in bulk? Ververs `public/data/skills.json` met `tools/build-skills.py`.
 
 ## Teamgebruik
 

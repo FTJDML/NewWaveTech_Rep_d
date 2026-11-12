@@ -6,7 +6,7 @@ import {
   STAGES, CASEPACK_KEYS, CASEPACK_TITLES, findTables, cleanInline, parseLedger, parseOpenItems, nextStageNeeds, findGaps, todayIso, dateEn, estimateTokens, fmtTokens, hoursSummary, parseHours, LEDGER_FIELDS, ledgerBlock,
 } from './engine.js';
 import { ROUTES, HOURS_STAGES, FLOWS } from './flows.js';
-import { ORDER, OPTIONAL, modTitle, modStatus, nextModule, stageState, progress, allConditions, dueState, refDate } from './helpers.js';
+import { ORDER, OPTIONAL, modTitle, modStatus, nextModule, stageState, progress, allConditions, dueState, refDate, available } from './helpers.js';
 import { viewSources } from './views-sources.js';
 import { builderMessage, parseCasePack, packChecks } from './casepack.js';
 import { settingsOf, manualAsk, makeCtx, runStep, runGate, saveGate, composeGate, explainError } from './runtime.js';
@@ -56,7 +56,7 @@ export function wsLayout(p, active, content) {
   const gaps = Object.values(p.casepack?.docs || {}).reduce((a, d) => a + (d?.text ? (d.text.match(/Not provided\s*[—–-]\s*needs validation/gi) || []).length : 0), 0);
   const modLinks = [];
   const m0 = modStatus(p, 'M0');
-  const modItem = (id) => h('a', { class: 'mod' + (active === id ? ' on' : ''), href: `${base}/m/${id}` }, h('span', { class: 'sdot ' + modStatus(p, id) }, modStatus(p, id) === 'done' ? icon('check', 11) : null), h('span', null, id + ' · ' + modTitle(id)));
+  const modItem = (id) => h('a', { class: 'mod' + (active === id ? ' on' : '') + (available(id) ? '' : ' soon'), href: `${base}/m/${id}`, title: available(id) ? '' : 'Officiële prompts nog niet toegevoegd' }, h('span', { class: 'sdot ' + modStatus(p, id) }, modStatus(p, id) === 'done' ? icon('check', 11) : null), h('span', null, id + ' · ' + modTitle(id)), available(id) ? null : h('span', { class: 'xs muted', style: { marginLeft: 'auto' } }, 'binnenkort'));
   modLinks.push(h('div', { class: 'stg' }, 'FUNDAMENT'), modItem('M0'));
   for (const s of STAGES) { modLinks.push(h('div', { class: 'stg' }, `${s.n} · ${s.name.toUpperCase()}`)); s.modules.forEach((id) => modLinks.push(modItem(id))); }
   const prog = progress(p);
@@ -142,12 +142,16 @@ function overview(p) {
     const quick = nx === 'M0' && !p.ledger?.current;
     nextCard = h('div', { class: 'nextstep' }, h('div', null, h('div', { class: 'eyebrow' }, modStatus(p, nx) === 'doing' ? 'Je bent bezig' : 'Volgende module'), h('h2', null, `${nx} · ${mod.title}`), h('p', null, mod.question + ' ' + mod.intro.split('. ')[0] + '.')),
       h('div', { class: 'row' }, quick ? h('button', { class: 'btn ghost lg', onclick: () => quickstart(p) }, icon('spark', 18), 'Snelstart M0 (automatisch)') : null, h('a', { class: 'btn primary lg', href: `#/p/${p.id}/m/${nx}` }, modStatus(p, nx) === 'doing' ? 'Verder' : 'Start', icon('arrowRight', 18))));
-  } else nextCard = h('div', { class: 'nextstep' }, h('div', null, h('div', { class: 'eyebrow' }, 'Klaar'), h('h2', null, 'Alle modules zijn afgerond'), h('p', null, 'Exporteer het dossier, boek de echte sign-off en plan je 30-dagen review.')), h('button', { class: 'btn primary lg', onclick: () => exportDossier(p) }, 'Exporteer dossier'));
+  } else {
+    const pending = ORDER.filter((m) => !available(m));
+    nextCard = h('div', { class: 'nextstep' }, h('div', null, h('div', { class: 'eyebrow' }, 'Klaar'), h('h2', null, pending.length ? 'Alle beschikbare modules zijn afgerond' : 'Alle modules zijn afgerond'),
+      h('p', null, pending.length ? `${pending.join(', ')} volgen zodra de officiële prompts zijn toegevoegd (Bibliotheek). Exporteer ondertussen het dossier en boek de echte sign-off.` : 'Exporteer het dossier, boek de echte sign-off en plan je 30-dagen review.')), h('button', { class: 'btn primary lg', onclick: () => exportDossier(p) }, 'Exporteer dossier'));
+  }
 
   // ---- journey
   const nxStage = nx ? STAGES.find((s) => s.modules.includes(nx))?.n : null;
   const journey = h('div', { class: 'journey' }, STAGES.map((s) => h('div', { class: 'jstage ' + (stageState(p, s.n) === 'done' ? 'done' : stageState(p, s.n) === 'doing' ? 'doing' : s.n === nxStage ? 'next' : '') },
-    h('div', { class: 'n' }, 'STAGE ' + s.n), h('h4', null, s.name), s.modules.map((id) => h('a', { href: `#/p/${p.id}/m/${id}`, title: `${id} · ${modTitle(id)}` }, h('span', { class: 'sdot ' + modStatus(p, id), style: { width: '14px', height: '14px' } }, modStatus(p, id) === 'done' ? icon('check', 9) : null), h('b', null, id), h('span', { class: 'xs muted jt' }, modTitle(id)))))));
+    h('div', { class: 'n' }, 'STAGE ' + s.n), h('h4', null, s.name), s.modules.map((id) => h('a', { href: `#/p/${p.id}/m/${id}`, title: `${id} · ${modTitle(id)}` + (available(id) ? '' : ' — officiële prompts nog niet toegevoegd'), style: available(id) ? null : { opacity: .5 } }, h('span', { class: 'sdot ' + modStatus(p, id), style: { width: '14px', height: '14px' } }, modStatus(p, id) === 'done' ? icon('check', 9) : null), h('b', null, id), h('span', { class: 'xs muted jt' }, modTitle(id)))))));
 
   // ---- strategy on a page
   const L = p.ledger?.current ? parseLedger(p.ledger.current.text) : null;

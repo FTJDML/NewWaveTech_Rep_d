@@ -1,4 +1,4 @@
-import { FW } from './framework.js';
+import { FW, moduleAvailable } from './framework.js';
 import { STAGES, stageOf, todayIso } from './engine.js';
 import { daysUntil } from './ui.js';
 
@@ -7,23 +7,26 @@ export const OPTIONAL = new Set(['M1', 'M14']); // personal workflow modules: on
 export const modTitle = (id) => FW.modules[id]?.title || id;
 export const modStatus = (p, id) => p.modules?.[id]?.status || 'todo';
 
+export const available = (id) => moduleAvailable(id);
 export function nextModule(p) {
-  for (const id of ORDER) if (!OPTIONAL.has(id) && modStatus(p, id) !== 'done') return id;
-  for (const id of ORDER) if (modStatus(p, id) !== 'done') return id;
+  for (const id of ORDER) if (available(id) && !OPTIONAL.has(id) && modStatus(p, id) !== 'done') return id;
+  for (const id of ORDER) if (available(id) && modStatus(p, id) !== 'done') return id;
   return null;
 }
 export function stageState(p, n) {
-  const mods = STAGES.find((s) => s.n === n).modules.filter((m) => !OPTIONAL.has(m));
-  const ids = mods.length ? mods : STAGES.find((s) => s.n === n).modules;
+  const all = STAGES.find((s) => s.n === n).modules.filter(available);
+  const mods = all.filter((m) => !OPTIONAL.has(m));
+  const ids = mods.length ? mods : all;
+  if (!ids.length) return 'todo';
   const st = ids.map((m) => modStatus(p, m));
   if (st.every((s) => s === 'done')) return 'done';
   if (st.some((s) => s !== 'todo')) return 'doing';
   return 'todo';
 }
 export function progress(p) {
-  const req = ORDER.filter((m) => !OPTIONAL.has(m));
+  const req = ORDER.filter((m) => !OPTIONAL.has(m) && available(m));
   const done = req.filter((m) => modStatus(p, m) === 'done').length;
-  return { done, total: req.length, pct: Math.round((done / req.length) * 100) };
+  return { done, total: req.length, pct: req.length ? Math.round((done / req.length) * 100) : 0 };
 }
 export function allConditions(p) {
   const out = [];

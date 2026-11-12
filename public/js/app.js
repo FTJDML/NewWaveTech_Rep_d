@@ -1,6 +1,6 @@
 import { h, clear, icon, toast, modal, $ } from './ui.js';
 import { S, loadConfig, loadList, loadUser, openPursuit, closePursuit, onChange, userName, setUserName, api } from './state.js';
-import { loadFramework } from './framework.js';
+import { loadFramework, refreshOverrides } from './framework.js';
 import { viewDashboard, viewNew, viewHelp } from './views-core.js';
 import { viewPursuit } from './views-pursuit.js';
 import { viewLibrary, viewMe, viewSettings } from './views-misc.js';
@@ -63,6 +63,7 @@ async function route() {
   let view;
   try {
     if (seg[0] !== 'p') closePursuit();
+    if (seg[0] === 'p' || seg[0] === 'library') await refreshOverrides();
     if (!seg.length) { await loadList(); view = await viewDashboard(); }
     else if (seg[0] === 'new') view = await viewNew();
     else if (seg[0] === 'p' && seg[1]) { await openPursuit(seg[1]); view = await viewPursuit(seg.slice(2)); }
