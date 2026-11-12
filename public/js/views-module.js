@@ -6,7 +6,7 @@ import { ROUTES, FLOWS, FORMS, moduleCards, lastMsg, art, artHtmlList, hoursText
 import {
   STAGES, stageOf, extractStarQuestions, parseLedger, parseGate, decisionLine, todayIso, estimateTokens, fmtTokens, nextStageNeeds, dateEn, LEDGER_FIELDS,
 } from './engine.js';
-import { makeCtx, runStep, runGate, saveGate, stopRunning, running, previewStep, editMessage, resetFrom, continueMessage, composeGate, markModuleDone, threadOf } from './runtime.js';
+import { makeCtx, runStep, runGate, saveGate, stopRunning, running, previewStep, editMessage, resetFrom, continueMessage, composeGate, markModuleDone, threadOf, reparseGate, gateStep } from './runtime.js';
 import { modStatus, modTitle, nextModule, OPTIONAL } from './helpers.js';
 import { previewHtml } from './views-pursuit.js';
 import { hoursEditor } from './views-misc.js';
@@ -33,7 +33,7 @@ export async function viewModule(p, modId) {
   };
   const firstOpen = () => { const i = flow.steps.findIndex((s) => !s.optional && !stepDone(s)); return i < 0 ? Math.max(0, flow.steps.findIndex((s) => !stepDone(s))) : i; };
 
-  function rerender() { const y = window.scrollY; clear(root); root.append(build()); window.scrollTo(0, y); }
+  function rerender() { if (!root.isConnected) return; const y = window.scrollY; clear(root); root.append(build()); window.scrollTo(0, y); }
 
   // ------------------------------------------------------------------------------------------
   function header() {
@@ -188,7 +188,7 @@ export async function viewModule(p, modId) {
     }
     const idx = flow.steps.findIndex((s) => s.id === step.id);
     const nextIdx = flow.steps.findIndex((s, i) => i > idx && !s.optional && !stepDone(s));
-    openIdx = step.chat ? idx : (nextIdx >= 0 ? nextIdx : idx);
+    openIdx = step.chat || res.msg?.usage?.truncated ? idx : (nextIdx >= 0 ? nextIdx : idx);
     rerender();
   }
 
@@ -355,6 +355,12 @@ export async function viewModule(p, modId) {
     if (!edit.init || edit.for !== g.runAt) { Object.assign(edit, { init: true, for: g.runAt, row: { ...(saved ? g.row : parsed.row) || {} }, ledger: saved ? g.ledgerText : parsed.ledger?.text || '' }); }
     const prevL = p.ledger?.history?.length > 1 ? parseLedger(p.ledger.history[p.ledger.history.length - 2].text) : (!saved && p.ledger?.current ? parseLedger(p.ledger.current.text) : null);
     const out = h('div', { class: 'review3' });
+    if (!saved && g.truncated) {
+      out.append(h('div', { class: 'err' }, h('b', null, 'Het gate-antwoord is afgekapt (token-limiet). '), 'Laat het model doorgaan voordat je opslaat. ', h('button', { class: 'btn sm outline', onclick: async (e) => {
+        e.currentTarget.disabled = true; const msg = threadOf(modId, 'main').find((m) => m.id === g.msgId);
+        await continueMessage(modId, gateStep(modId), msg, { onUpdate: () => {} }); await reparseGate(modId); vals.__rev = null; rerender();
+      } }, 'Doorgaan waar het stopte')));
+    }
     const checks = saved ? g.checks : parsed.checks;
     out.append(h('div', { class: 'card' }, h('h4', null, '(1) Menselijke checks — aangetoond, ontbrekend of aan jou om te bevestigen'), checks?.length ? h('ul', { style: { margin: 0, paddingLeft: '1.1em' } }, checks.map((c) => h('li', { class: 'small' }, (() => { const s = h('span'); s.innerHTML = c.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/\b(shown)\b/gi, '<span class="chip green">$1</span>').replace(/\b(missing)\b/gi, '<span class="chip red">$1</span>').replace(/\b(mine to confirm)\b/gi, '<span class="chip amber">$1</span>'); return s; })()))) : h('div', { class: 'muted small' }, 'Niet herkend in het antwoord — zie het ruwe antwoord hieronder.')));
     const keys = ['stage', 'module', 'trigger', 'input', 'skill', 'humanCheck', 'output'];

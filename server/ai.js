@@ -112,7 +112,8 @@ async function streamAnthropic(cfg, req, cb, signal) {
     stream: true,
     messages: req.messages.map((m) => ({ role: m.role, content: m.content })),
   };
-  if (req.system) body.system = req.system;
+  // the workspace (standing instructions + Case Pack + sources) is identical across calls: let Anthropic cache it
+  if (req.system) body.system = req.system.length > 4000 && env.ANTHROPIC_CACHE !== '0' ? [{ type: 'text', text: req.system, cache_control: { type: 'ephemeral' } }] : req.system;
   const res = await fetchWithRetry(a.baseUrl + '/v1/messages', {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'x-api-key': a.apiKey, 'anthropic-version': '2023-06-01' },
@@ -121,7 +122,7 @@ async function streamAnthropic(cfg, req, cb, signal) {
   let inTok = 0, outTok = 0, stop = '';
   for await (const ev of sseEvents(res.body)) {
     let j; try { j = JSON.parse(ev.data); } catch { continue; }
-    if (ev.event === 'message_start') inTok = j.message?.usage?.input_tokens || 0;
+    if (ev.event === 'message_start') { const u = j.message?.usage || {}; inTok = (u.input_tokens || 0) + (u.cache_read_input_tokens || 0) + (u.cache_creation_input_tokens || 0); }
     else if (ev.event === 'content_block_delta' && j.delta?.type === 'text_delta') cb.delta(j.delta.text);
     else if (ev.event === 'message_delta') { outTok = j.usage?.output_tokens ?? outTok; stop = j.delta?.stop_reason || stop; }
     else if (ev.event === 'error') throw new Error(j.error?.message || 'stream error');

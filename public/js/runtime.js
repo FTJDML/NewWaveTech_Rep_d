@@ -31,9 +31,9 @@ const attachText = (att) => (att || []).map((a) => `\n\n<attached_file name="${a
 
 export function threadOf(modId, name = 'main') { return S.p.modules?.[modId]?.threads?.[name] || []; }
 
-function ensureModule(modId) {
+function ensureModule(P, modId) {
   const ops = [];
-  const m = S.p.modules?.[modId];
+  const m = P.modules?.[modId];
   if (!m) ops.push({ op: 'set', path: ['modules', modId], value: { status: 'doing', startedAt: new Date().toISOString(), threads: {}, data: {}, page: {} } });
   else if (!m.status || m.status === 'todo') ops.push({ op: 'set', path: ['modules', modId, 'status'], value: 'doing' }, { op: 'set', path: ['modules', modId, 'startedAt'], value: new Date().toISOString() });
   return ops;
@@ -68,7 +68,8 @@ export function manualAsk({ title, content, system }) {
  */
 export async function runStep(modId, step, values, { freeText, onUpdate, regenerate } = {}) {
   if (running.id) throw new Error('Er loopt al een AI-aanroep. Wacht tot die klaar is of stop hem.');
-  const pid = S.p.id;
+  const P = S.p;
+  const pid = P.id;
   const ctx = makeCtx(modId);
   if (step.guard && freeText === undefined) { const g = step.guard(ctx, values || {}); if (g) throw new Error(g); }
   if (step.ledgerNeeded !== false && freeText === undefined && !ctx.hasLedger && modId !== 'M0' && !step.noLedgerCheck && !['s2a', 's2b', 's2c'].includes(step.id)) {
@@ -84,7 +85,7 @@ export async function runStep(modId, step, values, { freeText, onUpdate, regener
   const userMsg = { id: uid('m'), role: 'user', content, step: step.id, ts: new Date().toISOString(), kind: freeText !== undefined ? 'chat' : 'prompt', values: freeText === undefined ? values : undefined };
   const basePath = ['modules', modId, 'threads', threadName];
 
-  if (step.noReply) { await patch([...ensureModule(modId), { op: 'push', path: basePath, value: userMsg }]); onUpdate && onUpdate({ phase: 'done' }); return { ok: true }; }
+  if (step.noReply) { await patch([...ensureModule(P, modId), { op: 'push', path: basePath, value: userMsg }], { pid }); onUpdate && onUpdate({ phase: 'done' }); return { ok: true }; }
 
   const scope = step.scope || 'workspace';
   const system = scope === 'private' ? '' : buildSystem(S.p, ctx.settings, scope === 'casepack' ? 'casepack' : undefined);
@@ -110,10 +111,10 @@ export async function runStep(modId, step, values, { freeText, onUpdate, regener
   }
   running.id = null; running.abort = null;
   const asst = { id: uid('m'), role: 'assistant', content: text, step: step.id, ts: new Date().toISOString(), usage: usage ? { in: usage.input, out: usage.output, model: usage.model, truncated: !!usage.truncated, ms: Date.now() - t0 } : undefined };
-  const ops = [...ensureModule(modId), { op: 'push', path: basePath, value: userMsg }, { op: 'push', path: basePath, value: asst }];
+  const ops = [...ensureModule(P, modId), { op: 'push', path: basePath, value: userMsg }, { op: 'push', path: basePath, value: asst }];
   if (step.onResult && !asst.usage?.truncated) {
     try {
-      const extra = step.onResult({ ...ctx, mod: { ...(S.p.modules?.[modId] || {}), threads: { ...(S.p.modules?.[modId]?.threads || {}), [threadName]: [...existing, userMsg, asst] } } }, text);
+      const extra = step.onResult({ ...ctx, mod: { ...(P.modules?.[modId] || {}), threads: { ...(P.modules?.[modId]?.threads || {}), [threadName]: [...existing, userMsg, asst] } } }, text);
       if (extra) ops.push(...extra);
     } catch (e) { console.error('onResult', e); }
   }
@@ -124,6 +125,7 @@ export async function runStep(modId, step, values, { freeText, onUpdate, regener
 
 /** The answer was cut off at the token limit: ask to continue and merge into the same message. */
 export async function continueMessage(modId, step, msg, { onUpdate } = {}) {
+  const P = S.p; const pid = P.id;
   const threadName = step.thread || 'main';
   const arr = threadOf(modId, threadName);
   const idx = arr.findIndex((m) => m.id === msg.id);
@@ -138,8 +140,8 @@ export async function continueMessage(modId, step, msg, { onUpdate } = {}) {
     const { text, usage } = await streamAI({ system, messages, maxTokens: step.maxTokens || 12000, signal: ac.signal, onDelta: (t) => onUpdate && onUpdate({ phase: 'delta', text: msg.content + t }) });
     running.id = null;
     const merged = msg.content + text;
-    await patch([{ op: 'set', path: ['modules', modId, 'threads', threadName, idx, 'content'], value: merged }, { op: 'set', path: ['modules', modId, 'threads', threadName, idx, 'usage'], value: { ...(msg.usage || {}), truncated: !!usage?.truncated, out: (msg.usage?.out || 0) + (usage?.output || 0) } }]);
-    if (step.onResult && !usage?.truncated) { const extra = step.onResult({ ...ctx, mod: { ...(S.p.modules?.[modId] || {}) } }, merged); if (extra?.length) await patch(extra); }
+    await patch([{ op: 'set', path: ['modules', modId, 'threads', threadName, idx, 'content'], value: merged }, { op: 'set', path: ['modules', modId, 'threads', threadName, idx, 'usage'], value: { ...(msg.usage || {}), truncated: !!usage?.truncated, out: (msg.usage?.out || 0) + (usage?.output || 0) } }], { pid });
+    if (step.onResult && !usage?.truncated) { const extra = step.onResult({ ...ctx, mod: { ...(P.modules?.[modId] || {}), threads: { ...(P.modules?.[modId]?.threads || {}), [threadName]: arr.map((m, i) => (i === idx ? { ...m, content: merged } : m)) } } }, merged); if (extra?.length) await patch(extra, { pid }); }
     onUpdate && onUpdate({ phase: 'done' });
   } catch (e) { running.id = null; onUpdate && onUpdate({ phase: 'error', error: ac.signal.aborted ? 'Gestopt' : e.message }); }
 }
@@ -188,7 +190,7 @@ export async function runGate(modId, opts, { onUpdate } = {}) {
   const res = await runStep(modId, step, {}, { onUpdate });
   if (!res.ok) return res;
   const parsed = parseGate(res.msg.content);
-  await patch([{ op: 'set', path: ['modules', modId, 'gate'], value: { runAt: new Date().toISOString(), raw: res.msg.content, parsed, saved: false, input: { decision: opts?.decision || null, note: opts?.note || '', caseDate: opts?.caseDate || S.p?.meta?.caseDate || '' } } }], { pid: res.pid });
+  await patch([{ op: 'set', path: ['modules', modId, 'gate'], value: { runAt: new Date().toISOString(), msgId: res.msg.id, truncated: !!res.msg.usage?.truncated, raw: res.msg.content, parsed, saved: false, input: { decision: opts?.decision || null, note: opts?.note || '', caseDate: opts?.caseDate || S.p?.meta?.caseDate || '' } } }], { pid: res.pid });
   return { ok: true, parsed };
 }
 
@@ -215,7 +217,7 @@ export async function saveGate(modId, { checks, row, ledgerText }) {
 
 export function markModuleDone(modId) {
   const now = new Date().toISOString();
-  return patch([...ensureModule(modId), { op: 'set', path: ['modules', modId, 'status'], value: 'done' }, { op: 'set', path: ['modules', modId, 'doneAt'], value: now }]);
+  return patch([...ensureModule(S.p, modId), { op: 'set', path: ['modules', modId, 'status'], value: 'done' }, { op: 'set', path: ['modules', modId, 'doneAt'], value: now }]);
 }
 
 export function moduleStatus(p, modId) { return p.modules?.[modId]?.status || 'todo'; }
@@ -225,3 +227,13 @@ export function ledgerFields(p) {
   if (!t) return null;
   return import('./engine.js').then((e) => e.parseLedger(t));
 }
+
+/** After "continue" on a truncated gate answer: merge, re-parse and refresh the stored gate result. */
+export async function reparseGate(modId) {
+  const arr = threadOf(modId, 'main');
+  const g = S.p.modules?.[modId]?.gate;
+  const msg = arr.find((m) => m.id === g?.msgId);
+  if (!msg) return;
+  await patch([{ op: 'set', path: ['modules', modId, 'gate'], value: { ...g, raw: msg.content, parsed: parseGate(msg.content), truncated: !!msg.usage?.truncated } }]);
+}
+export function gateStep(modId) { return { id: 'gate', title: 'Gate', thread: 'main', scope: 'workspace', maxTokens: 16000 }; }

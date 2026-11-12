@@ -93,13 +93,23 @@ function reply(req) {
   return 'Mock reply to: ' + last.slice(0, 120).replace(/\n/g, ' ');
 }
 
+let remainder = ''; // for the "continue from where you stopped" test hook
 export async function mockStream(req, cb, signal) {
-  const text = MARK + reply(req);
+  const last = req.messages[req.messages.length - 1].content || '';
+  if (/MOCK_ERROR/.test(last)) throw new Error('Mock: model overloaded (simulated error)');
+  const isContinue = /^Continue from where you stopped\.$/.test(last.trim());
+  let text, truncated = false;
+  if (isContinue) { text = remainder || 'CONTINUED-PART — the rest of the answer.'; remainder = ''; }
+  else {
+    text = MARK + reply(req);
+    if (/MOCK_TRUNCATE/.test(last)) { const cut = Math.max(200, Math.floor(text.length / 2)); remainder = 'CONTINUED-PART — ' + text.slice(cut); text = text.slice(0, cut); truncated = true; }
+  }
+  const delay = /MOCK_SLOW/.test(last) ? 120 : 6;
   for (let i = 0; i < text.length; i += 60) {
     if (signal?.aborted) throw new Error('aborted');
     cb.delta(text.slice(i, i + 60));
-    await sleep(6);
+    await sleep(delay);
   }
   const inTok = Math.round(((req.system || '').length + req.messages.reduce((a, m) => a + (m.content || '').length, 0)) / 4);
-  cb.usage({ input: inTok, output: Math.round(text.length / 4), model: 'demo', truncated: false });
+  cb.usage({ input: inTok, output: Math.round(text.length / 4), model: 'demo', truncated });
 }

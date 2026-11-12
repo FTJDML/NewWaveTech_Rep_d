@@ -125,3 +125,6 @@ export function daysUntil(iso, ref) {
   return Math.round((a - b) / 86400000);
 }
 export function slugify(s) { return String(s || 'pursuit').toLowerCase().normalize('NFKD').replace(/[^\w]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'pursuit'; }
+
+/** Re-render the current route from the in-memory state (used instead of a full page reload). */
+export const refreshApp = () => window.dispatchEvent(new Event('pn:refresh'));

@@ -19,6 +19,9 @@ function shell() {
     (mainEl = h('main', { class: 'wrap', id: 'main' })),
     h('footer', { class: 'footer' }, h('b', null, 'CGI'), ' Pursuit Navigator · gebaseerd op het AI-Native DCS-framework (v4.0) · Het model beslist nooit over bid, prijs, marge, staffing of juridische voorwaarden — dat doe jij.'));
   renderChrome();
+  fetch('/brand/logo.svg').then(async (r) => { // drop the official CGI logo at public/brand/logo.svg to use it instead of the text wordmark
+    if (r.ok && (r.headers.get('content-type') || '').includes('svg')) { const el = root.querySelector('.brand .logo'); if (el) { el.textContent = ''; el.append(h('img', { src: '/brand/logo.svg', alt: 'CGI', style: { height: '28px', display: 'block' } })); } }
+  }).catch(() => {});
 }
 
 function renderChrome() {
@@ -76,6 +79,7 @@ async function route() {
 }
 
 window.addEventListener('hashchange', route);
+window.addEventListener('pn:refresh', route);
 onChange((w) => { if (w === 'config') renderChrome(); });
 
 (async function boot() {

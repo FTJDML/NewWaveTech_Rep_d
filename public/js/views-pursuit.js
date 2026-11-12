@@ -1,9 +1,9 @@
-import { h, icon, toast, modal, confirmBox, fmtDate, fmtDateTime, relTime, daysUntil, uid, autoGrow, clear, copyText, downloadText, downloadBlob, slugify } from './ui.js';
+import { h, icon, toast, modal, confirmBox, fmtDate, fmtDateTime, relTime, daysUntil, uid, autoGrow, clear, copyText, downloadText, downloadBlob, slugify, refreshApp } from './ui.js';
 import { S, api, patch, streamAI, saveUser, flush } from './state.js';
 import { FW } from './framework.js';
 import { mountMarkdown, renderMarkdown } from './md.js';
 import {
-  STAGES, CASEPACK_KEYS, CASEPACK_TITLES, parseLedger, parseOpenItems, nextStageNeeds, findGaps, todayIso, dateEn, estimateTokens, fmtTokens, hoursSummary, parseHours, LEDGER_FIELDS, ledgerBlock,
+  STAGES, CASEPACK_KEYS, CASEPACK_TITLES, findTables, cleanInline, parseLedger, parseOpenItems, nextStageNeeds, findGaps, todayIso, dateEn, estimateTokens, fmtTokens, hoursSummary, parseHours, LEDGER_FIELDS, ledgerBlock,
 } from './engine.js';
 import { ROUTES, HOURS_STAGES, FLOWS } from './flows.js';
 import { ORDER, OPTIONAL, modTitle, modStatus, nextModule, stageState, progress, allConditions, dueState, refDate } from './helpers.js';
@@ -97,7 +97,7 @@ function pursuitSettings(p) {
       h('div', { class: 'field' }, h('label', { class: 'f' }, 'Antwoordtaal van de AI'), lang, h('div', { class: 'help' }, 'Kies bij de start; wissel niet halverwege (de Ledger wordt woordelijk doorgegeven).')),
       h('label', { class: 'check' }, h('input', { type: 'checkbox', checked: m.gateHint !== false, onchange: (e) => { m.gateHint = e.target.checked; } }), h('span', null, 'Opmaakhint voor de app toevoegen aan het gate (helpt het resultaat automatisch te verwerken; wijzigt de inhoud niet).')),
       h('hr'), h('button', { class: 'btn danger', onclick: async () => { if (await confirmBox('Pursuit verwijderen?', 'Deze pursuit wordt verwijderd (een kopie blijft in de map data/trash op de server).', 'Verwijderen')) { await api('/pursuits/' + p.id, { method: 'DELETE' }); location.hash = '#/'; } } }, icon('trash', 16), 'Pursuit verwijderen')),
-    actions: [{ label: 'Annuleren', kind: 'ghost' }, { label: 'Opslaan', kind: 'primary', onClick: async () => { await patch([{ op: 'set', path: ['meta'], value: m }]); toast('Opgeslagen', 'ok'); location.reload(); } }],
+    actions: [{ label: 'Annuleren', kind: 'ghost' }, { label: 'Opslaan', kind: 'primary', onClick: async () => { await patch([{ op: 'set', path: ['meta'], value: m }]); toast('Opgeslagen', 'ok'); refreshApp(); } }],
   });
 }
 
@@ -169,8 +169,44 @@ function overview(p) {
     needs.length ? h('div', { class: 'card top' }, h('div', { class: 'card-head' }, icon('arrowRight', 22), h('h3', null, 'Volgende stage heeft nodig')), needs.map((n) => h('div', { class: 'small', style: { marginBottom: '6px' } }, h('span', { class: 'chip next' }, 'for ' + n.for), ' ' + n.text))) : null,
     gapList.length ? h('div', { class: 'card' }, h('div', { class: 'card-head' }, h('span', { class: 'chip gap' }, 'Not provided'), h('h3', null, `${gapList.length} gaten in het Case Pack`)), h('ul', { style: { margin: 0, paddingLeft: '1.1em' } }, gapList.slice(0, 6).map((x) => h('li', { class: 'small' }, h('b', null, x.k + ' · '), x.g.slice(0, 120)))), h('a', { class: 'small', href: `#/p/${p.id}/casepack` }, 'Alle gaten bekijken →')) : null);
 
-  box.append(head, nextCard, h('div', null, h('h3', { style: { margin: '6px 0 10px' } }, 'De route'), journey), h('div', { class: 'grid', style: { gridTemplateColumns: 'minmax(0,1.35fr) minmax(0,1fr)', alignItems: 'start' } }, strat, attention));
+  let calls = 0, tin = 0, tout = 0;
+  for (const mod of Object.values(p.modules || {})) for (const arr of Object.values(mod.threads || {})) for (const x of arr) if (x.role === 'assistant' && x.usage) { calls++; tin += x.usage.in || 0; tout += x.usage.out || 0; }
+  const ask = clientAsk(p);
+  box.append(head, nextCard, h('div', null, h('h3', { style: { margin: '6px 0 10px' } }, 'De route'), journey), ask, h('div', { class: 'grid', style: { gridTemplateColumns: 'minmax(0,1.35fr) minmax(0,1fr)', alignItems: 'start' } }, strat, attention), calls ? h('div', { class: 'xs muted' }, `AI-gebruik in deze pursuit: ${calls} aanroepen · ${fmtTokens(tin)} tokens in · ${fmtTokens(tout)} tokens uit (schatting op basis van de provider; kosten volgens jullie tarief)`) : null);
   return box;
+}
+
+/** "Wat de klant vraagt": requirements, criteria with weights and dates, read from the tables of Case Pack 02. */
+function clientAsk(p) {
+  const t2 = p.casepack?.docs?.['02']?.text;
+  if (!t2) return null;
+  const tabs = findTables(t2);
+  const cell = (r, i) => cleanInline(r[i] || '');
+  const reqT = tabs.find((t) => t.header.some((x) => /^(id|req)/i.test(x)) && t.header.some((x) => /priority|must|should/i.test(x)));
+  const critT = tabs.find((t) => t.header.some((x) => /criteri/i.test(x)) && t.header.some((x) => /weight|gewicht/i.test(x)));
+  const dateT = tabs.find((t) => t.header.some((x) => /event|milestone|datum|date/i.test(x)) && t.header.length <= 3 && t.rows.some((r) => !isNaN(Date.parse(cell(r, 1)))));
+  if (!reqT && !critT && !dateT) return null;
+  const card = h('div', { class: 'card top' }, h('div', { class: 'card-head' }, icon('target', 22), h('h3', null, 'Wat de klant vraagt'), h('a', { class: 'btn ghost sm', style: { marginLeft: 'auto' }, href: `#/p/${p.id}/casepack` }, 'Case Pack 02')));
+  const body = h('div', { class: 'grid g3', style: { alignItems: 'start' } });
+  if (critT) {
+    const pi = critT.header.findIndex((x) => /weight|gewicht/i.test(x));
+    const rows = critT.rows.map((r) => ({ name: cell(r, 0), w: parseFloat(cell(r, pi).replace(',', '.')) })).filter((x) => x.name && Number.isFinite(x.w));
+    const total = Math.round(rows.reduce((a, b) => a + b.w, 0) * 10) / 10;
+    body.append(h('div', null, h('div', { class: 'eyebrow' }, 'Beoordeling'), rows.map((x) => h('div', { style: { margin: '6px 0' } }, h('div', { class: 'row between nowrap small', style: { alignItems: 'flex-start' } }, h('span', { class: 'grow' }, x.name), h('b', null, x.w + '%')), h('div', { class: 'progress' }, h('i', { style: { width: Math.min(100, x.w) + '%' } })))), h('div', { class: 'xs ' + (Math.round(total) === 100 ? 'muted' : ''), style: Math.round(total) === 100 ? null : { color: 'var(--red-700)', fontWeight: 700 } }, `Totaal ${total}%` + (Math.round(total) === 100 ? '' : ' — telt niet op tot 100%: controleer de bron'))));
+  }
+  if (reqT) {
+    const pri = reqT.header.findIndex((x) => /priority|must|should/i.test(x));
+    const rows = reqT.rows.map((r) => ({ id: cell(r, 0), pr: cell(r, pri), text: cell(r, reqT.header.length - 1) })).filter((x) => x.id);
+    const must = rows.filter((x) => /must/i.test(x.pr)).length;
+    body.append(h('div', null, h('div', { class: 'eyebrow' }, `Eisen · ${must} Must · ${rows.length - must} Should`), h('div', { style: { maxHeight: '220px', overflow: 'auto' } }, rows.map((x) => h('div', { class: 'small', style: { margin: '4px 0' } }, h('span', { class: 'chip ' + (/must/i.test(x.pr) ? 'red' : '') }, x.id + ' · ' + x.pr), ' ' + x.text.slice(0, 110))))));
+  }
+  if (dateT) {
+    const rows = dateT.rows.map((r) => ({ ev: cell(r, 0), d: cell(r, 1), t: Date.parse(cell(r, 1)) })).filter((x) => !isNaN(x.t));
+    const ref = new Date((refDate(p)) + 'T00:00:00').getTime();
+    body.append(h('div', null, h('div', { class: 'eyebrow' }, 'Data'), rows.map((x) => { const d = Math.round((x.t - ref) / 86400000); return h('div', { class: 'small', style: { margin: '7px 0' } }, h('div', null, x.ev), h('span', { class: 'chip ' + (d < 0 ? '' : d <= 14 ? 'amber' : 'purple') }, x.d + (d > 0 ? ` · over ${d} d` : d === 0 ? ' · vandaag' : ' · geweest'))); })));
+  }
+  card.append(body);
+  return card;
 }
 
 function condRow(p, c) {
@@ -191,7 +227,7 @@ function markMet(p, c) {
       const ci = p.decisions[di].conditions.findIndex((x) => x.id === c.id);
       const n = ci + 1;
       await patch([{ op: 'set', path: ['decisions', di, 'conditions', ci, 'status'], value: 'met' }, { op: 'set', path: ['decisions', di, 'conditions', ci, 'evidence'], value: ev.value.trim() }, { op: 'push', path: ['evidence'], value: { id: uid('e'), text: `Met: condition ${n} (${c.text}) — ${ev.value.trim()}, ${dateEn(date.value)}.`, at: new Date().toISOString() } }]);
-      location.reload();
+      refreshApp();
     } }] });
 }
 
@@ -355,5 +391,5 @@ function viewArtefacts(p) {
     arts.length ? h('div', { class: 'card' }, arts.map((a) => h('div', { class: 'src-item' }, h('div', { class: 'ico' }, icon(a.kind === 'html' ? 'play' : 'file', 20)), h('div', { class: 'grow' }, h('b', null, a.name), ' ', h('span', { class: 'chip' }, a.kind === 'html' ? 'HTML · klikbaar' : 'Markdown'), h('div', { class: 'small muted' }, `${a.module} · ${fmtDateTime(a.at)} · ${fmtTokens(estimateTokens(a.content))} tokens${a.note ? ' · ⚠ ' + a.note : ''}`)),
       h('button', { class: 'btn ghost sm', onclick: () => view(a) }, icon('eye', 14), a.kind === 'html' ? 'Open' : 'Bekijk'),
       h('button', { class: 'btn ghost sm', onclick: () => downloadText(a.kind === 'html' ? slugify(a.name) + '.html' : slugify(a.name) + '.md', a.content, a.kind === 'html' ? 'text/html' : 'text/plain') }, icon('download', 14)),
-      h('button', { class: 'icon-btn', onclick: async () => { if (await confirmBox('Artefact verwijderen?', a.name, 'Verwijderen')) { await patch([{ op: 'remove', path: ['artefacts'], id: a.id }]); location.reload(); } } }, icon('trash', 17))))) : h('div', { class: 'empty' }, 'Nog geen artefacten.'));
+      h('button', { class: 'icon-btn', onclick: async () => { if (await confirmBox('Artefact verwijderen?', a.name, 'Verwijderen')) { await patch([{ op: 'remove', path: ['artefacts'], id: a.id }]); refreshApp(); } } }, icon('trash', 17))))) : h('div', { class: 'empty' }, 'Nog geen artefacten.'));
 }

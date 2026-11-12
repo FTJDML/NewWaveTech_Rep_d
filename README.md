@@ -83,6 +83,7 @@ tekst in via **Bibliotheek → module → Bewerk** (gedeeld met het hele team; t
 
 ## Beveiliging
 
+* Bij Anthropic wordt de (grote, stabiele) werkruimte-context met prompt caching verstuurd (uit te zetten met `ANTHROPIC_CACHE=0`): dat scheelt kosten en wachttijd.
 * API-sleutels staan alleen op de server (`data/config.json`, rechten 600, of omgevingsvariabelen).
 * AI-gegenereerde HTML (prototypes) draait in een sandbox-iframe op een apart document met een CSP (`sandbox allow-scripts`, `default-src 'none'`): geen netwerk, geen toegang tot de app of cookies.
 * Alle AI-uitvoer wordt als tekst ge-escaped voordat de opmaak wordt toegepast; de app-CSP staat geen externe scripts toe.
@@ -94,8 +95,12 @@ tekst in via **Bibliotheek → module → Bewerk** (gedeeld met het hele team; t
 npm test                                  # unit- en protocoltests (prompt-fideliteit, parsers, Anthropic/OpenAI-streaming)
 AI_PROVIDER=mock PORT=3111 DATA_DIR=/tmp/pn node server/index.js &
 node tests/e2e.cjs                        # doorloopt M0–M14 in de browser (vereist Playwright), demo-modus
+PORT=3112 DATA_DIR=/tmp/pn2 node server/index.js &                  # tweede server zonder AI-sleutel (kopieer-modus)
+node tests/e2e-edge.cjs                   # randgevallen: afkappen, fouten, wegnavigeren tijdens een aanroep, workshopmodus, kopieer-modus …
 python3 -I tools/verify-skills.py "<map met de gidsen>" public/data/skills.json   # bewijst dat alle prompts identiek zijn aan de Word-gidsen
 ```
+
+Het officiële CGI-logo? Zet het als `public/brand/logo.svg`; de app gebruikt het dan in plaats van de tekst-wordmark.
 
 Structuur: `server/` (HTTP, opslag, AI-proxy met streaming, tekstextractie, Word-export) · `public/js/` (app, `engine.js` = prompt-opbouw en parsers, `flows.js` = orkestratie per module,
 `runtime.js` = uitvoeren en gate, `views-*.js` = schermen) · `public/data/skills.json` (de prompts, letterlijk uit de gidsen).

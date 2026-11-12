@@ -1,4 +1,4 @@
-import { h, icon, toast, modal, confirmBox, fmtDate, relTime, uid, autoGrow, clear, copyText } from './ui.js';
+import { h, icon, toast, modal, confirmBox, fmtDate, relTime, uid, autoGrow, clear, copyText, refreshApp } from './ui.js';
 import { S, api, patch, userName } from './state.js';
 import { estimateTokens, fmtTokens, buildSystem } from './engine.js';
 import { settingsOf } from './runtime.js';
@@ -62,7 +62,7 @@ function editSource(s) {
   modal({
     title: 'Bron bewerken', wide: true,
     body: h('div', { class: 'stack' }, h('div', { class: 'grid g2' }, h('div', null, h('label', { class: 'f' }, 'Naam'), name), h('div', null, h('label', { class: 'f' }, 'Soort'), type)), h('div', { style: { maxWidth: '240px' } }, h('label', { class: 'f' }, 'Datum'), date), h('div', null, h('label', { class: 'f' }, 'Tekst'), text, h('div', { class: 'help' }, 'Corrigeer hier gerust extractiefouten (tabellen, koppen). De AI leest exact deze tekst.'))),
-    actions: [{ label: 'Annuleren', kind: 'ghost' }, { label: 'Opslaan', kind: 'primary', onClick: async () => { const i = S.p.sources.findIndex((x) => x.id === s.id); await patch([{ op: 'set', path: ['sources', i], value: { ...s, name: name.value.trim() || s.name, type: type.value, date: date.value, text: text.value, chars: text.value.length } }]); location.reload(); } }],
+    actions: [{ label: 'Annuleren', kind: 'ghost' }, { label: 'Opslaan', kind: 'primary', onClick: async () => { const i = S.p.sources.findIndex((x) => x.id === s.id); await patch([{ op: 'set', path: ['sources', i], value: { ...s, name: name.value.trim() || s.name, type: type.value, date: date.value, text: text.value, chars: text.value.length } }]); refreshApp(); } }],
   });
 }
 

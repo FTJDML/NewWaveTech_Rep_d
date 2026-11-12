@@ -64,6 +64,18 @@ test('Anthropic: headers, body, streaming deltas, usage, truncation flag, retry 
   } finally { app.stop(); up.close(); }
 });
 
+test('Anthropic: a large workspace prompt is sent with cache_control, usage counts cached tokens', async () => {
+  let seen;
+  const up = http.createServer((req, res) => { let b = ''; req.on('data', (c) => (b += c)); req.on('end', () => { seen = JSON.parse(b); sse(res, [['message_start', { type: 'message_start', message: { usage: { input_tokens: 10, cache_read_input_tokens: 5000, cache_creation_input_tokens: 20 } } }], ['content_block_delta', { type: 'content_block_delta', delta: { type: 'text_delta', text: 'x' } }], ['message_delta', { type: 'message_delta', delta: { stop_reason: 'end_turn' }, usage: { output_tokens: 1 } }]]); }); });
+  const upPort = await listen(up);
+  const app = await startApp({ AI_PROVIDER: 'anthropic', ANTHROPIC_API_KEY: 'k', ANTHROPIC_BASE_URL: `http://127.0.0.1:${upPort}` });
+  try {
+    const r = await stream(app.port, { system: 'W'.repeat(5000), messages: [{ role: 'user', content: 'q' }] });
+    assert.equal(r.usage.input, 5030);
+    assert.deepEqual(seen.system, [{ type: 'text', text: 'W'.repeat(5000), cache_control: { type: 'ephemeral' } }]);
+  } finally { app.stop(); up.close(); }
+});
+
 test('Anthropic: upstream 400 becomes a readable error event', async () => {
   const up = http.createServer((req, res) => { req.resume(); req.on('end', () => { res.writeHead(400, { 'content-type': 'application/json' }); res.end('{"type":"error","error":{"type":"invalid_request_error","message":"prompt is too long"}}'); }); });
   const upPort = await listen(up);
